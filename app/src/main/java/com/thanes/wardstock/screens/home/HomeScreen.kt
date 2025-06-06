@@ -1,5 +1,6 @@
 package com.thanes.wardstock.screens.home
 
+import android.app.Activity
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.data.store.DataManager
@@ -30,6 +32,7 @@ import com.thanes.wardstock.R
 @Composable
 fun HomeScreen(navController: NavHostController, context: Context) {
   val scope = rememberCoroutineScope()
+  val activity = context as? Activity
 
   Box(
     modifier = Modifier
@@ -63,6 +66,13 @@ fun HomeScreen(navController: NavHostController, context: Context) {
           )
         }
       }
+
+      Spacer(modifier = Modifier.height(10.dp))
+
+      Text(stringResource(R.string.app_lang))
+
+      Spacer(modifier = Modifier.height(10.dp))
+
     }
   }
 }

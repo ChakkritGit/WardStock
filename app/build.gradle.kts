@@ -53,6 +53,8 @@ dependencies {
   implementation(libs.coil.compose)
   implementation(libs.coil.network.okhttp)
   implementation(libs.androidx.foundation)
+  implementation(libs.androidx.appcompat)
+  implementation (libs.androidx.appcompat.resources)
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.espresso.core)

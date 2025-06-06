@@ -2,33 +2,22 @@ package com.thanes.wardstock.screens.login
 
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.* // Material 3 components are used
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.thanes.wardstock.data.repositories.ApiRepository
 import com.thanes.wardstock.data.store.DataManager
 import com.thanes.wardstock.navigation.Routes
@@ -88,62 +77,207 @@ fun LoginScreen(navController: NavHostController, context: Context) {
 
   Box(
     modifier = Modifier
-      .padding(10.dp)
-      .fillMaxHeight()
-  ) {
-    Column(
-//      verticalArrangement = Arrangement.Center,
-      modifier = Modifier.fillMaxHeight()
-    ) {
-      Text("Ward Stock", fontSize = 32.sp, fontWeight = FontWeight.Medium)
-      Spacer(modifier = Modifier.height(10.dp))
-      OutlinedTextField(
-        value = userName,
-        onValueChange = { userName = it },
-        label = { Text("ชื่อผู้ใช้") },
-        modifier = Modifier
-          .fillMaxWidth()
-          .height(70.dp),
-        shape = RoundedCornerShape(50.dp)
-      )
-      Spacer(modifier = Modifier.height(10.dp))
-      OutlinedTextField(
-        value = userPassword,
-        onValueChange = { userPassword = it },
-        label = { Text("รหัสผ่าน") },
-        modifier = Modifier
-          .fillMaxWidth()
-          .height(70.dp),
-        shape = RoundedCornerShape(50.dp),
-        visualTransformation = PasswordVisualTransformation(),
-      )
-      Spacer(modifier = Modifier.height(16.dp))
-      Button(
-        onClick = {
-          if (isLoading) return@Button
-          handleLogin()
-        },
-        modifier = Modifier
-          .fillMaxWidth()
-          .height(60.dp),
-        enabled = !isLoading
-      ) {
-        if (isLoading) {
-          CircularProgressIndicator(
-            color = MaterialTheme.colorScheme.onPrimary,
-            strokeWidth = 2.dp,
-            modifier = Modifier.size(24.dp)
+      .fillMaxSize()
+      .background(
+        brush = Brush.verticalGradient(
+          colors = listOf(
+            Color(0xFF6C63FF),
+            Color(0xFF4A47E8)
           )
-        } else {
-          Text("เข้าสู่ระบบ")
-        }
-      }
+        )
+      )
+  ) {
+    // Decorative elements
+    Box(
+      modifier = Modifier
+        .size(120.dp)
+        .offset(x = 50.dp, y = 80.dp)
+        .clip(RoundedCornerShape(60.dp))
+        .background(Color.White.copy(alpha = 0.1f))
+    )
 
-      LaunchedEffect(errorMessage) {
-        if (errorMessage.isNotEmpty()) {
-          Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+    Box(
+      modifier = Modifier
+        .size(80.dp)
+        .offset(x = 300.dp, y = 150.dp)
+        .clip(RoundedCornerShape(40.dp))
+        .background(Color.White.copy(alpha = 0.15f))
+    )
+
+    // Main content
+    Column(
+      modifier = Modifier
+        .fillMaxSize()
+        .padding(horizontal = 24.dp),
+      horizontalAlignment = Alignment.CenterHorizontally,
+      verticalArrangement = Arrangement.Center
+    ) {
+      // Login Form Card
+      Card(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(16.dp),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+          containerColor = Color.White
+        ),
+        elevation = CardDefaults.cardElevation(
+          defaultElevation = 8.dp
+        )
+      ) {
+        Column(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(32.dp),
+          horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+          // Title
+          Text(
+            text = "Sign in",
+            fontSize = 48.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF2D2D2D),
+            textAlign = TextAlign.Center
+          )
+
+          Spacer(modifier = Modifier.height(32.dp))
+
+          // Email Field - Updated to TextField
+          TextField( // <<<< CHANGED from OutlinedTextField
+            value = userName,
+            onValueChange = { userName = it },
+            label = {
+              Text("Email") // Color.Gray removed, handled by TextFieldDefaults
+            },
+            modifier = Modifier
+              .fillMaxWidth()
+              .height(56.dp), // Keep height for label animation
+            // shape removed, not needed for bottom-line style
+            colors = TextFieldDefaults.colors( // ใช้ TextFieldDefaults.colors สำหรับ Material 3
+              focusedTextColor = Color(0xFF6C63FF),
+              focusedIndicatorColor = Color(0xFF6C63FF),
+              unfocusedIndicatorColor = Color.Gray.copy(alpha = 0.3f),
+              focusedLabelColor = Color(0xFF6C63FF),
+              unfocusedLabelColor = Color.Gray,
+              cursorColor = Color(0xFF6C63FF),
+              // ระบุสี container อย่างชัดเจนเพื่อให้โปร่งใส
+              focusedContainerColor = Color.Transparent,
+              unfocusedContainerColor = Color.Transparent,
+              // ตัวเลือกเพิ่มเติม: ตั้งค่าสำหรับสถานะ disabled และ error หากต้องการ
+              disabledContainerColor = Color.Transparent,
+              errorContainerColor = Color.Transparent
+            )
+          )
+
+          Spacer(modifier = Modifier.height(16.dp))
+
+          // Password Field - Updated to TextField
+          TextField( // <<<< CHANGED from OutlinedTextField
+            value = userPassword,
+            onValueChange = { userPassword = it },
+            label = {
+              Text("Password") // Color.Gray removed, handled by TextFieldDefaults
+            },
+            modifier = Modifier
+              .fillMaxWidth()
+              .height(56.dp), // Keep height for label animation
+            visualTransformation = PasswordVisualTransformation(),
+            // shape removed, not needed for bottom-line style
+            colors = TextFieldDefaults.colors( // ใช้ TextFieldDefaults.colors สำหรับ Material 3
+              focusedTextColor = Color(0xFF6C63FF),
+              focusedIndicatorColor = Color(0xFF6C63FF),
+              unfocusedIndicatorColor = Color.Gray.copy(alpha = 0.3f),
+              focusedLabelColor = Color(0xFF6C63FF),
+              unfocusedLabelColor = Color.Gray,
+              cursorColor = Color(0xFF6C63FF),
+              // ระบุสี container อย่างชัดเจนเพื่อให้โปร่งใส
+              focusedContainerColor = Color.Transparent,
+              unfocusedContainerColor = Color.Transparent,
+              // ตัวเลือกเพิ่มเติม: ตั้งค่าสำหรับสถานะ disabled และ error หากต้องการ
+              disabledContainerColor = Color.Transparent,
+              errorContainerColor = Color.Transparent
+            )
+          )
+
+          Spacer(modifier = Modifier.height(24.dp))
+
+          // Sign In Button
+          Button(
+            onClick = {
+              if (isLoading) return@Button
+              handleLogin()
+            },
+            modifier = Modifier
+              .fillMaxWidth()
+              .height(56.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+              containerColor = Color(0xFF6C63FF),
+              disabledContainerColor = Color(0xFF6C63FF).copy(alpha = 0.6f)
+            ),
+            enabled = !isLoading
+          ) {
+            if (isLoading) {
+              CircularProgressIndicator(
+                color = Color.White,
+                strokeWidth = 2.dp,
+                modifier = Modifier.size(24.dp)
+              )
+            } else {
+              Text(
+                "Sign In",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White
+              )
+            }
+          }
+
+          Spacer(modifier = Modifier.height(16.dp))
+
+          // Forgot Password Link
+          TextButton(
+            onClick = { /* TODO: Handle forgot password */ }
+          ) {
+            Text(
+              "Forgot your password?",
+              color = Color(0xFF6C63FF),
+              fontSize = 14.sp
+            )
+          }
+
+          Spacer(modifier = Modifier.height(24.dp))
+
+          // Don't have account text
+          Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+          ) {
+            Text(
+              "Don't have an account? ",
+              color = Color.Gray,
+              fontSize = 14.sp
+            )
+            TextButton(
+              onClick = { /* TODO: Navigate to sign up */ },
+              contentPadding = PaddingValues(0.dp)
+            ) {
+              Text(
+                "Sign up",
+                color = Color(0xFF6C63FF),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium
+              )
+            }
+          }
         }
       }
+    }
+  }
+
+  LaunchedEffect(errorMessage) {
+    if (errorMessage.isNotEmpty()) {
+      Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
     }
   }
 }

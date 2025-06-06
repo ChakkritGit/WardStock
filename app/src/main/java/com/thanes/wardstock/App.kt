@@ -4,6 +4,8 @@ import android.app.Application
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import com.thanes.wardstock.services.machine.Dispense
 import com.thanes.wardstock.services.rabbit.RabbitMQService
 import com.thanes.wardstock.services.usb.SerialPortManager
@@ -17,6 +19,7 @@ class App : Application() {
 
   private var _dispenseService: Dispense? = null
   val dispenseService: Dispense? get() = _dispenseService
+  val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("th-TH")
 
   @Volatile
   var isInitialized = false
@@ -25,6 +28,7 @@ class App : Application() {
   @RequiresApi(Build.VERSION_CODES.TIRAMISU)
   override fun onCreate() {
     super.onCreate()
+    AppCompatDelegate.setApplicationLocales(appLocale)
     applicationScope.launch {
       try {
         val serialPortManager = SerialPortManager.getInstance(this@App)
