@@ -18,6 +18,7 @@ import androidx.navigation.compose.composable
 import com.thanes.wardstock.data.store.DataManager
 import com.thanes.wardstock.screens.home.HomeScreen
 import com.thanes.wardstock.screens.login.LoginScreen
+import com.thanes.wardstock.screens.setting.SettingScreen
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -31,12 +32,19 @@ fun AppNavigation(navController: NavHostController, innerPadding: PaddingValues,
   token?.let { tokenValue ->
     val startDestination = if (tokenValue.isNotEmpty()) Routes.Home.route else Routes.Login.route
 
-    NavHost(navController = navController, startDestination = startDestination, modifier = Modifier.padding(innerPadding)) {
+    NavHost(
+      navController = navController,
+      startDestination = startDestination,
+      modifier = Modifier.padding(innerPadding)
+    ) {
       composable(route = Routes.Login.route) {
         LoginScreen(navController, context)
       }
       composable(route = Routes.Home.route) {
         HomeScreen(navController, context)
+      }
+      composable(route = Routes.Setting.route) {
+        SettingScreen(navController, context)
       }
     }
   }

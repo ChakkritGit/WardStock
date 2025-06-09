@@ -2,10 +2,12 @@ package com.thanes.wardstock.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+object Colors {
+  val BluePrimary = Color(0xFF1A3D7C)     // สีหลัก (จากโลโก้)
+  val BlueSecondary = Color(0xFF234B91)   // สีรองเข้มกว่าเล็กน้อย
+  val BlueTertiary = Color(0xFF82A5D7)    // สีอ่อนสำหรับพื้นหลังหรือปุ่ม
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+  val BlueGrey100 = Color(0xFFE6F0FF)      // สีเทาน้ำเงินอ่อน (สำหรับพื้นหลังหรือ surface)
+  val BlueGrey80 = Color(0xFFC7D5EC)      // สีเทาน้ำเงินอ่อน (สำหรับพื้นหลังหรือ surface)
+  val BlueGrey40 = Color(0xFF8E9FB0)      // สีเทาน้ำเงินเข้ม
+}

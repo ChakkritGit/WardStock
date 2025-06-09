@@ -1,17 +1,18 @@
 package com.thanes.wardstock
 
 import android.app.Application
+import android.content.Context
+import android.content.res.Configuration
 import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.os.LocaleListCompat
+import com.thanes.wardstock.data.language.LanguageManager
 import com.thanes.wardstock.services.machine.Dispense
 import com.thanes.wardstock.services.rabbit.RabbitMQService
 import com.thanes.wardstock.services.usb.SerialPortManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 
 class App : Application() {
 
@@ -19,16 +20,42 @@ class App : Application() {
 
   private var _dispenseService: Dispense? = null
   val dispenseService: Dispense? get() = _dispenseService
-  val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("th-TH")
 
   @Volatile
   var isInitialized = false
     private set
 
-  @RequiresApi(Build.VERSION_CODES.TIRAMISU)
   override fun onCreate() {
     super.onCreate()
-    AppCompatDelegate.setApplicationLocales(appLocale)
+
+    LanguageManager.getInstance().initializeLanguage(this)
+
+    initializeServices()
+  }
+
+  override fun attachBaseContext(base: Context) {
+    val context = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+      updateContextLocale(base)
+    } else {
+      base
+    }
+    super.attachBaseContext(context)
+  }
+
+  private fun updateContextLocale(context: Context): Context {
+    val languageManager = LanguageManager.getInstance()
+    val savedLanguage = languageManager.getSavedLanguage(context)
+
+    val locale = Locale(savedLanguage)
+    Locale.setDefault(locale)
+
+    val config = Configuration(context.resources.configuration)
+    config.setLocale(locale)
+
+    return context.createConfigurationContext(config)
+  }
+
+  private fun initializeServices() {
     applicationScope.launch {
       try {
         val serialPortManager = SerialPortManager.getInstance(this@App)
@@ -51,13 +78,16 @@ class App : Application() {
     }
   }
 
-  @RequiresApi(Build.VERSION_CODES.TIRAMISU)
   override fun onTerminate() {
     super.onTerminate()
     applicationScope.launch {
-      val serialPortManager = SerialPortManager.getInstance(this@App)
-      serialPortManager.disconnectPorts()
-      RabbitMQService.getInstance().disconnect()
+      try {
+        val serialPortManager = SerialPortManager.getInstance(this@App)
+        serialPortManager.disconnectPorts()
+        RabbitMQService.getInstance().disconnect()
+      } catch (e: Exception) {
+        Log.e("App", "Error during cleanup: ${e.message}")
+      }
     }
   }
 }

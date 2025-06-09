@@ -5,13 +5,14 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.* // Material 3 components are used
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -23,6 +24,8 @@ import com.thanes.wardstock.data.store.DataManager
 import com.thanes.wardstock.navigation.Routes
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import com.thanes.wardstock.R
+import com.thanes.wardstock.ui.theme.Colors
 
 @Composable
 fun LoginScreen(navController: NavHostController, context: Context) {
@@ -32,13 +35,18 @@ fun LoginScreen(navController: NavHostController, context: Context) {
   var isLoading by remember { mutableStateOf(false) }
   var errorMessage by remember { mutableStateOf("") }
 
+  val completeFieldMessage = stringResource(R.string.complete_field)
+  val userDataInCompleteMessage = stringResource(R.string.userData_InComplete)
+  val somethingWrongMessage = stringResource(R.string.something_wrong)
+  val cannotConnectToServerMessage = stringResource(R.string.something_wrong)
+
   fun handleLogin() {
     errorMessage = ""
     isLoading = true
 
     scope.launch {
       if (userName.isEmpty() || userPassword.isEmpty()) {
-        errorMessage = "กรุณากรอกข้อมูลให้ครบ"
+        errorMessage = completeFieldMessage
         isLoading = false
         return@launch
       }
@@ -56,19 +64,19 @@ fun LoginScreen(navController: NavHostController, context: Context) {
               popUpTo(Routes.Login.route) { inclusive = true }
             }
           } else {
-            errorMessage = "ข้อมูลผู้ใช้ไม่สมบูรณ์"
+            errorMessage = userDataInCompleteMessage
           }
         } else {
           val errorJson = response.errorBody()?.string()
           val message = try {
             JSONObject(errorJson ?: "").getString("message")
-          } catch (e: Exception) {
-            "เกิดข้อผิดพลาดบางอย่าง"
+          } catch (_: Exception) {
+            somethingWrongMessage
           }
           errorMessage = message
         }
       } catch (_: Exception) {
-        errorMessage = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์"
+        errorMessage = cannotConnectToServerMessage
       } finally {
         isLoading = false
       }
@@ -81,13 +89,12 @@ fun LoginScreen(navController: NavHostController, context: Context) {
       .background(
         brush = Brush.verticalGradient(
           colors = listOf(
-            Color(0xFF6C63FF),
-            Color(0xFF4A47E8)
+            Colors.BlueSecondary,
+            Colors.BluePrimary
           )
         )
       )
   ) {
-    // Decorative elements
     Box(
       modifier = Modifier
         .size(120.dp)
@@ -104,7 +111,6 @@ fun LoginScreen(navController: NavHostController, context: Context) {
         .background(Color.White.copy(alpha = 0.15f))
     )
 
-    // Main content
     Column(
       modifier = Modifier
         .fillMaxSize()
@@ -112,14 +118,13 @@ fun LoginScreen(navController: NavHostController, context: Context) {
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.Center
     ) {
-      // Login Form Card
       Card(
         modifier = Modifier
           .fillMaxWidth()
           .padding(16.dp),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
-          containerColor = Color.White
+          containerColor = Colors.BlueGrey100
         ),
         elevation = CardDefaults.cardElevation(
           defaultElevation = 8.dp
@@ -131,9 +136,8 @@ fun LoginScreen(navController: NavHostController, context: Context) {
             .padding(32.dp),
           horizontalAlignment = Alignment.CenterHorizontally
         ) {
-          // Title
           Text(
-            text = "Sign in",
+            text = stringResource(R.string.sign_in),
             fontSize = 48.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF2D2D2D),
@@ -142,28 +146,24 @@ fun LoginScreen(navController: NavHostController, context: Context) {
 
           Spacer(modifier = Modifier.height(32.dp))
 
-          // Email Field - Updated to TextField
-          TextField( // <<<< CHANGED from OutlinedTextField
+          TextField(
             value = userName,
             onValueChange = { userName = it },
             label = {
-              Text("Email") // Color.Gray removed, handled by TextFieldDefaults
+              Text(stringResource(R.string.email_field))
             },
             modifier = Modifier
               .fillMaxWidth()
-              .height(56.dp), // Keep height for label animation
-            // shape removed, not needed for bottom-line style
-            colors = TextFieldDefaults.colors( // ใช้ TextFieldDefaults.colors สำหรับ Material 3
-              focusedTextColor = Color(0xFF6C63FF),
-              focusedIndicatorColor = Color(0xFF6C63FF),
-              unfocusedIndicatorColor = Color.Gray.copy(alpha = 0.3f),
-              focusedLabelColor = Color(0xFF6C63FF),
-              unfocusedLabelColor = Color.Gray,
-              cursorColor = Color(0xFF6C63FF),
-              // ระบุสี container อย่างชัดเจนเพื่อให้โปร่งใส
+              .height(56.dp),
+            colors = TextFieldDefaults.colors(
+              focusedTextColor = Colors.BlueSecondary,
+              focusedIndicatorColor = Colors.BlueSecondary,
+              unfocusedIndicatorColor = Colors.BlueSecondary.copy(alpha = 0.3f),
+              focusedLabelColor = Colors.BlueSecondary,
+              unfocusedLabelColor = Colors.BlueGrey40,
+              cursorColor = Colors.BlueSecondary,
               focusedContainerColor = Color.Transparent,
               unfocusedContainerColor = Color.Transparent,
-              // ตัวเลือกเพิ่มเติม: ตั้งค่าสำหรับสถานะ disabled และ error หากต้องการ
               disabledContainerColor = Color.Transparent,
               errorContainerColor = Color.Transparent
             )
@@ -171,29 +171,25 @@ fun LoginScreen(navController: NavHostController, context: Context) {
 
           Spacer(modifier = Modifier.height(16.dp))
 
-          // Password Field - Updated to TextField
-          TextField( // <<<< CHANGED from OutlinedTextField
+          TextField(
             value = userPassword,
             onValueChange = { userPassword = it },
             label = {
-              Text("Password") // Color.Gray removed, handled by TextFieldDefaults
+              Text(stringResource(R.string.password_field))
             },
             modifier = Modifier
               .fillMaxWidth()
-              .height(56.dp), // Keep height for label animation
+              .height(56.dp),
             visualTransformation = PasswordVisualTransformation(),
-            // shape removed, not needed for bottom-line style
-            colors = TextFieldDefaults.colors( // ใช้ TextFieldDefaults.colors สำหรับ Material 3
-              focusedTextColor = Color(0xFF6C63FF),
-              focusedIndicatorColor = Color(0xFF6C63FF),
-              unfocusedIndicatorColor = Color.Gray.copy(alpha = 0.3f),
-              focusedLabelColor = Color(0xFF6C63FF),
-              unfocusedLabelColor = Color.Gray,
-              cursorColor = Color(0xFF6C63FF),
-              // ระบุสี container อย่างชัดเจนเพื่อให้โปร่งใส
+            colors = TextFieldDefaults.colors(
+              focusedTextColor = Colors.BlueSecondary,
+              focusedIndicatorColor = Colors.BlueSecondary,
+              unfocusedIndicatorColor = Colors.BlueSecondary.copy(alpha = 0.3f),
+              focusedLabelColor = Colors.BlueSecondary,
+              unfocusedLabelColor = Colors.BlueGrey40,
+              cursorColor = Colors.BlueSecondary,
               focusedContainerColor = Color.Transparent,
               unfocusedContainerColor = Color.Transparent,
-              // ตัวเลือกเพิ่มเติม: ตั้งค่าสำหรับสถานะ disabled และ error หากต้องการ
               disabledContainerColor = Color.Transparent,
               errorContainerColor = Color.Transparent
             )
@@ -201,7 +197,6 @@ fun LoginScreen(navController: NavHostController, context: Context) {
 
           Spacer(modifier = Modifier.height(24.dp))
 
-          // Sign In Button
           Button(
             onClick = {
               if (isLoading) return@Button
@@ -212,8 +207,8 @@ fun LoginScreen(navController: NavHostController, context: Context) {
               .height(56.dp),
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
-              containerColor = Color(0xFF6C63FF),
-              disabledContainerColor = Color(0xFF6C63FF).copy(alpha = 0.6f)
+              containerColor = Colors.BlueSecondary,
+              disabledContainerColor = Colors.BlueSecondary.copy(alpha = 0.6f)
             ),
             enabled = !isLoading
           ) {
@@ -225,50 +220,24 @@ fun LoginScreen(navController: NavHostController, context: Context) {
               )
             } else {
               Text(
-                "Sign In",
+                stringResource(R.string.sign_in),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.White
+                color = Colors.BlueGrey100
               )
             }
           }
 
           Spacer(modifier = Modifier.height(16.dp))
 
-          // Forgot Password Link
           TextButton(
             onClick = { /* TODO: Handle forgot password */ }
           ) {
             Text(
-              "Forgot your password?",
-              color = Color(0xFF6C63FF),
+              stringResource(R.string.forget_password),
+              color = Colors.BlueSecondary,
               fontSize = 14.sp
             )
-          }
-
-          Spacer(modifier = Modifier.height(24.dp))
-
-          // Don't have account text
-          Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-          ) {
-            Text(
-              "Don't have an account? ",
-              color = Color.Gray,
-              fontSize = 14.sp
-            )
-            TextButton(
-              onClick = { /* TODO: Navigate to sign up */ },
-              contentPadding = PaddingValues(0.dp)
-            ) {
-              Text(
-                "Sign up",
-                color = Color(0xFF6C63FF),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium
-              )
-            }
           }
         }
       }
