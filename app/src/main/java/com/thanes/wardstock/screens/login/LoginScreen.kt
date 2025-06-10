@@ -114,7 +114,7 @@ fun LoginScreen(navController: NavHostController, context: Context) {
     Column(
       modifier = Modifier
         .fillMaxSize()
-        .padding(horizontal = 24.dp),
+        .padding(horizontal = 52.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.Center
     ) {
@@ -146,11 +146,11 @@ fun LoginScreen(navController: NavHostController, context: Context) {
 
           Spacer(modifier = Modifier.height(32.dp))
 
-          TextField(
+          OutlinedTextField(
             value = userName,
             onValueChange = { userName = it },
             label = {
-              Text(stringResource(R.string.email_field))
+              Text(stringResource(R.string.username_field))
             },
             modifier = Modifier
               .fillMaxWidth()
@@ -171,7 +171,7 @@ fun LoginScreen(navController: NavHostController, context: Context) {
 
           Spacer(modifier = Modifier.height(16.dp))
 
-          TextField(
+          OutlinedTextField(
             value = userPassword,
             onValueChange = { userPassword = it },
             label = {

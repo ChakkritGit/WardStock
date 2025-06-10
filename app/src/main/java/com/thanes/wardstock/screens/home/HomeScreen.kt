@@ -74,9 +74,7 @@ fun HomeScreen(navController: NavHostController, context: Context) {
         Spacer(modifier = Modifier.height(10.dp))
 
         Button(onClick = {
-          navController.navigate(Routes.Setting.route) {
-            popUpTo(Routes.Home.route) { inclusive = false }
-          }
+          navController.navigate(Routes.Setting.route)
         }) {
           Text(stringResource(R.string.settings))
         }

@@ -30,6 +30,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.thanes.wardstock.data.models.LanguageModel
 import com.thanes.wardstock.R
+import com.thanes.wardstock.ui.theme.Colors
+import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 
 @Composable
 fun LanguageSwitcher(
@@ -62,7 +64,7 @@ fun LanguageSwitcher(
         .height(40.dp)
         .clip(RoundedCornerShape(8.dp))
         .background(
-          MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+          Colors.BlueGrey80.copy(alpha = 0.5f)
         )
         .clickable {
           expanded = !expanded
@@ -85,7 +87,7 @@ fun LanguageSwitcher(
       expanded = expanded,
       onDismissRequest = { expanded = false },
       modifier = Modifier.background(
-        MaterialTheme.colorScheme.surface
+        Colors.BlueGrey100
       )
     ) {
       languagesList.forEach { item ->
@@ -127,6 +129,7 @@ fun LanguageListItem(
         text = selectedItem.name,
         style = MaterialTheme.typography.bodyMedium.copy(
           fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+          fontFamily = ibmpiexsansthailooped,
           color = if (isSelected)
             MaterialTheme.colorScheme.primary
           else

@@ -15,29 +15,34 @@ val anuphanFamily = FontFamily(
   Font(R.font.anuphan_bold, FontWeight.Bold)
 )
 
+val ibmpiexsansthailooped = FontFamily(
+  Font(R.font.ibmpiexsansthailooped_light, FontWeight.Light),
+  Font(R.font.ibmpiexsansthailooped_regular, FontWeight.Normal),
+  Font(R.font.ibmpiexsansthailooped_medium, FontWeight.Medium),
+  Font(R.font.ibmpiexsansthailooped_bold, FontWeight.Bold)
+)
+
 // Set of Material typography styles to start with
 val Typography = Typography(
   bodyLarge = TextStyle(
-    fontFamily = anuphanFamily,
+    fontFamily = ibmpiexsansthailooped,
     fontWeight = FontWeight.Normal,
     fontSize = 16.sp,
     lineHeight = 24.sp,
     letterSpacing = 0.5.sp
+  ),
+  titleLarge = TextStyle(
+    fontFamily = ibmpiexsansthailooped,
+    fontWeight = FontWeight.Normal,
+    fontSize = 22.sp,
+    lineHeight = 28.sp,
+    letterSpacing = 0.sp
+  ),
+  labelSmall = TextStyle(
+    fontFamily = ibmpiexsansthailooped,
+    fontWeight = FontWeight.Medium,
+    fontSize = 11.sp,
+    lineHeight = 16.sp,
+    letterSpacing = 0.5.sp
   )
-  /* Other default text styles to override
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
-    ),
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    )
-    */
 )

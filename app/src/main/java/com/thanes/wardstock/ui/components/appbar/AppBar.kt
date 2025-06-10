@@ -1,11 +1,16 @@
 package com.thanes.wardstock.ui.components.appbar
 
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import com.thanes.wardstock.R
 import com.thanes.wardstock.ui.theme.Colors
+import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -17,20 +22,23 @@ fun AppBar(
     title = {
       Text(
         text = title, maxLines = 1,
-        overflow = TextOverflow.Ellipsis
+        overflow = TextOverflow.Ellipsis,
+        fontWeight = FontWeight.Bold,
+        fontFamily = ibmpiexsansthailooped
       )
     },
     navigationIcon = {
       IconButton(onClick = onBack) {
         Icon(
-          imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+          painter = painterResource(R.drawable.chevron_left_24px),
           contentDescription = "Back",
-          tint = Colors.BluePrimary
+          tint = Colors.BluePrimary,
+          modifier = Modifier.size(64.dp)
         )
       }
     },
     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-      containerColor = Colors.BlueTertiary,
+      containerColor = Colors.BlueGrey100,
       titleContentColor = Colors.BluePrimary,
     ),
   )

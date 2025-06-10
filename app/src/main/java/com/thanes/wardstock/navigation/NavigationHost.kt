@@ -19,6 +19,7 @@ import com.thanes.wardstock.data.store.DataManager
 import com.thanes.wardstock.screens.home.HomeScreen
 import com.thanes.wardstock.screens.login.LoginScreen
 import com.thanes.wardstock.screens.setting.SettingScreen
+import com.thanes.wardstock.screens.setting.dispense.DispenseTestTool
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -45,6 +46,9 @@ fun AppNavigation(navController: NavHostController, innerPadding: PaddingValues,
       }
       composable(route = Routes.Setting.route) {
         SettingScreen(navController, context)
+      }
+      composable(route = Routes.DispenseTestTool.route) {
+        DispenseTestTool(navController, context)
       }
     }
   }

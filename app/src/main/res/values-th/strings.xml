@@ -3,12 +3,13 @@
   <string name="app_name">WardStock</string>
   <string name="app_lang">ไทย</string>
   <string name="select_language">เลือกภาษา</string>
-  <string name="change_language">เปลี่ยนภาษา</string>
+  <string name="change_language">ภาษา</string>
   <string name="sign_in">เข้าสู่ระบบ</string>
-  <string name="email_field">อีเมล์</string>
+  <string name="username_field">ชื่อผู้ใช้</string>
   <string name="password_field">รหัสผ่าน</string>
   <string name="forget_password">ลืมรหัสผ่านใช่ไหม?</string>
   <string name="settings">การตั้งค่า</string>
+  <string name="dispense_test_tool">เครื่องมือทดสอบการจ่าย</string>
 
   <string name="complete_field">กรุณากรอกข้อมูลให้ครบ!</string>
   <string name="userData_InComplete">ข้อมูลผู้ใช้ไม่สมบูรณ์!</string>
