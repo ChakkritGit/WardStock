@@ -45,7 +45,7 @@ fun SettingScreen(navController: NavHostController, context: Context) {
     Box(modifier = Modifier.padding(innerPadding)) {
       Column {
         LanguageSwitcher(context)
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         if (userData != null && userData?.role == "SUPER") {
           DispenseTestToolList(navController)
         }

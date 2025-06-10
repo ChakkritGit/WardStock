@@ -15,4 +15,6 @@
   <string name="userData_InComplete">User Data InComplete!</string>
   <string name="something_wrong">Something went wrong!</string>
   <string name="cannot_connect_to_server">Cannot connect to server!</string>
+  <string name="app_title_login">Ward Stock Dispensing Machine</string>
+  <string name="app_description_login">Automated medicine dispensing machine</string>
 </resources>

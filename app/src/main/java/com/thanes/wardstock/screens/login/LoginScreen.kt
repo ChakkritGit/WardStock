@@ -2,7 +2,9 @@ package com.thanes.wardstock.screens.login
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -12,9 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,6 +30,7 @@ import com.thanes.wardstock.navigation.Routes
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import com.thanes.wardstock.R
+import com.thanes.wardstock.ui.components.keyboard.Keyboard
 import com.thanes.wardstock.ui.theme.Colors
 
 @Composable
@@ -33,7 +39,10 @@ fun LoginScreen(navController: NavHostController, context: Context) {
   var userName by remember { mutableStateOf("") }
   var userPassword by remember { mutableStateOf("") }
   var isLoading by remember { mutableStateOf(false) }
+  var showPass by remember { mutableStateOf(false) }
   var errorMessage by remember { mutableStateOf("") }
+
+  val hideKeyboard = Keyboard.hideKeyboard()
 
   val completeFieldMessage = stringResource(R.string.complete_field)
   val userDataInCompleteMessage = stringResource(R.string.userData_InComplete)
@@ -52,6 +61,7 @@ fun LoginScreen(navController: NavHostController, context: Context) {
       }
 
       try {
+        hideKeyboard()
         val response = ApiRepository.login(userName, userPassword)
 
         if (response.isSuccessful) {
@@ -134,15 +144,29 @@ fun LoginScreen(navController: NavHostController, context: Context) {
           modifier = Modifier
             .fillMaxWidth()
             .padding(32.dp),
-          horizontalAlignment = Alignment.CenterHorizontally
+//          horizontalAlignment = Alignment.CenterHorizontally
         ) {
-          Text(
-            text = stringResource(R.string.sign_in),
-            fontSize = 48.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF2D2D2D),
-            textAlign = TextAlign.Center
-          )
+          Column {
+            Image(
+              painter = painterResource(R.drawable.login),
+              contentDescription = "LoginBanner",
+              modifier = Modifier.width(300.dp)
+            )
+            Text(
+              text = stringResource(R.string.app_title_login),
+              fontSize = 32.sp,
+              fontWeight = FontWeight.Bold,
+              color = Colors.BlueSecondary,
+              textAlign = TextAlign.Center
+            )
+            Text(
+              text = stringResource(R.string.app_description_login),
+              fontSize = 18.sp,
+              fontWeight = FontWeight.Bold,
+              color = Colors.BlueGrey40,
+              textAlign = TextAlign.Center
+            )
+          }
 
           Spacer(modifier = Modifier.height(32.dp))
 
@@ -154,7 +178,15 @@ fun LoginScreen(navController: NavHostController, context: Context) {
             },
             modifier = Modifier
               .fillMaxWidth()
-              .height(56.dp),
+              .height(60.dp),
+            shape = RoundedCornerShape(24.dp),
+            leadingIcon = {
+              Icon(
+                painter = painterResource(R.drawable.person_24px),
+                contentDescription = "Password Icon",
+                tint = Colors.BlueGrey40
+              )
+            },
             colors = TextFieldDefaults.colors(
               focusedTextColor = Colors.BlueSecondary,
               focusedIndicatorColor = Colors.BlueSecondary,
@@ -179,8 +211,29 @@ fun LoginScreen(navController: NavHostController, context: Context) {
             },
             modifier = Modifier
               .fillMaxWidth()
-              .height(56.dp),
-            visualTransformation = PasswordVisualTransformation(),
+              .height(60.dp),
+            shape = RoundedCornerShape(24.dp),
+            visualTransformation = if (showPass) VisualTransformation.None else PasswordVisualTransformation(),
+            leadingIcon = {
+              Icon(
+                painter = painterResource(R.drawable.lock_24px),
+                contentDescription = "Password Icon",
+                tint = Colors.BlueGrey40
+              )
+            },
+            trailingIcon = {
+              IconButton(
+                modifier = Modifier.padding(end = 4.dp),
+                onClick = { showPass = !showPass }) {
+                Icon(
+                  painter = painterResource(
+                    if (!showPass) R.drawable.visibility_24px else R.drawable.visibility_off_24px
+                  ),
+                  contentDescription = if (showPass) "Hide password" else "Show password",
+                  tint = Colors.BlueGrey40
+                )
+              }
+            },
             colors = TextFieldDefaults.colors(
               focusedTextColor = Colors.BlueSecondary,
               focusedIndicatorColor = Colors.BlueSecondary,
@@ -205,7 +258,7 @@ fun LoginScreen(navController: NavHostController, context: Context) {
             modifier = Modifier
               .fillMaxWidth()
               .height(56.dp),
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(24.dp),
             colors = ButtonDefaults.buttonColors(
               containerColor = Colors.BlueSecondary,
               disabledContainerColor = Colors.BlueSecondary.copy(alpha = 0.6f)
@@ -230,14 +283,20 @@ fun LoginScreen(navController: NavHostController, context: Context) {
 
           Spacer(modifier = Modifier.height(16.dp))
 
-          TextButton(
-            onClick = { /* TODO: Handle forgot password */ }
+          Box(
+            modifier = Modifier
+              .fillMaxWidth()
+              .wrapContentSize(Alignment.CenterEnd)
           ) {
-            Text(
-              stringResource(R.string.forget_password),
-              color = Colors.BlueSecondary,
-              fontSize = 14.sp
-            )
+            TextButton(
+              onClick = { /* TODO: Handle forgot password */ }
+            ) {
+              Text(
+                stringResource(R.string.forget_password),
+                color = Colors.BlueSecondary,
+                fontSize = 14.sp
+              )
+            }
           }
         }
       }

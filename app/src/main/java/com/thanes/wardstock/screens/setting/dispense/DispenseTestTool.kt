@@ -76,7 +76,7 @@ fun DispenseTestToolList(navController: NavHostController) {
     ) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(vertical = 8.dp)
+        modifier = Modifier.padding(vertical = 10.dp)
       ) {
         Surface(
           shape = RoundedCornerShape(24.dp),

@@ -30,6 +30,7 @@ import com.thanes.wardstock.R
 import com.thanes.wardstock.data.language.LanguageManager
 import com.thanes.wardstock.data.models.LanguageModel
 import com.thanes.wardstock.ui.components.LanguageSwitcher
+import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.theme.Colors
 import kotlinx.coroutines.launch
 

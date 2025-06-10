@@ -1,6 +1,7 @@
 package com.thanes.wardstock.ui.components
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,8 +29,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupProperties
 import com.thanes.wardstock.data.models.LanguageModel
 import com.thanes.wardstock.R
+import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 
@@ -48,10 +51,17 @@ fun LanguageSwitcher(
         ?: LanguageModel("en", "English")
     )
   }
+  val activity = LocalActivity.current
 
   LaunchedEffect(currentLanguage) {
     languagesList.firstOrNull { it.code == currentLanguage }?.let {
       selectedItem = it
+    }
+  }
+
+  LaunchedEffect(expanded) {
+    activity?.let {
+      HideSystemControll.manageSystemBars(it, hide = true)
     }
   }
 
@@ -88,6 +98,11 @@ fun LanguageSwitcher(
       onDismissRequest = { expanded = false },
       modifier = Modifier.background(
         Colors.BlueGrey100
+      ),
+      properties = PopupProperties(
+        dismissOnBackPress = true,
+        dismissOnClickOutside = true,
+        usePlatformDefaultWidth = false
       )
     ) {
       languagesList.forEach { item ->

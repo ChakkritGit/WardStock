@@ -15,4 +15,6 @@
   <string name="userData_InComplete">ข้อมูลผู้ใช้ไม่สมบูรณ์!</string>
   <string name="something_wrong">เกิดข้อผิดพลาดบางอย่าง!</string>
   <string name="cannot_connect_to_server">ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์!</string>
+  <string name="app_title_login">Ward Stock Dispensing Machine</string>
+  <string name="app_description_login">เครื่องจ่ายยาอัตโนมัติ</string>
 </resources>
