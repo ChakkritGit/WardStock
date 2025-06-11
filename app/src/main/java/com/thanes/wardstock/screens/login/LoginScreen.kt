@@ -7,6 +7,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,15 +16,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.input.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.data.repositories.ApiRepository
 import com.thanes.wardstock.data.store.DataManager
@@ -32,6 +39,7 @@ import org.json.JSONObject
 import com.thanes.wardstock.R
 import com.thanes.wardstock.ui.components.keyboard.Keyboard
 import com.thanes.wardstock.ui.theme.Colors
+import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 
 @Composable
 fun LoginScreen(navController: NavHostController, context: Context) {
@@ -42,6 +50,8 @@ fun LoginScreen(navController: NavHostController, context: Context) {
   var showPass by remember { mutableStateOf(false) }
   var errorMessage by remember { mutableStateOf("") }
 
+  val focusRequesterPassword = remember { FocusRequester() }
+  val keyboardController = LocalSoftwareKeyboardController.current
   val hideKeyboard = Keyboard.hideKeyboard()
 
   val completeFieldMessage = stringResource(R.string.complete_field)
@@ -143,28 +153,34 @@ fun LoginScreen(navController: NavHostController, context: Context) {
         Column(
           modifier = Modifier
             .fillMaxWidth()
-            .padding(32.dp),
-//          horizontalAlignment = Alignment.CenterHorizontally
+            .padding(32.dp)
         ) {
           Column {
             Image(
-              painter = painterResource(R.drawable.login),
+              painter = painterResource(R.drawable.login_banner),
               contentDescription = "LoginBanner",
-              modifier = Modifier.width(300.dp)
+              modifier = Modifier
+                .width(290.dp)
+                .height(290.dp),
+              contentScale = ContentScale.Fit
             )
             Text(
               text = stringResource(R.string.app_title_login),
               fontSize = 32.sp,
               fontWeight = FontWeight.Bold,
               color = Colors.BlueSecondary,
-              textAlign = TextAlign.Center
+              textAlign = TextAlign.Center,
+              maxLines = 1,
+              overflow = TextOverflow.Ellipsis
             )
             Text(
               text = stringResource(R.string.app_description_login),
-              fontSize = 18.sp,
+              fontSize = 22.sp,
               fontWeight = FontWeight.Bold,
               color = Colors.BlueGrey40,
-              textAlign = TextAlign.Center
+              textAlign = TextAlign.Center,
+              maxLines = 1,
+              overflow = TextOverflow.Ellipsis
             )
           }
 
@@ -173,20 +189,29 @@ fun LoginScreen(navController: NavHostController, context: Context) {
           OutlinedTextField(
             value = userName,
             onValueChange = { userName = it },
-            label = {
-              Text(stringResource(R.string.username_field))
-            },
+            label = { Text(stringResource(R.string.username_field)) },
             modifier = Modifier
               .fillMaxWidth()
               .height(60.dp),
             shape = RoundedCornerShape(24.dp),
+            textStyle = TextStyle(fontSize = 20.sp),
             leadingIcon = {
               Icon(
                 painter = painterResource(R.drawable.person_24px),
-                contentDescription = "Password Icon",
+                contentDescription = "User Icon",
                 tint = Colors.BlueGrey40
               )
             },
+            singleLine = true,
+            maxLines = 1,
+            keyboardOptions = KeyboardOptions.Default.copy(
+              imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+              onNext = {
+                focusRequesterPassword.requestFocus()
+              }
+            ),
             colors = TextFieldDefaults.colors(
               focusedTextColor = Colors.BlueSecondary,
               focusedIndicatorColor = Colors.BlueSecondary,
@@ -206,14 +231,14 @@ fun LoginScreen(navController: NavHostController, context: Context) {
           OutlinedTextField(
             value = userPassword,
             onValueChange = { userPassword = it },
-            label = {
-              Text(stringResource(R.string.password_field))
-            },
+            label = { Text(stringResource(R.string.password_field)) },
             modifier = Modifier
               .fillMaxWidth()
-              .height(60.dp),
+              .height(60.dp)
+              .focusRequester(focusRequesterPassword),
             shape = RoundedCornerShape(24.dp),
             visualTransformation = if (showPass) VisualTransformation.None else PasswordVisualTransformation(),
+            textStyle = TextStyle(fontSize = 20.sp),
             leadingIcon = {
               Icon(
                 painter = painterResource(R.drawable.lock_24px),
@@ -221,6 +246,8 @@ fun LoginScreen(navController: NavHostController, context: Context) {
                 tint = Colors.BlueGrey40
               )
             },
+            singleLine = true,
+            maxLines = 1,
             trailingIcon = {
               IconButton(
                 modifier = Modifier.padding(end = 4.dp),
@@ -234,6 +261,15 @@ fun LoginScreen(navController: NavHostController, context: Context) {
                 )
               }
             },
+            keyboardOptions = KeyboardOptions.Default.copy(
+              imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+              onDone = {
+                keyboardController?.hide()
+                handleLogin()
+              }
+            ),
             colors = TextFieldDefaults.colors(
               focusedTextColor = Colors.BlueSecondary,
               focusedIndicatorColor = Colors.BlueSecondary,
@@ -274,7 +310,7 @@ fun LoginScreen(navController: NavHostController, context: Context) {
             } else {
               Text(
                 stringResource(R.string.sign_in),
-                fontSize = 16.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Colors.BlueGrey100
               )
@@ -288,13 +324,11 @@ fun LoginScreen(navController: NavHostController, context: Context) {
               .fillMaxWidth()
               .wrapContentSize(Alignment.CenterEnd)
           ) {
-            TextButton(
-              onClick = { /* TODO: Handle forgot password */ }
-            ) {
+            TextButton(onClick = { /* TODO: Forgot password */ }) {
               Text(
                 stringResource(R.string.forget_password),
                 color = Colors.BlueSecondary,
-                fontSize = 14.sp
+                fontSize = 18.sp
               )
             }
           }

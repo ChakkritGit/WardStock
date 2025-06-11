@@ -1,5 +1,6 @@
 package com.thanes.wardstock.screens.setting.dispense
 
+import android.app.Activity
 import android.content.Context
 import android.os.Build
 import android.util.Log
@@ -45,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -56,9 +58,11 @@ import com.thanes.wardstock.App
 import com.thanes.wardstock.R
 import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.components.appbar.AppBar
+import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -158,6 +162,7 @@ fun SlotGridWithBottomSheet(app: App) {
   val qty = remember { mutableIntStateOf(1) }
   var openAlertDialog by remember { mutableStateOf(false) }
   var isDispenseServiceReady by remember { mutableStateOf(false) }
+  val currentActivity = LocalContext.current as? Activity
 
   LaunchedEffect(Unit) {
     while (!app.isInitialized) {
@@ -304,7 +309,16 @@ fun SlotGridWithBottomSheet(app: App) {
   }
 
   if (openAlertDialog) {
-    AlertDialogExample(
+    currentActivity.let { activity ->
+      LaunchedEffect(openAlertDialog) {
+        if (openAlertDialog) {
+          delay(20)
+          HideSystemControll.manageSystemBars(activity as Activity, true)
+        }
+      }
+    }
+
+    AlertDialog(
       dialogTitle = "กำลังหยิบ",
       dialogText = "โปรดรอจนกว่าจะหยิบเสร็จ",
       icon = Icons.Default.Info
@@ -313,7 +327,7 @@ fun SlotGridWithBottomSheet(app: App) {
 }
 
 @Composable
-fun AlertDialogExample(
+fun AlertDialog(
   dialogTitle: String,
   dialogText: String,
   icon: ImageVector,

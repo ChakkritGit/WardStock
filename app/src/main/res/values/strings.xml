@@ -8,7 +8,6 @@
   <string name="username_field">Username</string>
   <string name="password_field">Password</string>
   <string name="forget_password">Forgot your password?</string>
-  <string name="settings">Settings</string>
   <string name="dispense_test_tool">Dispense Test Tool</string>
 
   <string name="complete_field">Please complete the field!</string>
@@ -17,4 +16,19 @@
   <string name="cannot_connect_to_server">Cannot connect to server!</string>
   <string name="app_title_login">Ward Stock Dispensing Machine</string>
   <string name="app_description_login">Automated medicine dispensing machine</string>
+
+  <string name="good_morning">Good Morning,</string>
+  <string name="good_afternoon">Good Afternoon,</string>
+  <string name="good_evening">Good Evening,</string>
+  <string name="good_night">Good Night,</string>
+
+  <string name="refill_medicine">Refill</string>
+  <string name="drug_report">Reports</string>
+  <string name="all_manage">Managements</string>
+  <string name="settings">Settings</string>
+  <string name="logout">Logout</string>
+  <string name="logout_description">Do you want to logout?</string>
+  <string name="cancel">Cancel</string>
+
+  <string name="scan_to_dispense">Please scan to dispense</string>
 </resources>

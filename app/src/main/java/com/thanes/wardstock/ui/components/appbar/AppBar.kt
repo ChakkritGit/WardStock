@@ -21,7 +21,8 @@ fun AppBar(
   TopAppBar(
     title = {
       Text(
-        text = title, maxLines = 1,
+        text = title,
+        maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         fontWeight = FontWeight.Bold,
         fontFamily = ibmpiexsansthailooped
