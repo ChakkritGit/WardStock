@@ -30,18 +30,26 @@ class MainActivity : ComponentActivity() {
 
     permissionRequest()
 
+    HideSystemControll.manageSystemBars(this, hide = true)
+
     enableEdgeToEdge()
 
     setContent {
-      HideSystemControll.manageSystemBars(this, hide = true)
-
       WardStockTheme {
         val context = LocalContext.current
         val navController = rememberNavController()
+
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-          AppNavigation(navController, innerPadding, context = context)
+          AppNavigation(navController, innerPadding, context)
         }
       }
+    }
+  }
+
+  override fun onWindowFocusChanged(hasFocus: Boolean) {
+    super.onWindowFocusChanged(hasFocus)
+    if (hasFocus) {
+      HideSystemControll.manageSystemBars(this, hide = true)
     }
   }
 

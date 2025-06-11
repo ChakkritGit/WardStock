@@ -114,7 +114,7 @@ fun HomeAppBar(navController: NavHostController, context: Context) {
           )
         }
         Column {
-          Text(stringResource(id = greetingMessage), fontSize = 24.sp, color = Colors.BlueGrey80)
+          Text(stringResource(id = greetingMessage), fontSize = 22.sp, color = Colors.BlueGrey80)
           Text(
             userData?.display ?: "-",
             fontSize = 28.sp,
