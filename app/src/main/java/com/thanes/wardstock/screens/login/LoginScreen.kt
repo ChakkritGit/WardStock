@@ -4,7 +4,6 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -17,7 +16,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -38,8 +36,8 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import com.thanes.wardstock.R
 import com.thanes.wardstock.ui.components.keyboard.Keyboard
+import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
-import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 
 @Composable
 fun LoginScreen(navController: NavHostController, context: Context) {
@@ -109,8 +107,7 @@ fun LoginScreen(navController: NavHostController, context: Context) {
       .background(
         brush = Brush.verticalGradient(
           colors = listOf(
-            Colors.BlueSecondary,
-            Colors.BluePrimary
+            Colors.BlueSecondary, Colors.BluePrimary
           )
         )
       )
@@ -167,7 +164,7 @@ fun LoginScreen(navController: NavHostController, context: Context) {
             Text(
               text = stringResource(R.string.app_title_login),
               fontSize = 32.sp,
-              fontWeight = FontWeight.Bold,
+              fontWeight = FontWeight.ExtraBold,
               color = Colors.BlueSecondary,
               textAlign = TextAlign.Center,
               maxLines = 1,
@@ -176,7 +173,7 @@ fun LoginScreen(navController: NavHostController, context: Context) {
             Text(
               text = stringResource(R.string.app_description_login),
               fontSize = 22.sp,
-              fontWeight = FontWeight.Bold,
+              fontWeight = FontWeight.Medium,
               color = Colors.BlueGrey40,
               textAlign = TextAlign.Center,
               maxLines = 1,
@@ -210,8 +207,7 @@ fun LoginScreen(navController: NavHostController, context: Context) {
             keyboardActions = KeyboardActions(
               onNext = {
                 focusRequesterPassword.requestFocus()
-              }
-            ),
+              }),
             colors = TextFieldDefaults.colors(
               focusedTextColor = Colors.BlueSecondary,
               focusedIndicatorColor = Colors.BlueSecondary,
@@ -250,8 +246,7 @@ fun LoginScreen(navController: NavHostController, context: Context) {
             maxLines = 1,
             trailingIcon = {
               IconButton(
-                modifier = Modifier.padding(end = 4.dp),
-                onClick = { showPass = !showPass }) {
+                modifier = Modifier.padding(end = 4.dp), onClick = { showPass = !showPass }) {
                 Icon(
                   painter = painterResource(
                     if (!showPass) R.drawable.visibility_24px else R.drawable.visibility_off_24px
@@ -268,8 +263,7 @@ fun LoginScreen(navController: NavHostController, context: Context) {
               onDone = {
                 keyboardController?.hide()
                 handleLogin()
-              }
-            ),
+              }),
             colors = TextFieldDefaults.colors(
               focusedTextColor = Colors.BlueSecondary,
               focusedIndicatorColor = Colors.BlueSecondary,
@@ -286,26 +280,20 @@ fun LoginScreen(navController: NavHostController, context: Context) {
 
           Spacer(modifier = Modifier.height(24.dp))
 
-          Button(
+          GradientButton(
             onClick = {
-              if (isLoading) return@Button
+              if (isLoading) return@GradientButton
               handleLogin()
             },
+            shape = RoundedCornerShape(24.dp),
             modifier = Modifier
               .fillMaxWidth()
               .height(56.dp),
-            shape = RoundedCornerShape(24.dp),
-            colors = ButtonDefaults.buttonColors(
-              containerColor = Colors.BlueSecondary,
-              disabledContainerColor = Colors.BlueSecondary.copy(alpha = 0.6f)
-            ),
             enabled = !isLoading
           ) {
             if (isLoading) {
               CircularProgressIndicator(
-                color = Color.White,
-                strokeWidth = 2.dp,
-                modifier = Modifier.size(24.dp)
+                color = Color.White, strokeWidth = 2.dp, modifier = Modifier.size(24.dp)
               )
             } else {
               Text(
@@ -340,6 +328,7 @@ fun LoginScreen(navController: NavHostController, context: Context) {
   LaunchedEffect(errorMessage) {
     if (errorMessage.isNotEmpty()) {
       Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+      errorMessage = ""
     }
   }
 }

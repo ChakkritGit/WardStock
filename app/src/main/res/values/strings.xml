@@ -31,4 +31,5 @@
   <string name="cancel">Cancel</string>
 
   <string name="scan_to_dispense">Please scan to dispense</string>
+  <string name="is_dispensing">Dispensing</string>
 </resources>

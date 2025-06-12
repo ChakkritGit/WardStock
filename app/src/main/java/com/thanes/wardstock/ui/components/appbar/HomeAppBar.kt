@@ -13,9 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -45,6 +46,7 @@ import com.thanes.wardstock.data.models.UserData
 import com.thanes.wardstock.data.store.DataManager
 import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.components.system.HideSystemControll
+import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 import com.thanes.wardstock.utils.ImageUrl
@@ -157,7 +159,8 @@ fun HomeAppBar(navController: NavHostController, context: Context) {
       icon = {
         Surface(
           modifier = Modifier
-            .clip(shape = CircleShape), color = Colors.BlueGrey80.copy(alpha = 0.5f)
+            .clip(shape = CircleShape),
+          color = Colors.BlueGrey80.copy(alpha = 0.5f)
         ) {
           Icon(
             painter = painterResource(R.drawable.logout_24px),
@@ -168,51 +171,71 @@ fun HomeAppBar(navController: NavHostController, context: Context) {
           )
         }
       },
-      title = {
-        Text(
-          stringResource(R.string.logout),
-          fontWeight = FontWeight.Medium,
-          fontFamily = ibmpiexsansthailooped
-        )
-      },
       text = {
-        Text(stringResource(R.string.logout_description), fontFamily = ibmpiexsansthailooped)
-      },
-      onDismissRequest = {
-        openAlertDialog = false
-      },
-
-      confirmButton = {
-        Button(onClick = {
-          scope.launch {
-            DataManager.clearAll(context)
-            navController.navigate(Routes.Login.route) {
-              popUpTo(Routes.Home.route) { inclusive = true }
-            }
-          }
-          openAlertDialog = false
-        }) {
+        Column(
+          verticalArrangement = Arrangement.spacedBy(6.dp),
+          horizontalAlignment = Alignment.CenterHorizontally,
+          modifier = Modifier.fillMaxWidth(0.7f)
+        ) {
           Text(
             stringResource(R.string.logout),
+            fontSize = 22.sp,
             fontWeight = FontWeight.Medium,
+            fontFamily = ibmpiexsansthailooped
+          )
+          Text(
+            stringResource(R.string.logout_description),
+            fontSize = 18.sp,
             fontFamily = ibmpiexsansthailooped
           )
         }
       },
-      dismissButton = {
-        Button(
-          onClick = {
-            openAlertDialog = false
-          },
-          colors = ButtonDefaults.buttonColors(Colors.BlueGrey80)
+      onDismissRequest = {
+        openAlertDialog = false
+      },
+      confirmButton = {
+        Column(
+          verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-          Text(
-            stringResource(R.string.cancel),
-            fontFamily = ibmpiexsansthailooped,
-            color = Colors.BlueSecondary
+          GradientButton(
+            onClick = {
+              scope.launch {
+                DataManager.clearAll(context)
+                navController.navigate(Routes.Login.route) {
+                  popUpTo(Routes.Home.route) { inclusive = true }
+                }
+              }
+              openAlertDialog = false
+            },
+            text = stringResource(R.string.logout),
+            fontWeight = FontWeight.Medium,
+            shape = RoundedCornerShape(24.dp),
+            modifier = Modifier.fillMaxWidth(0.7f)
           )
+
+          GradientButton(
+            onClick = {
+              openAlertDialog = false
+            },
+            shape = RoundedCornerShape(24.dp),
+            gradient = Brush.verticalGradient(
+              colors = listOf(
+                Colors.BlueGrey80,
+                Colors.BlueGrey80
+              ),
+            ),
+            modifier = Modifier.fillMaxWidth(0.7f)
+          ) {
+            Text(
+              stringResource(R.string.cancel),
+              fontFamily = ibmpiexsansthailooped,
+              color = Colors.BlueSecondary,
+              fontSize = 16.sp
+            )
+          }
         }
       },
+      dismissButton = {},
       containerColor = Colors.BlueGrey100
     )
   }
