@@ -11,19 +11,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,7 +43,6 @@ import com.thanes.wardstock.data.repositories.ApiRepository
 import com.thanes.wardstock.ui.components.BarcodeInputField
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
@@ -80,7 +74,6 @@ fun HomeWrapperContent(context: Context) {
       } catch (_: Exception) {
         errorMessage = "Something went wrong"
       } finally {
-        delay(3000)
         isLoading = false
       }
     }
@@ -137,29 +130,21 @@ fun HomeWrapperContent(context: Context) {
       }
     } else {
       if (orderState != null) {
-        orderState?.let {
-          LazyColumn(
-            modifier = Modifier
-              .fillMaxSize()
-              .padding(top = 12.dp, end = 12.dp, start = 12.dp)
-              .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-          ) {
-            itemsIndexed(orderState!!.order) { index, item ->
-              Card(
-                modifier = Modifier
-                  .fillMaxWidth()
-                  .wrapContentHeight(),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-              ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                  Text("ชื่อยา: ${item.drugName}", style = MaterialTheme.typography.titleMedium)
-                  Text("จำนวน: ${item.qty} ${item.unit}")
-                  Text("ล็อต: ${item.drugLot}")
-                  Text("วันหมดอายุ: ${item.drugExpire}")
-                  Text("สถานะ: ${item.status}")
-                }
+        Column(modifier = Modifier.fillMaxSize()) {
+          orderState?.let { state ->
+            PrescriptionHeader(state)
+            LazyColumn(
+              modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 4.dp, end = 12.dp, start = 12.dp)
+                .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)),
+              contentPadding = PaddingValues(6.dp),
+              verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+              itemsIndexed(
+                items = state.order.filter { it.status != "complete" }
+              ) { index, item ->
+                CardItem(index, item)
               }
             }
           }
