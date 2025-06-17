@@ -17,4 +17,7 @@ interface ApiService {
 
   @GET("dispense/{prescriptionId}")
   suspend fun orderWithPresId(@Path("prescriptionId") prescriptionId: String): Response<ApiResponse<OrderModel>>
+
+  @GET("dispense/prescription/order")
+  suspend fun orderWithOutPresId(): Response<ApiResponse<OrderModel>>
 }

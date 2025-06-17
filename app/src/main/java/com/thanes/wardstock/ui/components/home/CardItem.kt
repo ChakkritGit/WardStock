@@ -1,5 +1,10 @@
 package com.thanes.wardstock.ui.components.home
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -23,8 +28,14 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -35,14 +46,26 @@ import com.thanes.wardstock.data.models.OrderItem
 import com.thanes.wardstock.data.models.OrderModel
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
+import kotlinx.coroutines.delay
 
 @Composable
 fun CardItem(index: Int, item: OrderItem) {
+  val shadowColor = when (item.drugPriority) {
+    1 -> Colors.BlueGrey40.copy(alpha = 0.65f)
+    2 -> Color.Yellow.copy(alpha = 0.65f)
+    else -> Color(0xFFE91E63).copy(alpha = 0.65f)
+  }
+
   Card(
     colors = CardDefaults.cardColors(containerColor = Colors.BlueGrey140),
-    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     modifier = Modifier
-      .fillMaxWidth(),
+      .fillMaxWidth()
+      .shadow(
+        elevation = 14.dp,
+        shape = RoundedCornerShape(24.dp),
+        ambientColor = shadowColor,
+        spotColor = shadowColor
+      ),
     shape = RoundedCornerShape(24.dp)
   ) {
     Row(
@@ -110,7 +133,6 @@ fun CardItem(index: Int, item: OrderItem) {
 
         Spacer(modifier = Modifier.height(6.dp))
 
-        // Drug priority badge
         Box(
           modifier = Modifier
             .background(
@@ -119,7 +141,7 @@ fun CardItem(index: Int, item: OrderItem) {
                 2 -> Color.Yellow
                 else -> Color(0xFFE91E63)
               },
-              shape = RoundedCornerShape(10.dp)
+              shape = RoundedCornerShape(16.dp)
             )
             .border(
               width = 1.5.dp,
@@ -141,8 +163,8 @@ fun CardItem(index: Int, item: OrderItem) {
             style = TextStyle(
               fontSize = 18.sp,
               color = when (item.drugPriority) {
-                1 -> Color.Black
-                2 -> Color.Black
+                1 -> Colors.BlueGrey40
+                2 -> Colors.BlueGrey40
                 else -> Colors.BlueGrey140
               },
               fontFamily = ibmpiexsansthailooped
@@ -238,6 +260,29 @@ fun CardItem(index: Int, item: OrderItem) {
         }
       }
     }
+  }
+}
+
+@Composable
+fun AnimatedCardItem(index: Int, item: OrderItem) {
+  var visible by remember { mutableStateOf(false) }
+
+  LaunchedEffect(Unit) {
+    delay(index * 150L)
+    visible = true
+  }
+
+  AnimatedVisibility(
+    visible = visible,
+    enter = fadeIn(tween(700)) +
+            slideInVertically(tween(700)) { it / 2 } +
+            scaleIn(
+              animationSpec = tween(durationMillis = 800),
+              initialScale = 0.85f
+            ),
+    modifier = Modifier.padding(top = 4.dp, end = 12.dp, start = 12.dp)
+  ) {
+    CardItem(index, item)
   }
 }
 

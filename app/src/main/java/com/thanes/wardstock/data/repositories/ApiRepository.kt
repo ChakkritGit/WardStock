@@ -18,4 +18,8 @@ object ApiRepository {
   suspend fun orderWithPresId(context: Context, prescriptionId: String): Response<ApiResponse<OrderModel>> {
     return createApiWithAuth(context).orderWithPresId(prescriptionId)
   }
+
+  suspend fun orderWithInitial(context: Context): Response<ApiResponse<OrderModel>> {
+    return createApiWithAuth(context).orderWithOutPresId()
+  }
 }

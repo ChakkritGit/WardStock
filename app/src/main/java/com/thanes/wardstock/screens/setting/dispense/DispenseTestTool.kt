@@ -1,5 +1,6 @@
 package com.thanes.wardstock.screens.setting.dispense
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.os.Build
@@ -60,6 +61,7 @@ import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.components.appbar.AppBar
 import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.theme.Colors
+import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -83,7 +85,7 @@ fun DispenseTestToolList(navController: NavHostController) {
         modifier = Modifier.padding(vertical = 10.dp)
       ) {
         Surface(
-          shape = RoundedCornerShape(24.dp),
+          shape = RoundedCornerShape(RoundRadius.Large),
           color = Colors.BlueGrey80.copy(alpha = 0.7f),
           modifier = Modifier
             .size(42.dp)
@@ -111,7 +113,8 @@ fun DispenseTestToolList(navController: NavHostController) {
       ) {
         Surface(
           modifier = Modifier
-            .clip(RoundedCornerShape(8.dp)), color = Colors.BlueGrey80.copy(alpha = 0.5f)
+            .clip(RoundedCornerShape(RoundRadius.Large)),
+          color = Colors.BlueGrey80.copy(alpha = 0.5f)
         ) {
           Icon(
             painter = painterResource(R.drawable.chevron_right_24px),
@@ -129,12 +132,18 @@ fun DispenseTestToolList(navController: NavHostController) {
 @Composable
 fun DispenseTestTool(navController: NavHostController, context: Context) {
   val app = context.applicationContext as App
+  var canClick by remember { mutableStateOf(true) }
 
   Scaffold(
     topBar = {
       AppBar(
         title = stringResource(R.string.dispense_test_tool),
-        onBack = { navController.popBackStack() }
+        onBack = {
+          if (canClick) {
+            canClick = false
+            navController.popBackStack()
+          }
+        }
       )
     },
     containerColor = Colors.BlueGrey100
@@ -150,6 +159,7 @@ fun DispenseTestTool(navController: NavHostController, context: Context) {
   }
 }
 
+@SuppressLint("ContextCastToActivity")
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -191,14 +201,17 @@ fun SlotGridWithBottomSheet(app: App) {
                     selectedNumber = number
                     showBottomSheet = true
                   }
-                },
+                }
+                .clip(shape = RoundedCornerShape(RoundRadius.Large)),
               colors = CardDefaults.cardColors(
                 containerColor = Colors.BlueGrey80
               ),
-              elevation = CardDefaults.cardElevation(3.dp)
+              elevation = CardDefaults.cardElevation(8.dp)
             ) {
               Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                  .fillMaxSize()
+                  .clip(shape = RoundedCornerShape(RoundRadius.Large)),
                 contentAlignment = Alignment.Center
               ) {
                 Text(text = number.toString(), fontFamily = ibmpiexsansthailooped)

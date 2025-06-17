@@ -39,7 +39,9 @@ fun HomeMenu(navController: NavHostController, context: Context) {
       .horizontalScroll(rememberScrollState())
   ) {
     Button(
-      onClick = {},
+      onClick = {
+        navController.navigate(Routes.Refill.route)
+      },
     ) {
       Column(
         verticalArrangement = Arrangement.spacedBy(6.dp),

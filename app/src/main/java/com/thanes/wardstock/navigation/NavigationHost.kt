@@ -18,6 +18,7 @@ import androidx.navigation.compose.composable
 import com.thanes.wardstock.data.store.DataManager
 import com.thanes.wardstock.screens.home.HomeScreen
 import com.thanes.wardstock.screens.login.LoginScreen
+import com.thanes.wardstock.screens.refill.RefillScreen
 import com.thanes.wardstock.screens.setting.SettingScreen
 import com.thanes.wardstock.screens.setting.dispense.DispenseTestTool
 
@@ -49,6 +50,9 @@ fun AppNavigation(navController: NavHostController, innerPadding: PaddingValues,
       }
       composable(route = Routes.DispenseTestTool.route) {
         DispenseTestTool(navController, context)
+      }
+      composable(route = Routes.Refill.route) {
+        RefillScreen(navController, context)
       }
     }
   }

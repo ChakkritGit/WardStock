@@ -32,6 +32,7 @@ import com.thanes.wardstock.data.models.LanguageModel
 import com.thanes.wardstock.ui.components.LanguageSwitcher
 import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.theme.Colors
+import com.thanes.wardstock.ui.theme.RoundRadius
 import kotlinx.coroutines.launch
 
 @Composable
@@ -68,7 +69,7 @@ fun LanguageSwitcher(context: Context) {
   ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
       Surface(
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(RoundRadius.Large),
         color = Colors.BlueGrey80.copy(alpha = 0.7f),
         modifier = Modifier
           .size(42.dp)

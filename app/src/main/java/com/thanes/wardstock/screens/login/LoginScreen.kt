@@ -1,6 +1,7 @@
 package com.thanes.wardstock.screens.login
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -38,6 +39,7 @@ import com.thanes.wardstock.R
 import com.thanes.wardstock.ui.components.keyboard.Keyboard
 import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
+import com.thanes.wardstock.ui.theme.RoundRadius
 
 @Composable
 fun LoginScreen(navController: NavHostController, context: Context) {
@@ -55,7 +57,6 @@ fun LoginScreen(navController: NavHostController, context: Context) {
   val completeFieldMessage = stringResource(R.string.complete_field)
   val userDataInCompleteMessage = stringResource(R.string.userData_InComplete)
   val somethingWrongMessage = stringResource(R.string.something_wrong)
-  val cannotConnectToServerMessage = stringResource(R.string.something_wrong)
 
   fun handleLogin() {
     errorMessage = ""
@@ -89,12 +90,48 @@ fun LoginScreen(navController: NavHostController, context: Context) {
           val message = try {
             JSONObject(errorJson ?: "").getString("message")
           } catch (_: Exception) {
-            somethingWrongMessage
+            when (response.code()) {
+              400 -> "Invalid request data"
+              401 -> "Authentication required"
+              403 -> "Access denied"
+              404 -> "Prescription not found"
+              500 -> "Server error, please try again later"
+              else -> "HTTP Error ${response.code()}: ${response.message()}"
+            }
           }
           errorMessage = message
         }
-      } catch (_: Exception) {
-        errorMessage = cannotConnectToServerMessage
+      } catch (e: Exception) {
+        errorMessage = when (e) {
+          is java.net.UnknownHostException -> {
+            "No internet connection"
+          }
+
+          is java.net.SocketTimeoutException -> {
+            "Request timeout, please try again"
+          }
+
+          is java.net.ConnectException -> {
+            "Unable to connect to server"
+          }
+
+          is javax.net.ssl.SSLException -> {
+            "Secure connection failed"
+          }
+
+          is com.google.gson.JsonSyntaxException -> {
+            "Invalid response format"
+          }
+
+          is java.io.IOException -> {
+            "Network error occurred"
+          }
+
+          else -> {
+            Log.e("OrderAPI", "Unexpected error: ${e.javaClass.simpleName}", e)
+            "Unexpected error occurred: $somethingWrongMessage"
+          }
+        }
       } finally {
         isLoading = false
       }
@@ -139,7 +176,7 @@ fun LoginScreen(navController: NavHostController, context: Context) {
         modifier = Modifier
           .fillMaxWidth()
           .padding(16.dp),
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(RoundRadius.Large),
         colors = CardDefaults.cardColors(
           containerColor = Colors.BlueGrey100
         ),
@@ -190,7 +227,7 @@ fun LoginScreen(navController: NavHostController, context: Context) {
             modifier = Modifier
               .fillMaxWidth()
               .height(60.dp),
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(RoundRadius.Large),
             textStyle = TextStyle(fontSize = 20.sp),
             leadingIcon = {
               Icon(
@@ -232,7 +269,7 @@ fun LoginScreen(navController: NavHostController, context: Context) {
               .fillMaxWidth()
               .height(60.dp)
               .focusRequester(focusRequesterPassword),
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(RoundRadius.Large),
             visualTransformation = if (showPass) VisualTransformation.None else PasswordVisualTransformation(),
             textStyle = TextStyle(fontSize = 20.sp),
             leadingIcon = {
@@ -285,7 +322,7 @@ fun LoginScreen(navController: NavHostController, context: Context) {
               if (isLoading) return@GradientButton
               handleLogin()
             },
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(RoundRadius.Large),
             modifier = Modifier
               .fillMaxWidth()
               .height(56.dp),

@@ -31,6 +31,7 @@ import com.thanes.wardstock.screens.setting.language.LanguageSwitcher
 @Composable
 fun SettingScreen(navController: NavHostController, context: Context) {
   var userData by remember { mutableStateOf<UserData?>(null) }
+  var canClick by remember { mutableStateOf(true) }
 
   LaunchedEffect(Unit) {
     userData = DataManager.getUserData(context)
@@ -40,7 +41,12 @@ fun SettingScreen(navController: NavHostController, context: Context) {
     topBar = {
       AppBar(
         title = stringResource(R.string.settings),
-        onBack = { navController.popBackStack() }
+        onBack = {
+          if (canClick) {
+            canClick = false
+            navController.popBackStack()
+          }
+        }
       )
     },
     containerColor = Colors.BlueGrey100

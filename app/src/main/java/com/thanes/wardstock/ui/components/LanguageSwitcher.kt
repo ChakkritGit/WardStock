@@ -26,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -34,6 +35,7 @@ import com.thanes.wardstock.data.models.LanguageModel
 import com.thanes.wardstock.R
 import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.theme.Colors
+import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 
 @Composable
@@ -45,11 +47,8 @@ fun LanguageSwitcher(
 ) {
   var expanded by remember { mutableStateOf(false) }
   var selectedItem by remember {
-    mutableStateOf(
-      languagesList.firstOrNull { it.code == currentLanguage }
-        ?: languagesList.firstOrNull()
-        ?: LanguageModel("en", "English")
-    )
+    mutableStateOf(languagesList.firstOrNull { it.code == currentLanguage }
+      ?: languagesList.firstOrNull() ?: LanguageModel("en", "English"))
   }
   val activity = LocalActivity.current
 
@@ -68,21 +67,21 @@ fun LanguageSwitcher(
   Box(
     modifier = modifier
       .wrapContentSize(Alignment.TopEnd)
+      .clip(RoundedCornerShape(RoundRadius.Large))
   ) {
     Row(
       modifier = Modifier
         .height(40.dp)
-        .clip(RoundedCornerShape(8.dp))
+        .clip(RoundedCornerShape(RoundRadius.Large))
         .background(
           Colors.BlueGrey80.copy(alpha = 0.5f)
         )
         .clickable {
           expanded = !expanded
         }
-        .padding(horizontal = 12.dp, vertical = 8.dp),
+        .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
       horizontalArrangement = Arrangement.spacedBy(8.dp),
-      verticalAlignment = Alignment.CenterVertically
-    ) {
+      verticalAlignment = Alignment.CenterVertically) {
       LanguageListItem(selectedItem = selectedItem, showName = true)
 
       Icon(
@@ -96,9 +95,12 @@ fun LanguageSwitcher(
     DropdownMenu(
       expanded = expanded,
       onDismissRequest = { expanded = false },
-      modifier = Modifier.background(
-        Colors.BlueGrey100
-      ),
+      shadowElevation = 12.dp,
+      modifier = Modifier
+        .background(
+          Colors.BlueGrey100
+        ),
+      shape = RoundedCornerShape(RoundRadius.Large),
       properties = PopupProperties(
         dismissOnBackPress = true,
         dismissOnClickOutside = true,
@@ -109,19 +111,15 @@ fun LanguageSwitcher(
         DropdownMenuItem(
           text = {
             LanguageListItem(
-              selectedItem = item,
-              showName = true,
-              isSelected = item.code == selectedItem.code
+              selectedItem = item, showName = true, isSelected = item.code == selectedItem.code
             )
-          },
-          onClick = {
+          }, onClick = {
             if (selectedItem.code != item.code) {
               selectedItem = item
               onCurrentLanguageChange(item.code)
             }
             expanded = false
-          }
-        )
+          })
       }
     }
   }
@@ -135,20 +133,17 @@ fun LanguageListItem(
   @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
 ) {
   Row(
-    modifier = modifier,
+    modifier = modifier.padding(start = 8.dp),
     verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(8.dp)
+    horizontalArrangement = Arrangement.spacedBy(6.dp)
   ) {
     if (showName) {
       Text(
-        text = selectedItem.name,
-        style = MaterialTheme.typography.bodyMedium.copy(
+        text = selectedItem.name, style = MaterialTheme.typography.bodyMedium.copy(
           fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
           fontFamily = ibmpiexsansthailooped,
-          color = if (isSelected)
-            MaterialTheme.colorScheme.primary
-          else
-            MaterialTheme.colorScheme.onSurface
+          color = if (isSelected) MaterialTheme.colorScheme.primary
+          else MaterialTheme.colorScheme.onSurface
         )
       )
     }

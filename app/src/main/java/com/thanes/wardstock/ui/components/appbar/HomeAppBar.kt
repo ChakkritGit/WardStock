@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -166,7 +167,7 @@ fun HomeAppBar(navController: NavHostController, context: Context) {
             painter = painterResource(R.drawable.logout_24px),
             contentDescription = "logout_24px",
             modifier = Modifier
-              .size(48.dp)
+              .size(56.dp)
               .padding(6.dp)
           )
         }
@@ -179,13 +180,13 @@ fun HomeAppBar(navController: NavHostController, context: Context) {
         ) {
           Text(
             stringResource(R.string.logout),
-            fontSize = 22.sp,
+            fontSize = 24.sp,
             fontWeight = FontWeight.Medium,
             fontFamily = ibmpiexsansthailooped
           )
           Text(
             stringResource(R.string.logout_description),
-            fontSize = 18.sp,
+            fontSize = 20.sp,
             fontFamily = ibmpiexsansthailooped
           )
         }
@@ -210,7 +211,10 @@ fun HomeAppBar(navController: NavHostController, context: Context) {
             text = stringResource(R.string.logout),
             fontWeight = FontWeight.Medium,
             shape = RoundedCornerShape(24.dp),
-            modifier = Modifier.fillMaxWidth(0.7f)
+            textSize = 20.sp,
+            modifier = Modifier
+              .fillMaxWidth(0.7f)
+              .height(56.dp)
           )
 
           GradientButton(
@@ -224,13 +228,15 @@ fun HomeAppBar(navController: NavHostController, context: Context) {
                 Colors.BlueGrey80
               ),
             ),
-            modifier = Modifier.fillMaxWidth(0.7f)
+            modifier = Modifier
+              .fillMaxWidth(0.7f)
+              .height(56.dp)
           ) {
             Text(
               stringResource(R.string.cancel),
               fontFamily = ibmpiexsansthailooped,
               color = Colors.BlueSecondary,
-              fontSize = 16.sp
+              fontSize = 20.sp,
             )
           }
         }
