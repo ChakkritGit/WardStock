@@ -29,7 +29,10 @@
   <string name="logout">ออกจากระบบ</string>
   <string name="logout_description">คุณต้องการออกจากระบบหรือไม่?</string>
   <string name="cancel">ยกเลิก</string>
+  <string name="search_drug">ค้นหาชื่อยาหรือช่องยา</string>
 
   <string name="scan_to_dispense">กรุณาสแกนเพื่อสั่งยา</string>
   <string name="is_dispensing">กำลังจัด</string>
+  <string name="empty_data">ไม่พบข้อมูล</string>
+  <string name="is_Loading">กำลังโหลด</string>
 </resources>

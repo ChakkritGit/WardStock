@@ -2,6 +2,7 @@ package com.thanes.wardstock.remote.api.services
 
 import com.thanes.wardstock.data.models.ApiResponse
 import com.thanes.wardstock.data.models.OrderModel
+import com.thanes.wardstock.data.models.RefillModel
 import com.thanes.wardstock.data.models.UserData
 import retrofit2.Response
 import retrofit2.http.Body
@@ -20,4 +21,7 @@ interface ApiService {
 
   @GET("dispense/prescription/order")
   suspend fun orderWithOutPresId(): Response<ApiResponse<OrderModel>>
+
+  @GET("group-inventory/stock")
+  suspend fun refill(): Response<ApiResponse<List<RefillModel>>>
 }

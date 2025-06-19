@@ -4,6 +4,7 @@ import android.content.Context
 import retrofit2.Response
 import com.thanes.wardstock.data.models.ApiResponse
 import com.thanes.wardstock.data.models.OrderModel
+import com.thanes.wardstock.data.models.RefillModel
 import com.thanes.wardstock.data.models.UserData
 import com.thanes.wardstock.remote.api.services.LoginRequest
 import com.thanes.wardstock.remote.configs.RetrofitInstance
@@ -21,5 +22,9 @@ object ApiRepository {
 
   suspend fun orderWithInitial(context: Context): Response<ApiResponse<OrderModel>> {
     return createApiWithAuth(context).orderWithOutPresId()
+  }
+
+  suspend fun refill(context: Context): Response<ApiResponse<List<RefillModel>>> {
+    return createApiWithAuth(context).refill()
   }
 }

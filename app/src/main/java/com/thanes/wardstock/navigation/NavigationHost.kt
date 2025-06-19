@@ -12,12 +12,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.thanes.wardstock.data.store.DataManager
+import com.thanes.wardstock.data.viewModel.RefillSharedViewModel
 import com.thanes.wardstock.screens.home.HomeScreen
 import com.thanes.wardstock.screens.login.LoginScreen
+import com.thanes.wardstock.screens.refill.RefillDrug
 import com.thanes.wardstock.screens.refill.RefillScreen
 import com.thanes.wardstock.screens.setting.SettingScreen
 import com.thanes.wardstock.screens.setting.dispense.DispenseTestTool
@@ -26,6 +29,8 @@ import com.thanes.wardstock.screens.setting.dispense.DispenseTestTool
 @Composable
 fun AppNavigation(navController: NavHostController, innerPadding: PaddingValues, context: Context) {
   var token by remember { mutableStateOf<String?>(null) }
+
+  val refillSharedViewModel: RefillSharedViewModel = viewModel()
 
   LaunchedEffect(Unit) {
     token = DataManager.getToken(context)
@@ -39,20 +44,29 @@ fun AppNavigation(navController: NavHostController, innerPadding: PaddingValues,
       startDestination = startDestination,
       modifier = Modifier.padding(innerPadding)
     ) {
+
       composable(route = Routes.Login.route) {
         LoginScreen(navController, context)
       }
+
       composable(route = Routes.Home.route) {
         HomeScreen(navController, context)
       }
+
       composable(route = Routes.Setting.route) {
         SettingScreen(navController, context)
       }
+
       composable(route = Routes.DispenseTestTool.route) {
         DispenseTestTool(navController, context)
       }
+
       composable(route = Routes.Refill.route) {
-        RefillScreen(navController, context)
+        RefillScreen(navController, context, refillSharedViewModel)
+      }
+
+      composable(route = Routes.RefillDrug.route) {
+        RefillDrug(navController, context, refillSharedViewModel)
       }
     }
   }

@@ -29,7 +29,10 @@
   <string name="logout">Logout</string>
   <string name="logout_description">Do you want to logout?</string>
   <string name="cancel">Cancel</string>
+  <string name="search_drug">Search drug name or inventory position</string>
 
   <string name="scan_to_dispense">Please scan to dispense</string>
   <string name="is_dispensing">Dispensing</string>
+  <string name="empty_data">Data is empty!</string>
+  <string name="is_Loading">Loading</string>
 </resources>

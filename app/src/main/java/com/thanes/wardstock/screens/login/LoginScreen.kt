@@ -233,7 +233,8 @@ fun LoginScreen(navController: NavHostController, context: Context) {
               Icon(
                 painter = painterResource(R.drawable.person_24px),
                 contentDescription = "User Icon",
-                tint = Colors.BlueGrey40
+                tint = Colors.BlueGrey40,
+                modifier = Modifier.size(32.dp)
               )
             },
             singleLine = true,
@@ -276,7 +277,8 @@ fun LoginScreen(navController: NavHostController, context: Context) {
               Icon(
                 painter = painterResource(R.drawable.lock_24px),
                 contentDescription = "Password Icon",
-                tint = Colors.BlueGrey40
+                tint = Colors.BlueGrey40,
+                modifier = Modifier.size(32.dp)
               )
             },
             singleLine = true,
@@ -289,7 +291,8 @@ fun LoginScreen(navController: NavHostController, context: Context) {
                     if (!showPass) R.drawable.visibility_24px else R.drawable.visibility_off_24px
                   ),
                   contentDescription = if (showPass) "Hide password" else "Show password",
-                  tint = Colors.BlueGrey40
+                  tint = Colors.BlueGrey40,
+                  modifier = Modifier.size(32.dp)
                 )
               }
             },

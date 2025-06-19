@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,11 +42,27 @@ import com.thanes.wardstock.ui.components.BarcodeInputField
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeWrapperContent(context: Context) {
   val viewModel: OrderViewModel = viewModel(
     factory = ViewModelProvider.AndroidViewModelFactory(LocalContext.current.applicationContext as Application)
+  )
+  var pullState by remember { mutableStateOf(false) }
+  val pullRefreshState = rememberPullRefreshState(
+    refreshing = viewModel.isLoading,
+    onRefresh = {
+      viewModel.fetchOrderInitial()
+      pullState = true
+    }
   )
 
   LaunchedEffect(viewModel.orderState) {
@@ -89,7 +106,7 @@ fun HomeWrapperContent(context: Context) {
         )
       )
   ) {
-    if (viewModel.isLoading) {
+    if (viewModel.isLoading && !pullState) {
       Box(
         modifier = Modifier
           .fillMaxSize(),
@@ -113,7 +130,11 @@ fun HomeWrapperContent(context: Context) {
       }
     } else {
       if (viewModel.orderState != null) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+          modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(pullRefreshState)
+        ) {
           viewModel.orderState?.let { state ->
             PrescriptionHeader(state)
             LazyColumn(
@@ -136,6 +157,14 @@ fun HomeWrapperContent(context: Context) {
             }
           }
         }
+
+        PullRefreshIndicator(
+          refreshing = viewModel.isLoading,
+          state = pullRefreshState,
+          modifier = Modifier.align(Alignment.TopCenter),
+          backgroundColor = Colors.BlueGrey120,
+          contentColor = Colors.BluePrimary
+        )
       } else {
         Box(
           modifier = Modifier

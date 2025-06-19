@@ -9,18 +9,22 @@ espressoCore = "3.6.1"
 latestAppCompatVersion = "1.7.1"
 lifecycleRuntimeKtx = "2.9.1"
 activityCompose = "1.10.1"
-composeBom = "2025.06.00"
+composeBom = "2025.06.01"
+material = "1.9.0-beta01"
+materialPullRefresh = "1.6.0"
 retrofit = "2.11.0"
 amqpClient = "5.25.0"
 coilCompose = "3.1.0"
 converterGson = "2.11.0"
-foundation = "1.8.2"
+foundation = "1.8.3"
 navigationCompose = "2.9.0"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-appcompat-resources = { module = "androidx.appcompat:appcompat-resources", version.ref = "latestAppCompatVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-material = { module = "androidx.compose.material:material", version.ref = "material" }
+androidx-material-pull-refresh = { module = "androidx.compose.material:material-pull-refresh", version.ref = "materialPullRefresh" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

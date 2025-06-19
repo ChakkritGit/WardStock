@@ -1,6 +1,7 @@
 package com.thanes.wardstock.ui.components.appbar
 
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,7 +26,8 @@ fun AppBar(
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         fontWeight = FontWeight.Bold,
-        fontFamily = ibmpiexsansthailooped
+        fontFamily = ibmpiexsansthailooped,
+        modifier = Modifier.width(500.dp)
       )
     },
     navigationIcon = {
