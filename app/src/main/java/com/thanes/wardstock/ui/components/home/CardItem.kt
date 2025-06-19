@@ -1,10 +1,11 @@
 package com.thanes.wardstock.ui.components.home
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -37,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -49,10 +51,19 @@ import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 import kotlinx.coroutines.delay
 
 @Composable
-fun CardItem(index: Int, item: OrderItem) {
+fun CardItem(index: Int, item: OrderItem, showShadow: Boolean = false) {
+  val shadowAlpha by animateFloatAsState(
+    targetValue = if (showShadow) 0.65f else 0f,
+    animationSpec = tween(
+      durationMillis = 700,
+      easing = CubicBezierEasing(0.25f, 0.1f, 0.25f, 1f)
+    ),
+    label = "shadowAlpha"
+  )
+
   val shadowColor = when (item.drugPriority) {
     1 -> Colors.BlueGrey40.copy(alpha = 0.65f)
-    2 -> Color.Yellow.copy(alpha = 0.65f)
+    2 -> Color(0xFFFFC107).copy(alpha = 0.65f)
     else -> Color(0xFFE91E63).copy(alpha = 0.65f)
   }
 
@@ -61,10 +72,10 @@ fun CardItem(index: Int, item: OrderItem) {
     modifier = Modifier
       .fillMaxWidth()
       .shadow(
-        elevation = 14.dp,
+        elevation = if (showShadow) 12.dp else 0.dp,
         shape = RoundedCornerShape(24.dp),
-        ambientColor = shadowColor,
-        spotColor = shadowColor
+        ambientColor = shadowColor.copy(alpha = shadowAlpha),
+        spotColor = shadowColor.copy(alpha = shadowAlpha)
       ),
     shape = RoundedCornerShape(24.dp)
   ) {
@@ -137,8 +148,8 @@ fun CardItem(index: Int, item: OrderItem) {
           modifier = Modifier
             .background(
               color = when (item.drugPriority) {
-                1 -> Colors.BlueGrey140
-                2 -> Color.Yellow
+                1 -> Colors.BlueGrey40
+                2 -> Color(0xFFFFC107)
                 else -> Color(0xFFE91E63)
               },
               shape = RoundedCornerShape(16.dp)
@@ -147,7 +158,7 @@ fun CardItem(index: Int, item: OrderItem) {
               width = 1.5.dp,
               color = when (item.drugPriority) {
                 1 -> Colors.BlueGrey40
-                2 -> Color.Yellow
+                2 -> Color(0xFFFFC107)
                 else -> Color(0xFFE91E63)
               },
               shape = RoundedCornerShape(16.dp)
@@ -163,8 +174,8 @@ fun CardItem(index: Int, item: OrderItem) {
             style = TextStyle(
               fontSize = 18.sp,
               color = when (item.drugPriority) {
-                1 -> Colors.BlueGrey40
-                2 -> Colors.BlueGrey40
+                1 -> Colors.BlueGrey100
+                2 -> Colors.black
                 else -> Colors.BlueGrey140
               },
               fontFamily = ibmpiexsansthailooped
@@ -208,7 +219,7 @@ fun CardItem(index: Int, item: OrderItem) {
               Icon(
                 imageVector = Icons.Default.CheckCircle,
                 contentDescription = null,
-                tint = Color.Green,
+                tint = Color(0xFF009688),
                 modifier = Modifier.size(38.dp)
               )
               Text(
@@ -216,7 +227,7 @@ fun CardItem(index: Int, item: OrderItem) {
                 style = TextStyle(
                   fontSize = 20.sp,
                   fontWeight = FontWeight.Medium,
-                  color = Color.Green,
+                  color = Color(0xFF009688),
                   fontFamily = ibmpiexsansthailooped
                 )
               )
@@ -266,23 +277,54 @@ fun CardItem(index: Int, item: OrderItem) {
 @Composable
 fun AnimatedCardItem(index: Int, item: OrderItem) {
   var visible by remember { mutableStateOf(false) }
+  var animationFinished by remember { mutableStateOf(false) }
+
+  val animatedScale by animateFloatAsState(
+    targetValue = if (visible) 1f else 0.85f,
+    animationSpec = tween(
+      durationMillis = 800,
+      easing = FastOutSlowInEasing
+    ),
+    label = "scale"
+  )
+
+  val animatedAlpha by animateFloatAsState(
+    targetValue = if (visible) 1f else 0f,
+    animationSpec = tween(
+      durationMillis = 700,
+      easing = LinearOutSlowInEasing
+    ),
+    label = "alpha"
+  )
+
+  val animatedOffsetY by animateIntAsState(
+    targetValue = if (visible) 0 else 100,
+    animationSpec = tween(
+      durationMillis = 700,
+      easing = FastOutSlowInEasing
+    ),
+    label = "offsetY"
+  )
 
   LaunchedEffect(Unit) {
     delay(index * 150L)
     visible = true
+
+    delay(700L)
+    animationFinished = true
   }
 
-  AnimatedVisibility(
-    visible = visible,
-    enter = fadeIn(tween(700)) +
-            slideInVertically(tween(700)) { it / 2 } +
-            scaleIn(
-              animationSpec = tween(durationMillis = 800),
-              initialScale = 0.85f
-            ),
-    modifier = Modifier.padding(top = 4.dp, end = 12.dp, start = 12.dp)
+  Box(
+    modifier = Modifier
+      .padding(top = 4.dp, end = 12.dp, start = 12.dp)
+      .graphicsLayer {
+        scaleX = animatedScale
+        scaleY = animatedScale
+        alpha = animatedAlpha
+        translationY = animatedOffsetY.toFloat()
+      }
   ) {
-    CardItem(index, item)
+    CardItem(index, item, showShadow = animationFinished)
   }
 }
 
