@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,10 +18,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.thanes.wardstock.data.store.DataManager
+import com.thanes.wardstock.data.viewModel.OrderViewModel
 import com.thanes.wardstock.data.viewModel.RefillViewModel
 import com.thanes.wardstock.screens.home.HomeScreen
 import com.thanes.wardstock.screens.login.LoginScreen
-import com.thanes.wardstock.screens.refill.RefillDrug
+import com.thanes.wardstock.screens.manage.ManageScreen
+import com.thanes.wardstock.ui.components.Refill.RefillDrug
 import com.thanes.wardstock.screens.refill.RefillScreen
 import com.thanes.wardstock.screens.setting.SettingScreen
 import com.thanes.wardstock.screens.setting.dispense.DispenseTestTool
@@ -31,6 +34,7 @@ fun AppNavigation(navController: NavHostController, innerPadding: PaddingValues,
   var token by remember { mutableStateOf<String?>(null) }
 
   val refillSharedViewModel: RefillViewModel = viewModel()
+  val orderSharedViewModel: OrderViewModel = viewModel()
 
   LaunchedEffect(Unit) {
     token = DataManager.getToken(context)
@@ -50,7 +54,7 @@ fun AppNavigation(navController: NavHostController, innerPadding: PaddingValues,
       }
 
       composable(route = Routes.Home.route) {
-        HomeScreen(navController, context)
+        HomeScreen(navController, context, orderSharedViewModel)
       }
 
       composable(route = Routes.Setting.route) {
@@ -67,6 +71,26 @@ fun AppNavigation(navController: NavHostController, innerPadding: PaddingValues,
 
       composable(route = Routes.RefillDrug.route) {
         RefillDrug(navController, context, refillSharedViewModel)
+      }
+
+      composable(route = Routes.Manage.route) {
+        ManageScreen(navController)
+      }
+
+      composable(route = Routes.UserManagement.route) {
+        Text("User Management")
+      }
+
+      composable(route = Routes.DrugManagement.route) {
+        Text("Drug Management")
+      }
+
+      composable(route = Routes.StockManagement.route) {
+        Text("Stock Management")
+      }
+
+      composable(route = Routes.MachineManagement.route) {
+        Text("Machine Management")
       }
     }
   }

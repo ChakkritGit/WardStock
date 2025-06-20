@@ -1,6 +1,5 @@
 package com.thanes.wardstock.ui.components.home
 
-import android.app.Application
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
@@ -28,14 +27,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.viewModel.OrderViewModel
 import com.thanes.wardstock.ui.components.BarcodeInputField
@@ -52,10 +48,8 @@ import androidx.compose.runtime.setValue
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun HomeWrapperContent(context: Context) {
-  val viewModel: OrderViewModel = viewModel(
-    factory = ViewModelProvider.AndroidViewModelFactory(LocalContext.current.applicationContext as Application)
-  )
+fun HomeWrapperContent(context: Context, orderSharedViewModel: OrderViewModel) {
+  var viewModel = orderSharedViewModel
   var pullState by remember { mutableStateOf(false) }
   val pullRefreshState = rememberPullRefreshState(
     refreshing = viewModel.isLoading,

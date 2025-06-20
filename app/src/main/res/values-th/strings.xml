@@ -40,8 +40,14 @@
   <string name="add">เพิ่ม</string>
   <string name="successfully">สำเร็จ</string>
 
+  <string name="user_management">จัดการผู้ใช้</string>
+  <string name="drug_management">จัดการยา</string>
+  <string name="stock_management">จัดการสต็อก</string>
+  <string name="machine_management">จัดการเครื่อง</string>
+
   <string name="scan_to_dispense">กรุณาสแกนเพื่อสั่งยา</string>
   <string name="is_dispensing">กำลังจัด</string>
   <string name="empty_data">ไม่พบข้อมูล</string>
   <string name="is_Loading">กำลังโหลด</string>
+  <string name="wait_for_dispensing">รอจนกว่าจะจัดเสร็จ</string>
 </resources>

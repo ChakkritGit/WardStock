@@ -1,4 +1,4 @@
-package com.thanes.wardstock.screens.refill
+package com.thanes.wardstock.ui.components.Refill
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing

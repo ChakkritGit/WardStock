@@ -16,13 +16,19 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.data.models.UserData
 import com.thanes.wardstock.data.store.DataManager
+import com.thanes.wardstock.data.viewModel.OrderViewModel
 import com.thanes.wardstock.ui.components.appbar.HomeAppBar
 import com.thanes.wardstock.ui.components.home.HomeMenu
 import com.thanes.wardstock.ui.components.home.HomeWrapperContent
 import com.thanes.wardstock.ui.theme.Colors
 
+
 @Composable
-fun HomeScreen(navController: NavHostController, context: Context) {
+fun HomeScreen(
+  navController: NavHostController,
+  context: Context,
+  orderSharedViewModel: OrderViewModel
+) {
   var userData by remember { mutableStateOf<UserData?>(null) }
 
   LaunchedEffect(Unit) {
@@ -31,7 +37,7 @@ fun HomeScreen(navController: NavHostController, context: Context) {
 
   Scaffold(
     containerColor = Colors.BluePrimary,
-    topBar = { HomeAppBar(navController, context) }
+    topBar = { HomeAppBar(navController, context, orderSharedViewModel) }
   ) { innerPadding ->
     Box(
       modifier = Modifier
@@ -43,9 +49,9 @@ fun HomeScreen(navController: NavHostController, context: Context) {
           .fillMaxHeight()
       ) {
         if (userData?.role == "SUPER") {
-          HomeMenu(navController, context)
+          HomeMenu(navController, context, orderSharedViewModel)
         }
-        HomeWrapperContent(context)
+        HomeWrapperContent(context, orderSharedViewModel)
       }
     }
   }

@@ -13,5 +13,8 @@ object Colors {
   val BlueGrey80 = Color(0xFFC7D5EC)      // สีเทาน้ำเงินอ่อน (สำหรับพื้นหลังหรือ surface)
   val BlueGrey40 = Color(0xFF8E9FB0)      // สีเทาน้ำเงินเข้ม
 
+  val Warning = Color(0xFFFF9011)
+  val WarningText = Color(0xFF4F2700)
+
   val black = Color(0xFF000000)
 }

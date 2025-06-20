@@ -40,8 +40,14 @@
   <string name="add">Add</string>
   <string name="successfully">Successfully</string>
 
+  <string name="user_management">Manage users</string>
+  <string name="drug_management">Manage drugs</string>
+  <string name="stock_management">Manage stock</string>
+  <string name="machine_management">Manage machines</string>
+
   <string name="scan_to_dispense">Please scan to dispense</string>
   <string name="is_dispensing">Dispensing</string>
   <string name="empty_data">Data is empty!</string>
   <string name="is_Loading">Loading</string>
+  <string name="wait_for_dispensing">Wait for dispensing</string>
 </resources>

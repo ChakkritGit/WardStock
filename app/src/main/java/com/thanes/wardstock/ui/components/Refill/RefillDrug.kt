@@ -1,4 +1,4 @@
-package com.thanes.wardstock.screens.refill
+package com.thanes.wardstock.ui.components.Refill
 
 import android.content.Context
 import android.util.Log
@@ -40,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.google.gson.JsonSyntaxException
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.repositories.ApiRepository
 import com.thanes.wardstock.data.viewModel.RefillViewModel
@@ -49,6 +50,11 @@ import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.io.IOException
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
+import javax.net.ssl.SSLException
 
 @Composable
 fun RefillDrug(
@@ -95,27 +101,27 @@ fun RefillDrug(
         }
       } catch (e: Exception) {
         errorMessage = when (e) {
-          is java.net.UnknownHostException -> {
+          is UnknownHostException -> {
             "No internet connection"
           }
 
-          is java.net.SocketTimeoutException -> {
+          is SocketTimeoutException -> {
             "Request timeout, please try again"
           }
 
-          is java.net.ConnectException -> {
+          is ConnectException -> {
             "Unable to connect to server"
           }
 
-          is javax.net.ssl.SSLException -> {
+          is SSLException -> {
             "Secure connection failed"
           }
 
-          is com.google.gson.JsonSyntaxException -> {
+          is JsonSyntaxException -> {
             "Invalid response format"
           }
 
-          is java.io.IOException -> {
+          is IOException -> {
             "Network error occurred"
           }
 

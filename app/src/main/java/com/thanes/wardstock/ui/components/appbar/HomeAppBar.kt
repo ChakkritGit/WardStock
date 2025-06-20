@@ -3,6 +3,7 @@ package com.thanes.wardstock.ui.components.appbar
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +31,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
@@ -45,6 +47,7 @@ import coil3.compose.AsyncImage
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.models.UserData
 import com.thanes.wardstock.data.store.DataManager
+import com.thanes.wardstock.data.viewModel.OrderViewModel
 import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.components.utils.GradientButton
@@ -67,11 +70,18 @@ fun getGreetingMessage(): Int {
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun HomeAppBar(navController: NavHostController, context: Context) {
+fun HomeAppBar(
+  navController: NavHostController,
+  context: Context,
+  orderSharedViewModel: OrderViewModel
+) {
   val scope = rememberCoroutineScope()
   var userData by remember { mutableStateOf<UserData?>(null) }
   var greetingMessage by remember { mutableIntStateOf(getGreetingMessage()) }
   var openAlertDialog by remember { mutableStateOf(false) }
+  val isOrderActive = orderSharedViewModel.orderState != null
+  var alertMessage by remember { mutableStateOf("") }
+  val waitForDispenseMessage = stringResource(R.string.wait_for_dispensing)
 
   LaunchedEffect(Unit) {
     userData = DataManager.getUserData(context)
@@ -81,6 +91,13 @@ fun HomeAppBar(navController: NavHostController, context: Context) {
     while (true) {
       delay(60 * 60 * 1000L)
       greetingMessage = getGreetingMessage()
+    }
+  }
+
+  LaunchedEffect(alertMessage) {
+    if (alertMessage.isNotEmpty()) {
+      Toast.makeText(context, alertMessage, Toast.LENGTH_SHORT).show()
+      alertMessage = ""
     }
   }
 
@@ -128,7 +145,14 @@ fun HomeAppBar(navController: NavHostController, context: Context) {
         }
       }
       Button(
-        onClick = { openAlertDialog = true },
+        onClick = {
+          if (!isOrderActive) {
+            openAlertDialog = true
+          } else {
+            alertMessage = waitForDispenseMessage
+          }
+        },
+        modifier = Modifier.alpha(if (isOrderActive) 0.5f else 1f)
       ) {
         Icon(
           painter = painterResource(R.drawable.logout_24px),

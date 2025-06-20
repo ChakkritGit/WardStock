@@ -1,7 +1,7 @@
 package com.thanes.wardstock.ui.components.home
 
 import android.content.Context
-import androidx.compose.foundation.background
+import android.widget.Toast
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,20 +16,42 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.R
+import com.thanes.wardstock.data.viewModel.OrderViewModel
 import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 
 @Composable
-fun HomeMenu(navController: NavHostController, context: Context) {
+fun HomeMenu(
+  navController: NavHostController,
+  context: Context,
+  orderSharedViewModel: OrderViewModel
+) {
+  val isOrderActive = orderSharedViewModel.orderState != null
+  var alertMessage by remember { mutableStateOf("") }
+  val waitForDispenseMessage = stringResource(R.string.wait_for_dispensing)
+
+  LaunchedEffect(alertMessage) {
+    if (alertMessage.isNotEmpty()) {
+      Toast.makeText(context, alertMessage, Toast.LENGTH_SHORT).show()
+      alertMessage = ""
+    }
+  }
+
   Row(
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.Center,
@@ -37,10 +59,15 @@ fun HomeMenu(navController: NavHostController, context: Context) {
       .fillMaxWidth()
       .padding(top = 8.dp, end = 8.dp, start = 8.dp, bottom = 14.dp)
       .horizontalScroll(rememberScrollState())
+      .alpha(if (isOrderActive) 0.5f else 1f)
   ) {
     Button(
       onClick = {
-        navController.navigate(Routes.Refill.route)
+        if (!isOrderActive) {
+          navController.navigate(Routes.Refill.route)
+        } else {
+          alertMessage = waitForDispenseMessage
+        }
       },
     ) {
       Column(
@@ -48,7 +75,7 @@ fun HomeMenu(navController: NavHostController, context: Context) {
         horizontalAlignment = Alignment.CenterHorizontally
       ) {
         Icon(
-          painter = painterResource(R.drawable.add_box_24px),
+          painter = painterResource(R.drawable.medical_services_24px),
           contentDescription = "add_box_24px",
           tint = Colors.BlueGrey100,
           modifier = Modifier
@@ -63,14 +90,20 @@ fun HomeMenu(navController: NavHostController, context: Context) {
     }
     Spacer(modifier = Modifier.width(20.dp))
     Button(
-      onClick = {},
+      onClick = {
+//        if (!isOrderActive) {
+//          navController.navigate(Routes.Refill.route)
+//        }else {
+//          alertMessage = waitForDispenseMessage
+//        }
+      },
     ) {
       Column(
         verticalArrangement = Arrangement.spacedBy(6.dp),
         horizontalAlignment = Alignment.CenterHorizontally
       ) {
         Icon(
-          painter = painterResource(R.drawable.edit_document_24px),
+          painter = painterResource(R.drawable.assignment_24px),
           contentDescription = "edit_document_24px",
           tint = Colors.BlueGrey100,
           modifier = Modifier
@@ -85,7 +118,13 @@ fun HomeMenu(navController: NavHostController, context: Context) {
     }
     Spacer(modifier = Modifier.width(20.dp))
     Button(
-      onClick = {},
+      onClick = {
+        if (!isOrderActive) {
+          navController.navigate(Routes.Manage.route)
+        } else {
+          alertMessage = waitForDispenseMessage
+        }
+      },
     ) {
       Column(
         verticalArrangement = Arrangement.spacedBy(6.dp),
@@ -107,7 +146,13 @@ fun HomeMenu(navController: NavHostController, context: Context) {
     }
     Spacer(modifier = Modifier.width(20.dp))
     Button(
-      onClick = { navController.navigate(Routes.Setting.route) },
+      onClick = {
+        if (!isOrderActive) {
+          navController.navigate(Routes.Setting.route)
+        } else {
+          alertMessage = waitForDispenseMessage
+        }
+      },
     ) {
       Column(
         verticalArrangement = Arrangement.spacedBy(6.dp),
