@@ -71,7 +71,7 @@ fun RefillItemCard(index: Int, item: RefillModel, filteredList: List<RefillModel
       Box(
         modifier = Modifier
           .size(96.dp)
-          .clip(RoundedCornerShape(6.dp))
+          .clip(RoundedCornerShape(RoundRadius.Medium))
       ) {
         if (!item.drugImage.isNullOrBlank()) {
           AsyncImage(

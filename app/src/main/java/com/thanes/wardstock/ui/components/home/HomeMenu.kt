@@ -92,7 +92,7 @@ fun HomeMenu(navController: NavHostController, context: Context) {
         horizontalAlignment = Alignment.CenterHorizontally
       ) {
         Icon(
-          painter = painterResource(R.drawable.manage_accounts_24px),
+          painter = painterResource(R.drawable.inventory_2_24px),
           contentDescription = "manage_accounts_24px",
           tint = Colors.BlueGrey100,
           modifier = Modifier

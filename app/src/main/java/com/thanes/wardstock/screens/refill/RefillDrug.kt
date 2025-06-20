@@ -163,7 +163,7 @@ fun RefillDrug(
           .padding(12.dp)
           .verticalScroll(rememberScrollState())
       ) {
-        Text(stringResource(R.string.quantity), fontSize = 24.sp, fontWeight = FontWeight.Medium)
+        Text(stringResource(R.string.quantity), fontSize = 28.sp, fontWeight = FontWeight.Medium)
         Row(
           horizontalArrangement = Arrangement.Center,
           verticalAlignment = Alignment.CenterVertically,
@@ -174,13 +174,13 @@ fun RefillDrug(
               if (quality > (item?.inventoryMin ?: 0)) {
                 quality -= 1
               }
-            }, shape = RoundedCornerShape(24.dp), gradient = Brush.verticalGradient(
+            }, shape = RoundedCornerShape(RoundRadius.Medium), gradient = Brush.verticalGradient(
               colors = listOf(
                 Colors.BlueGrey80, Colors.BlueGrey80
               ),
             ), contentPadding = PaddingValues(8.dp), modifier = Modifier
-              .width(58.dp)
-              .height(58.dp)
+              .width(64.dp)
+              .height(64.dp)
           ) {
             Icon(
               painter = painterResource(R.drawable.remove_24px),
@@ -192,7 +192,7 @@ fun RefillDrug(
 
           Spacer(modifier = Modifier.width(48.dp))
 
-          Text(quality.toString(), fontSize = 36.sp, fontWeight = FontWeight.Medium)
+          Text(quality.toString(), fontSize = 42.sp, fontWeight = FontWeight.Medium)
 
           Spacer(modifier = Modifier.width(48.dp))
 
@@ -201,13 +201,13 @@ fun RefillDrug(
               if (quality < (item?.inventoryMAX ?: 15)) {
                 quality += 1
               }
-            }, shape = RoundedCornerShape(24.dp), gradient = Brush.verticalGradient(
+            }, shape = RoundedCornerShape(RoundRadius.Medium), gradient = Brush.verticalGradient(
               colors = listOf(
                 Colors.BlueGrey80, Colors.BlueGrey80
               ),
             ), contentPadding = PaddingValues(8.dp), modifier = Modifier
-              .width(58.dp)
-              .height(58.dp)
+              .width(64.dp)
+              .height(64.dp)
           ) {
             Icon(
               painter = painterResource(R.drawable.add_24px),
@@ -223,10 +223,10 @@ fun RefillDrug(
             if (isLoading) return@GradientButton
             handleSubmit()
           },
-          shape = RoundedCornerShape(RoundRadius.Large),
+          shape = RoundedCornerShape(RoundRadius.Medium),
           modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp),
+            .height(54.dp),
           enabled = !isLoading
         ) {
           if (isLoading) {
