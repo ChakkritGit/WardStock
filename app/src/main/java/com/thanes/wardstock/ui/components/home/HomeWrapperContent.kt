@@ -106,7 +106,7 @@ fun HomeWrapperContent(context: Context) {
         )
       )
   ) {
-    if (viewModel.isLoading && !pullState) {
+    if (viewModel.isLoading && viewModel.orderState == null && !pullState) {
       Box(
         modifier = Modifier
           .fillMaxSize(),
@@ -163,7 +163,8 @@ fun HomeWrapperContent(context: Context) {
           state = pullRefreshState,
           modifier = Modifier.align(Alignment.TopCenter),
           backgroundColor = Colors.BlueGrey120,
-          contentColor = Colors.BluePrimary
+          contentColor = Colors.BluePrimary,
+          scale = true,
         )
       } else {
         Box(

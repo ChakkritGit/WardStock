@@ -1,6 +1,5 @@
 package com.thanes.wardstock.screens.refill
 
-import android.app.Application
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -17,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -35,18 +35,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.R
-import com.thanes.wardstock.data.viewModel.RefillSharedViewModel
 import com.thanes.wardstock.data.viewModel.RefillViewModel
 import com.thanes.wardstock.ui.components.appbar.AppBar
 import com.thanes.wardstock.ui.theme.Colors
@@ -55,37 +51,36 @@ import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import com.thanes.wardstock.ui.components.keyboard.Keyboard
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun RefillScreen(
   navController: NavHostController,
   context: Context,
-  sharedViewModel: RefillSharedViewModel
+  sharedViewModel: RefillViewModel
 ) {
-  val viewModel: RefillViewModel = viewModel(
-    factory = ViewModelProvider.AndroidViewModelFactory(LocalContext.current.applicationContext as Application)
-  )
   var canClick by remember { mutableStateOf(true) }
   var pullState by remember { mutableStateOf(false) }
   val pullRefreshState = rememberPullRefreshState(
-    refreshing = viewModel.isLoading,
+    refreshing = sharedViewModel.isLoading,
     onRefresh = {
-      viewModel.fetchRefill()
+      sharedViewModel.fetchRefill()
       pullState = true
     }
   )
+  val hideKeyboard = Keyboard.hideKeyboard()
 
-  LaunchedEffect(viewModel.refillState) {
-    if (viewModel.refillState.isEmpty()) {
-      viewModel.fetchRefill()
+  LaunchedEffect(sharedViewModel.refillState) {
+    if (sharedViewModel.refillState.isEmpty()) {
+      sharedViewModel.fetchRefill()
     }
   }
 
-  LaunchedEffect(viewModel.errorMessage) {
-    if (viewModel.errorMessage.isNotEmpty()) {
-      Toast.makeText(context, viewModel.errorMessage, Toast.LENGTH_SHORT).show()
-      viewModel.errorMessage = ""
+  LaunchedEffect(sharedViewModel.errorMessage) {
+    if (sharedViewModel.errorMessage.isNotEmpty()) {
+      Toast.makeText(context, sharedViewModel.errorMessage, Toast.LENGTH_SHORT).show()
+      sharedViewModel.errorMessage = ""
     }
   }
 
@@ -110,7 +105,7 @@ fun RefillScreen(
       contentAlignment = Alignment.Center
     ) {
       when {
-        viewModel.isLoading && !pullState -> {
+        sharedViewModel.isLoading && sharedViewModel.refillState.isEmpty() && !pullState -> {
           Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -132,7 +127,7 @@ fun RefillScreen(
           }
         }
 
-        viewModel.refillState.isEmpty() -> {
+        sharedViewModel.refillState.isEmpty() -> {
           Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -159,7 +154,7 @@ fun RefillScreen(
         else -> {
           var searchText by remember { mutableStateOf("") }
 
-          val filteredList = viewModel.refillState.filter {
+          val filteredList = sharedViewModel.refillState.filter {
             it.drugName?.contains(searchText, ignoreCase = true) == true ||
                     it.inventoryPosition.toString().contains(searchText)
           }
@@ -205,6 +200,10 @@ fun RefillScreen(
                 },
                 singleLine = true,
                 maxLines = 1,
+                keyboardActions = KeyboardActions(
+                  onDone = {
+                    hideKeyboard()
+                  }),
                 colors = TextFieldDefaults.colors(
                   focusedTextColor = Colors.BlueSecondary,
                   focusedIndicatorColor = Colors.BlueSecondary,
@@ -225,18 +224,19 @@ fun RefillScreen(
                   .padding(top = 8.dp)
               ) {
                 itemsIndexed(filteredList) { index, item ->
-                  AnimatedCardItem(index, item, navController, sharedViewModel)
+                  AnimatedCardItem(index, item, navController, sharedViewModel, filteredList)
                 }
               }
             }
           }
 
           PullRefreshIndicator(
-            refreshing = viewModel.isLoading,
+            refreshing = sharedViewModel.isLoading,
             state = pullRefreshState,
             modifier = Modifier.align(Alignment.TopCenter),
             backgroundColor = Colors.BlueGrey120,
-            contentColor = Colors.BluePrimary
+            contentColor = Colors.BluePrimary,
+            scale = true,
           )
         }
       }

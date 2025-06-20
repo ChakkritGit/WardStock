@@ -17,7 +17,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.thanes.wardstock.data.store.DataManager
-import com.thanes.wardstock.data.viewModel.RefillSharedViewModel
+import com.thanes.wardstock.data.viewModel.RefillViewModel
 import com.thanes.wardstock.screens.home.HomeScreen
 import com.thanes.wardstock.screens.login.LoginScreen
 import com.thanes.wardstock.screens.refill.RefillDrug
@@ -30,7 +30,7 @@ import com.thanes.wardstock.screens.setting.dispense.DispenseTestTool
 fun AppNavigation(navController: NavHostController, innerPadding: PaddingValues, context: Context) {
   var token by remember { mutableStateOf<String?>(null) }
 
-  val refillSharedViewModel: RefillSharedViewModel = viewModel()
+  val refillSharedViewModel: RefillViewModel = viewModel()
 
   LaunchedEffect(Unit) {
     token = DataManager.getToken(context)

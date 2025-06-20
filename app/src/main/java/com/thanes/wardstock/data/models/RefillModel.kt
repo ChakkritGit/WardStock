@@ -13,3 +13,16 @@ data class RefillModel(
   val drugImage: String?,
   val drugPriority: Int?
 )
+
+data class RefillDrugModel(
+  val id: String,
+  val position: Int,
+  val qty: Int,
+  val min: Int,
+  val max: Int,
+  val status: Boolean,
+  val machineId: String,
+  val comment: String?,
+  val createdAt: String,
+  val updatedAt: String
+)

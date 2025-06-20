@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -45,7 +46,7 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.models.RefillModel
-import com.thanes.wardstock.data.viewModel.RefillSharedViewModel
+import com.thanes.wardstock.data.viewModel.RefillViewModel
 import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
@@ -53,7 +54,7 @@ import com.thanes.wardstock.utils.ImageUrl
 import kotlinx.coroutines.delay
 
 @Composable
-fun RefillItemCard(index: Int, item: RefillModel) {
+fun RefillItemCard(index: Int, item: RefillModel, filteredList: List<RefillModel>) {
   Column(
     modifier = Modifier.background(color = Colors.BlueGrey120)
   ) {
@@ -123,7 +124,7 @@ fun RefillItemCard(index: Int, item: RefillModel) {
       ) {
         Text(
           text = item.drugName
-            ?: "ไม่พบชื่อยา",
+            ?: stringResource(R.string.no_drug_name),
           fontWeight = FontWeight.Medium,
           fontSize = 18.sp,
           maxLines = 1,
@@ -143,7 +144,7 @@ fun RefillItemCard(index: Int, item: RefillModel) {
           }
 
           Text(
-            text = "จำนวนคงเหลือ $stockQty",
+            text = "${stringResource(R.string.remaining_stock)} $stockQty",
             fontSize = 16.sp,
             color = text,
             modifier = Modifier
@@ -155,7 +156,8 @@ fun RefillItemCard(index: Int, item: RefillModel) {
           Spacer(modifier = Modifier.width(8.dp))
 
           val isNarcotic = item.drugPriority != 1
-          val drugLabel = if (isNarcotic) "ยา Narcotic" else "ยาทั่วไป"
+          val drugLabel =
+            if (isNarcotic) stringResource((R.string.Narcotic_drug)) else stringResource(R.string.normal_drug)
           val drugColor = if (isNarcotic) Color(0xFFE91E63) else Color(0xFF78909C)
 
           Text(
@@ -179,7 +181,7 @@ fun RefillItemCard(index: Int, item: RefillModel) {
 
       Icon(
         painter = painterResource(R.drawable.chevron_right_24px),
-        contentDescription = "details",
+        contentDescription = "Details",
         tint = Colors.BlueGrey40,
         modifier = Modifier
           .padding(start = 8.dp)
@@ -188,7 +190,11 @@ fun RefillItemCard(index: Int, item: RefillModel) {
       )
     }
 
-    HorizontalDivider(color = Colors.BlueGrey80)
+    if (index == filteredList.lastIndex) {
+      HorizontalDivider(color = Colors.BlueGrey80)
+    } else {
+      HorizontalDivider(color = Colors.BlueGrey80, modifier = Modifier.padding(start = 125.dp))
+    }
   }
 }
 
@@ -197,7 +203,8 @@ fun AnimatedCardItem(
   index: Int,
   item: RefillModel,
   navController: NavHostController,
-  viewModel: RefillSharedViewModel
+  viewModel: RefillViewModel,
+  filteredList: List<RefillModel>
 ) {
   var visible by remember { mutableStateOf(false) }
 
@@ -246,6 +253,6 @@ fun AnimatedCardItem(
         navController.navigate(Routes.RefillDrug.route)
       })
   ) {
-    RefillItemCard(index, item)
+    RefillItemCard(index, item, filteredList)
   }
 }

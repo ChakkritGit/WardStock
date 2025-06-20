@@ -4,8 +4,10 @@ import android.content.Context
 import retrofit2.Response
 import com.thanes.wardstock.data.models.ApiResponse
 import com.thanes.wardstock.data.models.OrderModel
+import com.thanes.wardstock.data.models.RefillDrugModel
 import com.thanes.wardstock.data.models.RefillModel
 import com.thanes.wardstock.data.models.UserData
+import com.thanes.wardstock.remote.api.services.AddDrugRequest
 import com.thanes.wardstock.remote.api.services.LoginRequest
 import com.thanes.wardstock.remote.configs.RetrofitInstance
 import com.thanes.wardstock.remote.configs.RetrofitInstance.createApiWithAuth
@@ -26,5 +28,10 @@ object ApiRepository {
 
   suspend fun refill(context: Context): Response<ApiResponse<List<RefillModel>>> {
     return createApiWithAuth(context).refill()
+  }
+
+  suspend fun addDrug(context: Context, prescriptionId: String, inventoryQty: Int): Response<ApiResponse<RefillDrugModel>> {
+    val request = AddDrugRequest(inventoryQty)
+    return createApiWithAuth(context).addDrug(prescriptionId, request)
   }
 }

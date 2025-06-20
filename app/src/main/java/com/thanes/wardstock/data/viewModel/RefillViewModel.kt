@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import com.thanes.wardstock.data.models.RefillModel
@@ -23,6 +22,20 @@ class RefillViewModel(application: Application) : AndroidViewModel(application) 
 
   var errorMessage by mutableStateOf("")
     internal set
+
+  var selectedDrug by mutableStateOf<RefillModel?>(null)
+    private set
+
+  fun selectDrug(drug: RefillModel) {
+    selectedDrug = drug
+  }
+
+  fun clear() {
+    refillState = emptyList()
+    isLoading = false
+    errorMessage = ""
+    selectedDrug = null
+  }
 
   fun fetchRefill() {
     errorMessage = ""
@@ -84,18 +97,5 @@ class RefillViewModel(application: Application) : AndroidViewModel(application) 
         isLoading = false
       }
     }
-  }
-}
-
-class RefillSharedViewModel : ViewModel() {
-  var selectedDrug by mutableStateOf<RefillModel?>(null)
-    private set
-
-  fun selectDrug(drug: RefillModel) {
-    selectedDrug = drug
-  }
-
-  fun clear() {
-    selectedDrug = null
   }
 }
