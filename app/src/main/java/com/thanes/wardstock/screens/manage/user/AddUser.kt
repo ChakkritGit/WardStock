@@ -4,6 +4,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts.PickMultipleVisualMedia
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -68,7 +69,7 @@ fun AddUser(navController: NavHostController, userSharedViewModel: UserViewModel
   ) { innerPadding ->
     Box(modifier = Modifier.padding(innerPadding)) {
       Column {
-        Button(onClick = { pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageAndVideo)) }) {
+        Button(onClick = { pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly)) }) {
           Text("Choose Image")
         }
 
