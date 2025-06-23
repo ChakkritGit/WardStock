@@ -9,17 +9,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,7 +55,7 @@ fun ManageListItem(navController: NavHostController) {
     itemsIndexed(
       items = menuItems
     ) { index, item ->
-      AnimatedCardItem(index, item, menuItems) { navController.navigate(item.route) }
+      AnimatedCardItem(index, item) { navController.navigate(item.route) }
     }
   }
 }
@@ -65,7 +64,6 @@ fun ManageListItem(navController: NavHostController) {
 fun AnimatedCardItem(
   index: Int,
   item: NavigationItem,
-  menuItems: List<NavigationItem>,
   onClick: () -> Unit
 ) {
   var visible by remember { mutableStateOf(false) }
@@ -112,63 +110,61 @@ fun AnimatedCardItem(
       }
       .clickable { onClick() },
   ) {
-    MenuItemRow(index, item, menuItems)
+    MenuItemCard(item, onClick)
   }
 }
 
 
 @Composable
-fun MenuItemRow(
-  index: Int,
+fun MenuItemCard(
   item: NavigationItem,
-  menuItems: List<NavigationItem>,
+  onClick: () -> Unit
 ) {
-  Column(
-    modifier = Modifier.background(color = Colors.BlueGrey120)
+  Card(
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp, vertical = 8.dp)
+      .clickable { onClick() },
+    shape = RoundedCornerShape(RoundRadius.Medium),
+    colors = CardDefaults.cardColors(
+      containerColor = Colors.BlueGrey120
+    ),
+    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
   ) {
-    if (index == 0) {
-      HorizontalDivider(color = Colors.BlueGrey80)
-    }
-
     Row(
       modifier = Modifier
         .fillMaxWidth()
-        .padding(horizontal = 16.dp, vertical = 12.dp),
+        .padding(16.dp),
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.SpaceBetween
     ) {
       Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.weight(1f)
       ) {
         Box(
           modifier = Modifier
             .size(54.dp)
             .clip(RoundedCornerShape(RoundRadius.Medium))
+            .background(Colors.BluePrimary),
+          contentAlignment = Alignment.Center
         ) {
-          Box(
-            modifier = Modifier
-              .matchParentSize()
-              .background(Colors.BluePrimary),
-            contentAlignment = Alignment.Center
-          ) {
-            Icon(
-              painter = painterResource(item.iconRes),
-              contentDescription = stringResource(item.titleRes),
-              tint = Colors.BlueGrey80,
-              modifier = Modifier
-                .size(36.dp)
-            )
-          }
+          Icon(
+            painter = painterResource(item.iconRes),
+            contentDescription = stringResource(item.titleRes),
+            tint = Colors.BlueGrey80,
+            modifier = Modifier.size(36.dp)
+          )
         }
 
         Text(
           text = stringResource(item.titleRes),
           fontWeight = FontWeight.Medium,
-          fontSize = 18.sp,
+          fontSize = 24.sp,
           maxLines = 1,
           overflow = TextOverflow.Ellipsis,
-          modifier = Modifier.width(450.dp)
+          modifier = Modifier.weight(1f)
         )
       }
 
@@ -176,17 +172,8 @@ fun MenuItemRow(
         painter = painterResource(R.drawable.chevron_right_24px),
         contentDescription = "Details",
         tint = Colors.BlueGrey40,
-        modifier = Modifier
-          .padding(start = 8.dp)
-          .align(Alignment.CenterVertically)
-          .size(36.dp)
+        modifier = Modifier.size(36.dp)
       )
-    }
-
-    if (index == menuItems.lastIndex) {
-      HorizontalDivider(color = Colors.BlueGrey80)
-    } else {
-      HorizontalDivider(color = Colors.BlueGrey80, modifier = Modifier.padding(start = 85.dp))
     }
   }
 }

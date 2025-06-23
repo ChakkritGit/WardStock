@@ -50,4 +50,6 @@
   <string name="empty_data">ไม่พบข้อมูล</string>
   <string name="is_Loading">กำลังโหลด</string>
   <string name="wait_for_dispensing">รอจนกว่าจะจัดเสร็จ</string>
+
+  <string name="add_user">เพิ่มผู้ใช้</string>
 </resources>

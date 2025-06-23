@@ -5,7 +5,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,7 +21,11 @@ import com.thanes.wardstock.data.viewModel.OrderViewModel
 import com.thanes.wardstock.data.viewModel.RefillViewModel
 import com.thanes.wardstock.screens.home.HomeScreen
 import com.thanes.wardstock.screens.login.LoginScreen
+import com.thanes.wardstock.screens.manage.ManageDrugScreen
+import com.thanes.wardstock.screens.manage.ManageMachineScreen
 import com.thanes.wardstock.screens.manage.ManageScreen
+import com.thanes.wardstock.screens.manage.ManageStockScreen
+import com.thanes.wardstock.screens.manage.ManageUserScreen
 import com.thanes.wardstock.ui.components.Refill.RefillDrug
 import com.thanes.wardstock.screens.refill.RefillScreen
 import com.thanes.wardstock.screens.setting.SettingScreen
@@ -78,19 +81,19 @@ fun AppNavigation(navController: NavHostController, innerPadding: PaddingValues,
       }
 
       composable(route = Routes.UserManagement.route) {
-        Text("User Management")
+        ManageUserScreen(navController)
       }
 
       composable(route = Routes.DrugManagement.route) {
-        Text("Drug Management")
+        ManageDrugScreen(navController)
       }
 
       composable(route = Routes.StockManagement.route) {
-        Text("Stock Management")
+        ManageStockScreen(navController)
       }
 
       composable(route = Routes.MachineManagement.route) {
-        Text("Machine Management")
+        ManageMachineScreen(navController)
       }
     }
   }

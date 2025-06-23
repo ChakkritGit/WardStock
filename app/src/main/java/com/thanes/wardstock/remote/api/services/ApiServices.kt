@@ -5,6 +5,7 @@ import com.thanes.wardstock.data.models.OrderModel
 import com.thanes.wardstock.data.models.RefillDrugModel
 import com.thanes.wardstock.data.models.RefillModel
 import com.thanes.wardstock.data.models.UserData
+import com.thanes.wardstock.data.models.UserModel
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -30,4 +31,7 @@ interface ApiService {
 
   @PATCH("group-inventory/stock/{inventoryId}")
   suspend fun addDrug(@Path("inventoryId") inventoryId: String, @Body request: AddDrugRequest): Response<ApiResponse<RefillDrugModel>>
+
+  @GET("users")
+  suspend fun getUser(): Response<ApiResponse<List<UserModel>>>
 }

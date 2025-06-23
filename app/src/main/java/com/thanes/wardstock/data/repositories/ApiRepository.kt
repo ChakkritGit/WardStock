@@ -7,6 +7,7 @@ import com.thanes.wardstock.data.models.OrderModel
 import com.thanes.wardstock.data.models.RefillDrugModel
 import com.thanes.wardstock.data.models.RefillModel
 import com.thanes.wardstock.data.models.UserData
+import com.thanes.wardstock.data.models.UserModel
 import com.thanes.wardstock.remote.api.services.AddDrugRequest
 import com.thanes.wardstock.remote.api.services.LoginRequest
 import com.thanes.wardstock.remote.configs.RetrofitInstance
@@ -33,5 +34,9 @@ object ApiRepository {
   suspend fun addDrug(context: Context, prescriptionId: String, inventoryQty: Int): Response<ApiResponse<RefillDrugModel>> {
     val request = AddDrugRequest(inventoryQty)
     return createApiWithAuth(context).addDrug(prescriptionId, request)
+  }
+
+  suspend fun userWithInitial(context: Context): Response<ApiResponse<List<UserModel>>> {
+    return createApiWithAuth(context).getUser()
   }
 }

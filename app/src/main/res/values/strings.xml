@@ -50,4 +50,6 @@
   <string name="empty_data">Data is empty!</string>
   <string name="is_Loading">Loading</string>
   <string name="wait_for_dispensing">Wait for dispensing</string>
+
+  <string name="add_user">Add user</string>
 </resources>
