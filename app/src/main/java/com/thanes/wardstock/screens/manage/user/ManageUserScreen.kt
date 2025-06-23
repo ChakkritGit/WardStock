@@ -1,7 +1,6 @@
-package com.thanes.wardstock.screens.manage
+package com.thanes.wardstock.screens.manage.user
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -35,7 +34,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,109 +48,48 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.R
-import com.thanes.wardstock.data.models.UserModel
-import com.thanes.wardstock.data.repositories.ApiRepository
+import com.thanes.wardstock.data.viewModel.AuthState
+import com.thanes.wardstock.data.viewModel.UserViewModel
+import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.components.appbar.AppBar
 import com.thanes.wardstock.ui.components.keyboard.Keyboard
+import com.thanes.wardstock.ui.components.manage.AnimatedUserItem
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
-import kotlinx.coroutines.launch
-import org.json.JSONObject
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ManageUserScreen(navController: NavHostController) {
+fun ManageUserScreen(
+  navController: NavHostController,
+  authState: AuthState,
+  userSharedViewModel: UserViewModel
+) {
   val context = LocalContext.current
-  val scope = rememberCoroutineScope()
   var canClick by remember { mutableStateOf(true) }
-  var userState by remember { mutableStateOf<List<UserModel>>(emptyList()) }
-  var errorMessage by remember { mutableStateOf("") }
-  var isLoading by remember { mutableStateOf(false) }
   var pullState by remember { mutableStateOf(false) }
   val hideKeyboard = Keyboard.hideKeyboard()
-
-  fun fetchUser() {
-    errorMessage = ""
-    isLoading = true
-
-    scope.launch {
-      try {
-        val response = ApiRepository.userWithInitial(context)
-        if (response.isSuccessful) {
-          userState = response.body()?.data ?: emptyList()
-        } else {
-          val errorJson = response.errorBody()?.string()
-          val message = try {
-            JSONObject(errorJson ?: "").getString("message")
-          } catch (_: Exception) {
-            when (response.code()) {
-              400 -> "Invalid request data"
-              401 -> "Authentication required"
-              403 -> "Access denied"
-              404 -> "Prescription not found"
-              500 -> "Server error, please try again later"
-              else -> "HTTP Error ${response.code()}: ${response.message()}"
-            }
-          }
-          errorMessage = message
-        }
-      } catch (e: Exception) {
-        errorMessage = when (e) {
-          is java.net.UnknownHostException -> {
-            "No internet connection"
-          }
-
-          is java.net.SocketTimeoutException -> {
-            "Request timeout, please try again"
-          }
-
-          is java.net.ConnectException -> {
-            "Unable to connect to server"
-          }
-
-          is javax.net.ssl.SSLException -> {
-            "Secure connection failed"
-          }
-
-          is com.google.gson.JsonSyntaxException -> {
-            "Invalid response format"
-          }
-
-          is java.io.IOException -> {
-            "Network error occurred"
-          }
-
-          else -> {
-            Log.e("OrderAPI", "Unexpected error: ${e.javaClass.simpleName}", e)
-            "Unexpected error occurred"
-          }
-        }
-      } finally {
-        isLoading = false
-      }
-    }
-  }
+  val userData = authState.userData
 
   val pullRefreshState = rememberPullRefreshState(
-    refreshing = isLoading,
+    refreshing = userSharedViewModel.isLoading,
     onRefresh = {
-      fetchUser()
+      userSharedViewModel.fetchUser()
       pullState = true
     }
   )
 
-  LaunchedEffect(userState) {
-    if (userState.isEmpty()) {
-      fetchUser()
+  LaunchedEffect(userSharedViewModel.userState) {
+    if (userSharedViewModel.userState.isEmpty()) {
+      userSharedViewModel.fetchUser()
     }
   }
 
-  LaunchedEffect(errorMessage) {
-    if (errorMessage.isNotEmpty()) {
-      Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
-      errorMessage = ""
+  LaunchedEffect(userSharedViewModel.errorMessage) {
+    if (userSharedViewModel.errorMessage.isNotEmpty()) {
+      Toast.makeText(context, userSharedViewModel.errorMessage, Toast.LENGTH_SHORT).show()
+      userSharedViewModel.errorMessage = ""
     }
   }
 
@@ -170,7 +107,7 @@ fun ManageUserScreen(navController: NavHostController) {
     },
     floatingActionButton = {
       ExtendedFloatingActionButton(
-        onClick = { },
+        onClick = { navController.navigate(Routes.AddUser.route) },
         containerColor = Colors.BluePrimary,
         icon = {
           Icon(
@@ -200,7 +137,7 @@ fun ManageUserScreen(navController: NavHostController) {
       contentAlignment = Alignment.Center
     ) {
       when {
-        isLoading && userState.isEmpty() && !pullState -> {
+        userSharedViewModel.isLoading && userSharedViewModel.userState.isEmpty() && !pullState -> {
           Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -222,7 +159,7 @@ fun ManageUserScreen(navController: NavHostController) {
           }
         }
 
-        userState.isEmpty() -> {
+        userSharedViewModel.userState.isEmpty() -> {
           Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -249,9 +186,10 @@ fun ManageUserScreen(navController: NavHostController) {
         else -> {
           var searchText by remember { mutableStateOf("") }
 
-          val filteredList = userState.filter {
-            it.display.contains(searchText, ignoreCase = true) == true ||
-                    it.username.toString().contains(searchText)
+          val filteredList = userSharedViewModel.userState.filter {
+            (it.display.contains(searchText, ignoreCase = true) ||
+                    it.username.contains(searchText, ignoreCase = true)) &&
+                    it.username != userData?.username
           }
 
           Column(modifier = Modifier.fillMaxSize()) {
@@ -263,7 +201,7 @@ fun ManageUserScreen(navController: NavHostController) {
               OutlinedTextField(
                 value = searchText,
                 onValueChange = { searchText = it },
-                label = { Text(stringResource(R.string.search_drug)) },
+                label = { Text(stringResource(R.string.search_user)) },
                 modifier = Modifier
                   .padding(horizontal = 14.dp, vertical = 8.dp)
                   .fillMaxWidth()
@@ -319,14 +257,17 @@ fun ManageUserScreen(navController: NavHostController) {
                   .padding(top = 8.dp)
               ) {
                 itemsIndexed(filteredList) { index, item ->
-                  Text(item.display)
+                  AnimatedUserItem(index, item, filteredList, onClick = {
+                    userSharedViewModel.setUser(item)
+                    navController.navigate(Routes.EditUser.route)
+                  })
                 }
               }
             }
           }
 
           PullRefreshIndicator(
-            refreshing = isLoading,
+            refreshing = userSharedViewModel.isLoading,
             state = pullRefreshState,
             modifier = Modifier.align(Alignment.TopCenter),
             backgroundColor = Colors.BlueGrey120,

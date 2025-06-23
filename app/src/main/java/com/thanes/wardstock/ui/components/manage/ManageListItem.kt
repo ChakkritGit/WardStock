@@ -114,7 +114,6 @@ fun AnimatedCardItem(
   }
 }
 
-
 @Composable
 fun MenuItemCard(
   item: NavigationItem,

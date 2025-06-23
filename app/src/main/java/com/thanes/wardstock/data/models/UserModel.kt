@@ -5,7 +5,7 @@ data class UserModel(
   val username: String,
   val display: String,
   val picture: String,
-  val role: UserRole,
+  val role: UserRole?,
   val status: Boolean,
   val comment: String?,
   val createdAt: String,

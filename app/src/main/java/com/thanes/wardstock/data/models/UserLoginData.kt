@@ -6,6 +6,6 @@ data class UserData(
   val display: String,
   val picture: String,
   val status: Boolean,
-  val role: String,
+  val role: UserRole,
   val token: String
 )

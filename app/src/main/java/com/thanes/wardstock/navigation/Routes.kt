@@ -11,5 +11,7 @@ sealed  class Routes(val route: String) {
   object DrugManagement: Routes(route = "drug_management")
   object StockManagement: Routes(route = "stock_management")
   object MachineManagement: Routes(route = "machine_management")
+  object EditUser: Routes(route = "edit_user_route")
+  object AddUser: Routes(route = "add_user_route")
   object DispenseTestTool: Routes(route = "dispensetesttool_route")
 }

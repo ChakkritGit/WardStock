@@ -47,6 +47,8 @@ import coil3.compose.AsyncImage
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.models.UserData
 import com.thanes.wardstock.data.store.DataManager
+import com.thanes.wardstock.data.viewModel.AuthState
+import com.thanes.wardstock.data.viewModel.AuthViewModel
 import com.thanes.wardstock.data.viewModel.OrderViewModel
 import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.components.system.HideSystemControll
@@ -73,19 +75,17 @@ fun getGreetingMessage(): Int {
 fun HomeAppBar(
   navController: NavHostController,
   context: Context,
+  authState: AuthState,
+  authViewModel: AuthViewModel,
   orderSharedViewModel: OrderViewModel
 ) {
   val scope = rememberCoroutineScope()
-  var userData by remember { mutableStateOf<UserData?>(null) }
   var greetingMessage by remember { mutableIntStateOf(getGreetingMessage()) }
   var openAlertDialog by remember { mutableStateOf(false) }
   val isOrderActive = orderSharedViewModel.orderState != null
   var alertMessage by remember { mutableStateOf("") }
   val waitForDispenseMessage = stringResource(R.string.wait_for_dispensing)
-
-  LaunchedEffect(Unit) {
-    userData = DataManager.getUserData(context)
-  }
+  val userData = authState.userData
 
   LaunchedEffect(Unit) {
     while (true) {
@@ -225,7 +225,7 @@ fun HomeAppBar(
           GradientButton(
             onClick = {
               scope.launch {
-                DataManager.clearAll(context)
+                authViewModel.logout(context)
                 navController.navigate(Routes.Login.route) {
                   popUpTo(Routes.Home.route) { inclusive = true }
                 }

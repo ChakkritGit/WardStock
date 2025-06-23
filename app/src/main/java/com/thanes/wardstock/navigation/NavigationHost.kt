@@ -8,93 +8,120 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.thanes.wardstock.data.store.DataManager
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.thanes.wardstock.data.viewModel.AuthViewModel
 import com.thanes.wardstock.data.viewModel.OrderViewModel
 import com.thanes.wardstock.data.viewModel.RefillViewModel
+import com.thanes.wardstock.data.viewModel.UserViewModel
 import com.thanes.wardstock.screens.home.HomeScreen
 import com.thanes.wardstock.screens.login.LoginScreen
 import com.thanes.wardstock.screens.manage.ManageDrugScreen
 import com.thanes.wardstock.screens.manage.ManageMachineScreen
 import com.thanes.wardstock.screens.manage.ManageScreen
 import com.thanes.wardstock.screens.manage.ManageStockScreen
-import com.thanes.wardstock.screens.manage.ManageUserScreen
+import com.thanes.wardstock.screens.manage.user.AddUser
+import com.thanes.wardstock.screens.manage.user.EditUser
+import com.thanes.wardstock.screens.manage.user.ManageUserScreen
 import com.thanes.wardstock.ui.components.Refill.RefillDrug
 import com.thanes.wardstock.screens.refill.RefillScreen
 import com.thanes.wardstock.screens.setting.SettingScreen
 import com.thanes.wardstock.screens.setting.dispense.DispenseTestTool
+import com.thanes.wardstock.ui.components.splashscreen.SplashScreen
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun AppNavigation(navController: NavHostController, innerPadding: PaddingValues, context: Context) {
-  var token by remember { mutableStateOf<String?>(null) }
-
+  val authViewModel: AuthViewModel = viewModel()
   val refillSharedViewModel: RefillViewModel = viewModel()
   val orderSharedViewModel: OrderViewModel = viewModel()
+  val userSharedViewModel: UserViewModel = viewModel()
+
+  val authState by authViewModel.authState.collectAsState()
+  var showSplash by remember { mutableStateOf(true) }
 
   LaunchedEffect(Unit) {
-    token = DataManager.getToken(context)
+    authViewModel.initializeAuth(context)
   }
 
-  token?.let { tokenValue ->
-    val startDestination = if (tokenValue.isNotEmpty()) Routes.Home.route else Routes.Login.route
-
-    NavHost(
-      navController = navController,
-      startDestination = startDestination,
-      modifier = Modifier.padding(innerPadding)
-    ) {
-
-      composable(route = Routes.Login.route) {
-        LoginScreen(navController, context)
+  if (authState.isLoading || showSplash) {
+    SplashScreen(
+      onAnimationComplete = {
+        showSplash = false
       }
+    )
+    return
+  }
 
-      composable(route = Routes.Home.route) {
-        HomeScreen(navController, context, orderSharedViewModel)
-      }
+  val startDestination = if (authState.isAuthenticated) {
+    Routes.Home.route
+  } else {
+    Routes.Login.route
+  }
 
-      composable(route = Routes.Setting.route) {
-        SettingScreen(navController, context)
-      }
+  NavHost(
+    navController = navController,
+    startDestination = startDestination,
+    modifier = Modifier.padding(innerPadding)
+  ) {
 
-      composable(route = Routes.DispenseTestTool.route) {
-        DispenseTestTool(navController, context)
-      }
+    composable(route = Routes.Login.route) {
+      LoginScreen(navController, authViewModel, context)
+    }
 
-      composable(route = Routes.Refill.route) {
-        RefillScreen(navController, context, refillSharedViewModel)
-      }
+    composable(route = Routes.Home.route) {
+      HomeScreen(navController, context, authViewModel, orderSharedViewModel)
+    }
 
-      composable(route = Routes.RefillDrug.route) {
-        RefillDrug(navController, context, refillSharedViewModel)
-      }
+    composable(route = Routes.Setting.route) {
+      SettingScreen(navController, context)
+    }
 
-      composable(route = Routes.Manage.route) {
-        ManageScreen(navController)
-      }
+    composable(route = Routes.DispenseTestTool.route) {
+      DispenseTestTool(navController, context)
+    }
 
-      composable(route = Routes.UserManagement.route) {
-        ManageUserScreen(navController)
-      }
+    composable(route = Routes.Refill.route) {
+      RefillScreen(navController, context, refillSharedViewModel)
+    }
 
-      composable(route = Routes.DrugManagement.route) {
-        ManageDrugScreen(navController)
-      }
+    composable(route = Routes.RefillDrug.route) {
+      RefillDrug(navController, context, refillSharedViewModel)
+    }
 
-      composable(route = Routes.StockManagement.route) {
-        ManageStockScreen(navController)
-      }
+    composable(route = Routes.Manage.route) {
+      ManageScreen(navController)
+    }
 
-      composable(route = Routes.MachineManagement.route) {
-        ManageMachineScreen(navController)
-      }
+    composable(route = Routes.UserManagement.route) {
+      ManageUserScreen(navController, authState, userSharedViewModel)
+    }
+
+    composable(route = Routes.DrugManagement.route) {
+      ManageDrugScreen(navController)
+    }
+
+    composable(route = Routes.StockManagement.route) {
+      ManageStockScreen(navController)
+    }
+
+    composable(route = Routes.MachineManagement.route) {
+      ManageMachineScreen(navController)
+    }
+
+    composable(route = Routes.EditUser.route) {
+      EditUser(navController, userSharedViewModel)
+    }
+
+    composable(route = Routes.AddUser.route) {
+      AddUser(navController, userSharedViewModel)
     }
   }
 }

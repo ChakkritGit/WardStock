@@ -24,6 +24,7 @@ import com.thanes.wardstock.ui.components.appbar.AppBar
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.models.UserData
+import com.thanes.wardstock.data.models.UserRole
 import com.thanes.wardstock.data.store.DataManager
 import com.thanes.wardstock.screens.setting.dispense.DispenseTestToolList
 import com.thanes.wardstock.screens.setting.language.LanguageSwitcher
@@ -59,7 +60,7 @@ fun SettingScreen(navController: NavHostController, context: Context) {
       ) {
         LanguageSwitcher(context)
         Spacer(modifier = Modifier.height(4.dp))
-        if (userData != null && userData?.role == "SUPER") {
+        if (userData != null && userData?.role == UserRole.SUPER) {
           DispenseTestToolList(navController)
         }
       }

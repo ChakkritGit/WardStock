@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.R
+import com.thanes.wardstock.data.viewModel.AuthState
 import com.thanes.wardstock.data.viewModel.OrderViewModel
 import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.theme.Colors
@@ -39,6 +40,7 @@ import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 fun HomeMenu(
   navController: NavHostController,
   context: Context,
+  authState: AuthState,
   orderSharedViewModel: OrderViewModel
 ) {
   val isOrderActive = orderSharedViewModel.orderState != null

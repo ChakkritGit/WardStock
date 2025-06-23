@@ -30,6 +30,7 @@
   <string name="logout_description">Do you want to logout?</string>
   <string name="cancel">Cancel</string>
   <string name="search_drug">Search drug name or inventory position</string>
+  <string name="search_user">Search username or display name</string>
   <string name="no_drug_name">Drug name not found</string>
   <string name="remaining_stock">Remaining Stock</string>
   <string name="normal_drug">Normal Drug</string>
@@ -52,4 +53,5 @@
   <string name="wait_for_dispensing">Wait for dispensing</string>
 
   <string name="add_user">Add user</string>
+  <string name="unknow">UNKNOWN</string>
 </resources>

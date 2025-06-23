@@ -31,18 +31,18 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.data.repositories.ApiRepository
-import com.thanes.wardstock.data.store.DataManager
 import com.thanes.wardstock.navigation.Routes
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import com.thanes.wardstock.R
+import com.thanes.wardstock.data.viewModel.AuthViewModel
 import com.thanes.wardstock.ui.components.keyboard.Keyboard
 import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 
 @Composable
-fun LoginScreen(navController: NavHostController, context: Context) {
+fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, context: Context) {
   val scope = rememberCoroutineScope()
   var userName by remember { mutableStateOf("") }
   var userPassword by remember { mutableStateOf("") }
@@ -77,8 +77,7 @@ fun LoginScreen(navController: NavHostController, context: Context) {
           val userData = response.body()?.data
 
           if (userData != null) {
-            DataManager.saveToken(context, userData.token)
-            DataManager.saveUserData(context, userData)
+            authViewModel.login(context, userData.token, userData)
             navController.navigate(Routes.Home.route) {
               popUpTo(Routes.Login.route) { inclusive = true }
             }
