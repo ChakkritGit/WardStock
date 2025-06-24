@@ -53,5 +53,9 @@
   <string name="wait_for_dispensing">Wait for dispensing</string>
 
   <string name="add_user">Add user</string>
-  <string name="unknow">UNKNOWN</string>
+  <string name="unknown">UNKNOWN</string>
+
+  <string name="add_image">Add Image</string>
+  <string name="display_name">Name</string>
+  <string name="user_role">Role</string>
 </resources>

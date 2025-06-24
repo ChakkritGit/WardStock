@@ -201,7 +201,7 @@ fun RefillItemCard(index: Int, item: UserModel, filteredList: List<UserModel>) {
               color = Colors.BlueGrey40,
             )
             Text(
-              item.role?.toString() ?: stringResource(R.string.unknow),
+              item.role?.toString() ?: stringResource(R.string.unknown),
               fontSize = 14.sp,
               color = Color.White,
               modifier = Modifier

@@ -53,5 +53,9 @@
   <string name="wait_for_dispensing">รอจนกว่าจะจัดเสร็จ</string>
 
   <string name="add_user">เพิ่มผู้ใช้</string>
-  <string name="unknow">ไม่ทราบ</string>
+  <string name="unknown">ไม่ทราบ</string>
+
+  <string name="add_image">เพิ่มรูปภาพ</string>
+  <string name="display_name">ชื่อ</string>
+  <string name="user_role">สิทธิ์</string>
 </resources>

@@ -255,7 +255,8 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, 
               focusedContainerColor = Color.Transparent,
               unfocusedContainerColor = Color.Transparent,
               disabledContainerColor = Color.Transparent,
-              errorContainerColor = Color.Transparent
+              errorContainerColor = Color.Transparent,
+              focusedLeadingIconColor = Colors.BlueSecondary
             )
           )
 
@@ -291,7 +292,8 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, 
                   ),
                   contentDescription = if (showPass) "Hide password" else "Show password",
                   tint = Colors.BlueGrey40,
-                  modifier = Modifier.size(32.dp)
+                  modifier = Modifier
+                    .size(32.dp)
                 )
               }
             },
@@ -313,7 +315,8 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, 
               focusedContainerColor = Color.Transparent,
               unfocusedContainerColor = Color.Transparent,
               disabledContainerColor = Color.Transparent,
-              errorContainerColor = Color.Transparent
+              errorContainerColor = Color.Transparent,
+              focusedLeadingIconColor = Colors.BlueSecondary
             )
           )
 
@@ -332,7 +335,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, 
           ) {
             if (isLoading) {
               CircularProgressIndicator(
-                color = Color.White, strokeWidth = 2.dp, modifier = Modifier.size(24.dp)
+                color = Colors.BlueGrey100, strokeWidth = 2.dp, modifier = Modifier.size(24.dp)
               )
             } else {
               Text(

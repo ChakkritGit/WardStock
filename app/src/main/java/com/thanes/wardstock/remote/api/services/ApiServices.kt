@@ -6,11 +6,15 @@ import com.thanes.wardstock.data.models.RefillDrugModel
 import com.thanes.wardstock.data.models.RefillModel
 import com.thanes.wardstock.data.models.UserData
 import com.thanes.wardstock.data.models.UserModel
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 
 data class LoginRequest(val username: String, val password: String)
@@ -34,4 +38,14 @@ interface ApiService {
 
   @GET("users")
   suspend fun getUser(): Response<ApiResponse<List<UserModel>>>
+
+  @Multipart
+  @POST("users")
+  suspend fun uploadUser(
+    @Part image: MultipartBody.Part,
+    @Part("username") username: RequestBody,
+    @Part("password") password: RequestBody,
+    @Part("display") display: RequestBody,
+    @Part("role") role: RequestBody
+  ): Response<ApiResponse<UserModel>>
 }

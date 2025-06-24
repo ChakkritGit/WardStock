@@ -20,7 +20,8 @@
       android:supportsRtl="true"
       android:theme="@style/Theme.WardStock"
       tools:targetApi="33"
-      android:configChanges="locale|layoutDirection">
+      android:configChanges="locale|layoutDirection"
+      android:usesCleartextTraffic="true">
 
     <activity
         android:name=".MainActivity"

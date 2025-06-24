@@ -95,7 +95,7 @@ fun LanguageSwitcher(
     DropdownMenu(
       expanded = expanded,
       onDismissRequest = { expanded = false },
-      shadowElevation = 12.dp,
+      shadowElevation = 6.dp,
       modifier = Modifier
         .background(
           Colors.BlueGrey100
