@@ -71,6 +71,7 @@ import com.thanes.wardstock.R
 import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
+import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 import kotlinx.coroutines.launch
 
 data class UserFormState(
@@ -492,11 +493,13 @@ fun UserFormScreen(
               Text(
                 text = stringResource(R.string.delete_user),
                 fontSize = 24.sp,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Bold,
+                fontFamily = ibmpiexsansthailooped
               )
               Text(
                 text = stringResource(R.string.confirm_delete_desc),
-                fontSize = 20.sp
+                fontSize = 20.sp,
+                fontFamily = ibmpiexsansthailooped
               )
             }
           },

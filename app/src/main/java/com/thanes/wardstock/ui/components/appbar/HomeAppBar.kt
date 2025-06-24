@@ -204,7 +204,7 @@ fun HomeAppBar(
           Text(
             stringResource(R.string.logout),
             fontSize = 24.sp,
-            fontWeight = FontWeight.Medium,
+            fontWeight = FontWeight.Bold,
             fontFamily = ibmpiexsansthailooped
           )
           Text(
