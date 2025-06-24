@@ -39,7 +39,7 @@ fun EditUser(navController: NavHostController, userSharedViewModel: UserViewMode
   Scaffold(
     topBar = {
       AppBar(
-        title = user?.display ?: "—",
+        title = stringResource(R.string.edit),
         onBack = {
           if (canClick) {
             canClick = false

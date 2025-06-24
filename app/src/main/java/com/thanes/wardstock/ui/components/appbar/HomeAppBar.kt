@@ -45,8 +45,6 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import com.thanes.wardstock.R
-import com.thanes.wardstock.data.models.UserData
-import com.thanes.wardstock.data.store.DataManager
 import com.thanes.wardstock.data.viewModel.AuthState
 import com.thanes.wardstock.data.viewModel.AuthViewModel
 import com.thanes.wardstock.data.viewModel.OrderViewModel
@@ -54,6 +52,7 @@ import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
+import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 import com.thanes.wardstock.utils.ImageUrl
 import kotlinx.coroutines.delay
@@ -234,7 +233,7 @@ fun HomeAppBar(
             },
             text = stringResource(R.string.logout),
             fontWeight = FontWeight.Medium,
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(RoundRadius.Medium),
             textSize = 20.sp,
             modifier = Modifier
               .fillMaxWidth(0.7f)
@@ -245,7 +244,7 @@ fun HomeAppBar(
             onClick = {
               openAlertDialog = false
             },
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(RoundRadius.Medium),
             gradient = Brush.verticalGradient(
               colors = listOf(
                 Colors.BlueGrey80,

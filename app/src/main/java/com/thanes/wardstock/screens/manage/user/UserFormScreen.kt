@@ -27,6 +27,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,6 +37,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -49,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -62,6 +65,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import coil3.compose.rememberAsyncImagePainter
 import com.thanes.wardstock.R
 import com.thanes.wardstock.ui.components.utils.GradientButton
@@ -95,6 +99,7 @@ fun UserFormScreen(
   val focusRequesterPassword = remember { FocusRequester() }
   val keyboardController = LocalSoftwareKeyboardController.current
   var passwordVisible by remember { mutableStateOf(false) }
+  var showDeleteDialog by remember { mutableStateOf(false) }
   val scope = rememberCoroutineScope()
 
   val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
@@ -429,8 +434,116 @@ fun UserFormScreen(
         Text(
           stringResource(if (initialData == null) R.string.submit else R.string.update),
           fontSize = 20.sp,
-          fontWeight = FontWeight.SemiBold,
+          fontWeight = FontWeight.Bold,
           color = Colors.BlueGrey100
+        )
+      }
+    }
+
+    if (initialData != null) {
+      Spacer(modifier = Modifier.height(16.dp))
+
+      GradientButton(
+        onClick = { showDeleteDialog = true },
+        shape = RoundedCornerShape(RoundRadius.Medium),
+        gradient = Brush.verticalGradient(
+          colors = listOf(Colors.BlueGrey100, Colors.BlueGrey100),
+        ),
+        modifier = Modifier
+          .fillMaxWidth()
+          .height(56.dp)
+      ) {
+        Text(
+          stringResource(R.string.delete_user),
+          color = Color(0xFFD32F2F),
+          fontWeight = FontWeight.Medium,
+          fontSize = 20.sp
+        )
+      }
+
+      if (showDeleteDialog) {
+        AlertDialog(
+          properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true,
+            usePlatformDefaultWidth = true
+          ),
+          icon = {
+            Surface(
+              modifier = Modifier.clip(CircleShape),
+              color = Color(0xFFD32F2F).copy(alpha = 0.3f)
+            ) {
+              Icon(
+                painter = painterResource(R.drawable.delete_24px),
+                contentDescription = "delete_user",
+                modifier = Modifier
+                  .size(56.dp)
+                  .padding(6.dp),
+                tint = Color(0xFFD32F2F)
+              )
+            }
+          },
+          text = {
+            Column(
+              verticalArrangement = Arrangement.spacedBy(6.dp),
+              horizontalAlignment = Alignment.CenterHorizontally,
+              modifier = Modifier.fillMaxWidth(0.7f)
+            ) {
+              Text(
+                text = stringResource(R.string.delete_user),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Medium
+              )
+              Text(
+                text = stringResource(R.string.confirm_delete_desc),
+                fontSize = 20.sp
+              )
+            }
+          },
+          onDismissRequest = {
+            showDeleteDialog = false
+          },
+          confirmButton = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+              GradientButton(
+                onClick = {
+                  // TODO: เรียก delete user API ที่นี่
+                  showDeleteDialog = false
+                },
+                text = stringResource(R.string.delete),
+                fontWeight = FontWeight.Medium,
+                shape = RoundedCornerShape(RoundRadius.Medium),
+                textSize = 20.sp,
+                modifier = Modifier
+                  .fillMaxWidth(0.7f)
+                  .height(56.dp),
+                gradient = Brush.verticalGradient(
+                  colors = listOf(Color(0xFFD32F2F), Color(0xFFB71C1C))
+                )
+              )
+
+              GradientButton(
+                onClick = {
+                  showDeleteDialog = false
+                },
+                shape = RoundedCornerShape(RoundRadius.Medium),
+                gradient = Brush.verticalGradient(
+                  colors = listOf(Colors.BlueGrey80, Colors.BlueGrey80),
+                ),
+                modifier = Modifier
+                  .fillMaxWidth(0.7f)
+                  .height(56.dp)
+              ) {
+                Text(
+                  stringResource(R.string.cancel),
+                  color = Colors.BlueSecondary,
+                  fontSize = 20.sp
+                )
+              }
+            }
+          },
+          dismissButton = {},
+          containerColor = Colors.BlueGrey100
         )
       }
     }
