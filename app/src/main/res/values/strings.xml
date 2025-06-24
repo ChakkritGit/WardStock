@@ -38,6 +38,7 @@
   <string name="drug_inventory_no">Inventory No</string>
   <string name="quantity">Quantity</string>
   <string name="submit">Submit</string>
+  <string name="update">Update</string>
   <string name="add">Add</string>
   <string name="successfully">Successfully</string>
 

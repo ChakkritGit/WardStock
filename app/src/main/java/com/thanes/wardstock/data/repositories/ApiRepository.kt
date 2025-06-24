@@ -46,7 +46,7 @@ object ApiRepository {
     return createApiWithAuth(context).getUser()
   }
 
-  suspend fun uploadUserWithImage(
+  suspend fun createUserWithImage(
     context: Context,
     imagePart: MultipartBody.Part,
     username: String,
@@ -59,10 +59,31 @@ object ApiRepository {
     val displayPart = display.toRequestBody("text/plain".toMediaTypeOrNull())
     val rolePart = role.name.toRequestBody("text/plain".toMediaTypeOrNull())
 
-    return createApiWithAuth(context).uploadUser(
+    return createApiWithAuth(context).createUser(
       image = imagePart,
       username = usernamePart,
       password = passwordPart,
+      display = displayPart,
+      role = rolePart
+    )
+  }
+
+  suspend fun updateUserWithImage(
+    context: Context,
+    userId: String,
+    imagePart: MultipartBody.Part?,
+    username: String,
+    display: String,
+    role: UserRole
+  ): Response<ApiResponse<UserModel>> {
+    val usernamePart = username.toRequestBody("text/plain".toMediaTypeOrNull())
+    val displayPart = display.toRequestBody("text/plain".toMediaTypeOrNull())
+    val rolePart = role.name.toRequestBody("text/plain".toMediaTypeOrNull())
+
+    return createApiWithAuth(context).updatedUser(
+      userId = userId,
+      image = imagePart,
+      username = usernamePart,
       display = displayPart,
       role = rolePart
     )

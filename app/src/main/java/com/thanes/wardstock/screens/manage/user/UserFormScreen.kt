@@ -427,7 +427,7 @@ fun UserFormScreen(
         )
       } else {
         Text(
-          stringResource(R.string.submit),
+          stringResource(if (initialData == null) R.string.submit else R.string.update),
           fontSize = 20.sp,
           fontWeight = FontWeight.SemiBold,
           color = Colors.BlueGrey100

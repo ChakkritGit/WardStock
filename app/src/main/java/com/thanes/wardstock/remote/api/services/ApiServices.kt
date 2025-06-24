@@ -41,10 +41,20 @@ interface ApiService {
 
   @Multipart
   @POST("users")
-  suspend fun uploadUser(
+  suspend fun createUser(
     @Part image: MultipartBody.Part,
     @Part("username") username: RequestBody,
     @Part("password") password: RequestBody,
+    @Part("display") display: RequestBody,
+    @Part("role") role: RequestBody
+  ): Response<ApiResponse<UserModel>>
+
+  @Multipart
+  @PATCH("users/{userId}")
+  suspend fun updatedUser(
+    @Path("userId") userId: String,
+    @Part image: MultipartBody.Part?,
+    @Part("username") username: RequestBody,
     @Part("display") display: RequestBody,
     @Part("role") role: RequestBody
   ): Response<ApiResponse<UserModel>>

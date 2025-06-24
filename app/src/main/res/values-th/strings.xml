@@ -38,6 +38,7 @@
   <string name="drug_inventory_no">ช่องที่</string>
   <string name="quantity">จำนวน</string>
   <string name="submit">บันทึก</string>
+  <string name="update">อัปเดท</string>
   <string name="add">เพิ่ม</string>
   <string name="successfully">สำเร็จ</string>
 

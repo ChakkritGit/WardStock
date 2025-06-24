@@ -1,25 +1,31 @@
 package com.thanes.wardstock.screens.manage.user
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.data.viewModel.UserViewModel
 import com.thanes.wardstock.services.upload.uriToMultipartBodyPart
 import com.thanes.wardstock.ui.components.appbar.AppBar
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.utils.ImageUrl
-import kotlinx.coroutines.launch
 import androidx.core.net.toUri
+import com.thanes.wardstock.R
+import com.thanes.wardstock.data.models.UserRole
+import com.thanes.wardstock.data.repositories.ApiRepository
+import org.json.JSONObject
 
 @Composable
 fun EditUser(navController: NavHostController, userSharedViewModel: UserViewModel) {
   var canClick by remember { mutableStateOf(true) }
   val context = LocalContext.current
-  val scope = rememberCoroutineScope()
   var isLoading by remember { mutableStateOf(false) }
   var errorMessage by remember { mutableStateOf("") }
+  val somethingWrongMessage = stringResource(R.string.something_wrong)
+  val successMessage = stringResource(R.string.successfully)
 
   val user = userSharedViewModel.selectedUser
 
@@ -58,44 +64,68 @@ fun EditUser(navController: NavHostController, userSharedViewModel: UserViewMode
         onSubmit = { formState, uri ->
           isLoading = true
 
-          val result = try {
-            scope.launch {
-              val imagePart = if (uri != null) {
-                uriToMultipartBodyPart(context, uri)
-              } else null
+          try {
+            val imagePart = uri?.let { uriToMultipartBodyPart(context, it) }
 
-//              val response = ApiRepository.updateUserWithImage(
-//                context = context,
-//                userId = user.id,
-//                imagePart = imagePart,
-//                username = formState.username,
-//                password = formState.password.takeIf { it.isNotBlank() },
-//                display = formState.display,
-//                role = UserRole.valueOf(formState.role)
-//              )
-
-//              if (response.isSuccessful) {
-//                userSharedViewModel.fetchUser()
-//                navController.popBackStack()
-//              } else {
-//                val errorJson = response.errorBody()?.string()
-//                val message = try {
-//                  JSONObject(errorJson ?: "").getString("message")
-//                } catch (_: Exception) {
-//                  "HTTP Error ${response.code()}: ${response.message()}"
-//                }
-//                errorMessage = message
-//              }
+            val response = if (imagePart != null) {
+              ApiRepository.updateUserWithImage(
+                context = context,
+                userId = user.id,
+                imagePart = imagePart,
+                username = formState.username,
+                display = formState.display,
+                role = UserRole.valueOf(formState.role)
+              )
+            } else {
+              ApiRepository.updateUserWithImage(
+                context = context,
+                userId = user.id,
+                imagePart = null,
+                username = formState.username,
+                display = formState.display,
+                role = UserRole.valueOf(formState.role)
+              )
             }
-            true
+
+            return@UserFormScreen if (response.isSuccessful) {
+              errorMessage = successMessage
+              userSharedViewModel.fetchUser()
+              navController.popBackStack()
+              true
+            } else {
+              val errorJson = response.errorBody()?.string()
+              val message = try {
+                JSONObject(errorJson ?: "").getString("message")
+              } catch (_: Exception) {
+                when (response.code()) {
+                  400 -> "Invalid request data"
+                  401 -> "Authentication required"
+                  403 -> "Access denied"
+                  404 -> "Prescription not found"
+                  500 -> "Server error, please try again later"
+                  else -> "HTTP Error ${response.code()}: ${response.message()}"
+                }
+              }
+              errorMessage = message
+              false
+            }
           } catch (e: Exception) {
-            errorMessage = "ไม่สามารถบันทึกการแก้ไขได้ (${e.message})"
+            errorMessage = when (e) {
+              is java.net.UnknownHostException -> "No internet connection"
+              is java.net.SocketTimeoutException -> "Request timeout, please try again"
+              is java.net.ConnectException -> "Unable to connect to server"
+              is javax.net.ssl.SSLException -> "Secure connection failed"
+              is com.google.gson.JsonSyntaxException -> "Invalid response format"
+              is java.io.IOException -> "Network error occurred"
+              else -> {
+                Log.e("AddUser", "Unexpected error", e)
+                "Unexpected error occurred: $somethingWrongMessage"
+              }
+            }
             false
           } finally {
             isLoading = false
           }
-
-          result
         }
       )
     }

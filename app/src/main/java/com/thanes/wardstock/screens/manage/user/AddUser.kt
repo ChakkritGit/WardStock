@@ -26,6 +26,7 @@ fun AddUser(navController: NavHostController, userSharedViewModel: UserViewModel
   var errorMessage by remember { mutableStateOf("") }
   val somethingWrongMessage = stringResource(R.string.something_wrong)
   val successMessage = stringResource(R.string.successfully)
+  val completeFieldMessage = stringResource(R.string.complete_field)
 
   LaunchedEffect(errorMessage) {
     if (errorMessage.isNotEmpty()) {
@@ -54,10 +55,23 @@ fun AddUser(navController: NavHostController, userSharedViewModel: UserViewModel
       showPasswordField = true,
       onSubmit = { formState, uri ->
         isLoading = true
-        try {
-          val imagePart = uri?.let { uriToMultipartBodyPart(context, it) }
 
-          val response = ApiRepository.uploadUserWithImage(
+        val isValid = formState.username.isNotBlank()
+                && formState.password.isNotBlank()
+                && formState.display.isNotBlank()
+                && formState.role.isNotBlank()
+                && uri != null
+
+        if (!isValid) {
+          errorMessage = completeFieldMessage
+          isLoading = false
+          return@UserFormScreen false
+        }
+
+        try {
+          val imagePart = uriToMultipartBodyPart(context, uri)
+
+          val response = ApiRepository.createUserWithImage(
             context = context,
             imagePart = imagePart!!,
             username = formState.username,
