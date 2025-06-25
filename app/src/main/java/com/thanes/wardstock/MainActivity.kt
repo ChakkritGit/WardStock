@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
 import com.thanes.wardstock.data.language.LanguageManager
 import com.thanes.wardstock.navigation.AppNavigation
@@ -34,13 +35,15 @@ class MainActivity : ComponentActivity() {
 
     enableEdgeToEdge()
 
+    val splashScreen = installSplashScreen()
+
     setContent {
       WardStockTheme {
         val context = LocalContext.current
         val navController = rememberNavController()
 
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-          AppNavigation(navController, innerPadding, context)
+          AppNavigation(navController, innerPadding, splashScreen, context)
         }
       }
     }

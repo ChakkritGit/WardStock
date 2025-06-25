@@ -56,9 +56,9 @@ dependencies {
   implementation(libs.androidx.appcompat)
   implementation (libs.androidx.appcompat.resources)
   implementation(libs.androidx.material)
-
-  implementation("com.github.bumptech.glide:glide:4.16.0")
-  implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
+  implementation(libs.androidx.core.splashscreen)
+  implementation(libs.glide)
+  implementation(libs.compose)
 
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)

@@ -1,6 +1,9 @@
 [versions]
 agp = "8.10.1"
 appcompat = "1.7.1"
+compose = "1.0.0-beta01"
+coreSplashscreen = "1.0.1"
+glide = "4.16.0"
 kotlin = "2.0.21"
 coreKtx = "1.16.0"
 junit = "4.13.2"
@@ -11,7 +14,6 @@ lifecycleRuntimeKtx = "2.9.1"
 activityCompose = "1.10.1"
 composeBom = "2025.06.01"
 material = "1.9.0-beta01"
-materialPullRefresh = "1.6.0"
 retrofit = "2.11.0"
 amqpClient = "5.25.0"
 coilCompose = "3.1.0"
@@ -23,8 +25,10 @@ navigationCompose = "2.9.0"
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-appcompat-resources = { module = "androidx.appcompat:appcompat-resources", version.ref = "latestAppCompatVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-material = { module = "androidx.compose.material:material", version.ref = "material" }
-androidx-material-pull-refresh = { module = "androidx.compose.material:material-pull-refresh", version.ref = "materialPullRefresh" }
+compose = { module = "com.github.bumptech.glide:compose", version.ref = "compose" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
