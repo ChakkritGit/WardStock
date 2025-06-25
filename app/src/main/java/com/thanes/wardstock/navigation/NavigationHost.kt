@@ -14,6 +14,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.core.splashscreen.SplashScreen
 import com.thanes.wardstock.data.viewModel.AuthViewModel
 import com.thanes.wardstock.data.viewModel.DrugViewModel
@@ -55,8 +56,9 @@ fun AppNavigation(
   val authState by authViewModel.authState.collectAsState()
 
   val isConnected by rememberConnectivityState(context)
+  val isInitialConnected = remember { isConnected }
 
-  if (!isConnected) {
+  if (!isInitialConnected) {
     NoInternetComposable()
     return
   }

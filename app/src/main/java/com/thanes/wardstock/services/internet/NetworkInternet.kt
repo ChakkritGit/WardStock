@@ -17,8 +17,9 @@ import androidx.compose.runtime.remember
 fun rememberConnectivityState(context: Context): MutableState<Boolean> {
   val connectivityState = remember { mutableStateOf(isInternetAvailable(context)) }
 
-  DisposableEffect (Unit) {
-    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+  DisposableEffect(Unit) {
+    val connectivityManager =
+      context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     val callback = object : ConnectivityManager.NetworkCallback() {
       override fun onAvailable(network: Network) {

@@ -164,9 +164,9 @@ fun DispenseTestTool(navController: NavHostController, context: Context) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SlotGridWithBottomSheet(app: App) {
+  val scope = rememberCoroutineScope()
   val numbers = (1..60).toList()
   val sheetState = rememberModalBottomSheetState()
-  val scope = rememberCoroutineScope()
   var showBottomSheet by remember { mutableStateOf(false) }
   var selectedNumber by remember { mutableIntStateOf(1) }
   val qty = remember { mutableIntStateOf(1) }
@@ -176,7 +176,7 @@ fun SlotGridWithBottomSheet(app: App) {
 
   LaunchedEffect(Unit) {
     while (!app.isInitialized) {
-      kotlinx.coroutines.delay(100)
+      delay(100)
     }
     isDispenseServiceReady = true
   }
