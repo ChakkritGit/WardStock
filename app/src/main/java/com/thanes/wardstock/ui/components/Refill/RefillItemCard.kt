@@ -155,10 +155,9 @@ fun RefillItemCard(index: Int, item: RefillModel, filteredList: List<RefillModel
 
           Spacer(modifier = Modifier.width(8.dp))
 
-          val isNarcotic = item.drugPriority != 1
           val drugLabel =
-            if (isNarcotic) stringResource((R.string.Narcotic_drug)) else stringResource(R.string.normal_drug)
-          val drugColor = if (isNarcotic) Color(0xFFE91E63) else Color(0xFF78909C)
+            if (item.drugPriority == 1) stringResource((R.string.normal_drug)) else if (item.drugPriority == 2) stringResource(R.string.Had_drug) else stringResource(R.string.Narcotic_drug)
+          val drugColor = if (item.drugPriority == 1) Color(0xFFE91E63) else if (item.drugPriority == 2) Color(0xFFFF9800) else Color(0xFF78909C)
 
           Text(
             text = drugLabel,

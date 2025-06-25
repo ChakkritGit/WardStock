@@ -31,10 +31,12 @@
   <string name="cancel">ยกเลิก</string>
   <string name="search_drug">ค้นหาชื่อยาหรือช่องยา</string>
   <string name="search_user">ค้นหาชื่อผู้ใช้หรือชื่อแสดงผล</string>
+  <string name="search_drug_two">ค้นหาชื่อยาหรือรหัสยาหรือหน่วย</string>
   <string name="no_drug_name">ไม่พบชื่อยา</string>
   <string name="remaining_stock">จำนวนคงเหลือ</string>
   <string name="normal_drug">ยาทั่วไป</string>
   <string name="Narcotic_drug">ยา Narcotic</string>
+  <string name="Had_drug">ยา Had</string>
   <string name="drug_inventory_no">ช่องที่</string>
   <string name="quantity">จำนวน</string>
   <string name="submit">บันทึก</string>
@@ -54,6 +56,7 @@
   <string name="wait_for_dispensing">รอจนกว่าจะจัดเสร็จ</string>
 
   <string name="add_user">เพิ่มผู้ใช้</string>
+  <string name="add_drug">เพิ่มยา</string>
   <string name="unknown">ไม่ทราบ</string>
 
   <string name="add_image">เพิ่มรูปภาพ</string>
@@ -63,4 +66,6 @@
   <string name="delete_user">ลบ</string>
   <string name="delete">ลบ</string>
   <string name="confirm_delete_desc">คุณต้องการลบผู้ใช้หรือไม่?</string>
+
+  <string name="no_connection">โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ต!</string>
 </resources>

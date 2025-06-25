@@ -16,15 +16,18 @@ import androidx.navigation.compose.composable
 import androidx.compose.runtime.collectAsState
 import androidx.core.splashscreen.SplashScreen
 import com.thanes.wardstock.data.viewModel.AuthViewModel
+import com.thanes.wardstock.data.viewModel.DrugViewModel
 import com.thanes.wardstock.data.viewModel.OrderViewModel
 import com.thanes.wardstock.data.viewModel.RefillViewModel
 import com.thanes.wardstock.data.viewModel.UserViewModel
 import com.thanes.wardstock.screens.home.HomeScreen
 import com.thanes.wardstock.screens.login.LoginScreen
-import com.thanes.wardstock.screens.manage.ManageDrugScreen
+import com.thanes.wardstock.screens.manage.drug.ManageDrugScreen
 import com.thanes.wardstock.screens.manage.ManageMachineScreen
 import com.thanes.wardstock.screens.manage.ManageScreen
 import com.thanes.wardstock.screens.manage.ManageStockScreen
+import com.thanes.wardstock.screens.manage.drug.AddDrug
+import com.thanes.wardstock.screens.manage.drug.EditDrug
 import com.thanes.wardstock.screens.manage.user.AddUser
 import com.thanes.wardstock.screens.manage.user.EditUser
 import com.thanes.wardstock.screens.manage.user.ManageUserScreen
@@ -32,16 +35,31 @@ import com.thanes.wardstock.ui.components.Refill.RefillDrug
 import com.thanes.wardstock.screens.refill.RefillScreen
 import com.thanes.wardstock.screens.setting.SettingScreen
 import com.thanes.wardstock.screens.setting.dispense.DispenseTestTool
+import com.thanes.wardstock.services.internet.rememberConnectivityState
+import com.thanes.wardstock.ui.components.internet.NoInternetComposable
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun AppNavigation(navController: NavHostController, innerPadding: PaddingValues, splashScreen: SplashScreen, context: Context) {
+fun AppNavigation(
+  navController: NavHostController,
+  innerPadding: PaddingValues,
+  splashScreen: SplashScreen,
+  context: Context
+) {
   val authViewModel: AuthViewModel = viewModel()
   val refillSharedViewModel: RefillViewModel = viewModel()
   val orderSharedViewModel: OrderViewModel = viewModel()
   val userSharedViewModel: UserViewModel = viewModel()
+  val drugSharedViewModel: DrugViewModel = viewModel()
 
   val authState by authViewModel.authState.collectAsState()
+
+  val isConnected by rememberConnectivityState(context)
+
+  if (!isConnected) {
+    NoInternetComposable()
+    return
+  }
 
   LaunchedEffect(Unit) {
     authViewModel.initializeAuth(context)
@@ -99,7 +117,7 @@ fun AppNavigation(navController: NavHostController, innerPadding: PaddingValues,
     }
 
     composable(route = Routes.DrugManagement.route) {
-      ManageDrugScreen(navController)
+      ManageDrugScreen(navController, drugSharedViewModel)
     }
 
     composable(route = Routes.StockManagement.route) {
@@ -116,6 +134,14 @@ fun AppNavigation(navController: NavHostController, innerPadding: PaddingValues,
 
     composable(route = Routes.AddUser.route) {
       AddUser(navController, userSharedViewModel)
+    }
+
+    composable(route = Routes.EditDrug.route) {
+      EditDrug(navController, drugSharedViewModel)
+    }
+
+    composable(route = Routes.AddDrug.route) {
+      AddDrug(navController, drugSharedViewModel)
     }
   }
 }

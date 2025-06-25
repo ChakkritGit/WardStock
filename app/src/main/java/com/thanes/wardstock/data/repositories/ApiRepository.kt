@@ -3,6 +3,7 @@ package com.thanes.wardstock.data.repositories
 import android.content.Context
 import retrofit2.Response
 import com.thanes.wardstock.data.models.ApiResponse
+import com.thanes.wardstock.data.models.DrugModel
 import com.thanes.wardstock.data.models.OrderModel
 import com.thanes.wardstock.data.models.RefillDrugModel
 import com.thanes.wardstock.data.models.RefillModel
@@ -89,5 +90,9 @@ object ApiRepository {
 
   suspend fun removeUser(context: Context, userId: String): Response<ApiResponse<String>> {
     return createApiWithAuth(context).removeUser(userId = userId)
+  }
+
+  suspend fun getDrug(context: Context): Response<ApiResponse<List<DrugModel>>> {
+    return createApiWithAuth(context).getDrug()
   }
 }

@@ -1,6 +1,5 @@
-package com.thanes.wardstock.screens.manage.user
+package com.thanes.wardstock.screens.manage.drug
 
-import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -48,55 +47,49 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.R
-import com.thanes.wardstock.data.viewModel.AuthState
-import com.thanes.wardstock.data.viewModel.UserViewModel
+import com.thanes.wardstock.data.viewModel.DrugViewModel
 import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.components.appbar.AppBar
 import com.thanes.wardstock.ui.components.keyboard.Keyboard
+import com.thanes.wardstock.ui.components.manage.AnimatedDrugItem
 import com.thanes.wardstock.ui.components.manage.AnimatedUserItem
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 
-@SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ManageUserScreen(
-  navController: NavHostController,
-  authState: AuthState,
-  userSharedViewModel: UserViewModel
-) {
+fun ManageDrugScreen(navController: NavHostController, drugSharedViewModel: DrugViewModel) {
   val context = LocalContext.current
   var canClick by remember { mutableStateOf(true) }
   var pullState by remember { mutableStateOf(false) }
   val hideKeyboard = Keyboard.hideKeyboard()
-  val userData = authState.userData
 
   val pullRefreshState = rememberPullRefreshState(
-    refreshing = userSharedViewModel.isLoading,
+    refreshing = drugSharedViewModel.isLoading,
     onRefresh = {
-      userSharedViewModel.fetchUser()
+      drugSharedViewModel.fetchDrug()
       pullState = true
     }
   )
 
-  LaunchedEffect(userSharedViewModel.userState) {
-    if (userSharedViewModel.userState.isEmpty()) {
-      userSharedViewModel.fetchUser()
+  LaunchedEffect(drugSharedViewModel.drugState) {
+    if (drugSharedViewModel.drugState.isEmpty()) {
+      drugSharedViewModel.fetchDrug()
     }
   }
 
-  LaunchedEffect(userSharedViewModel.errorMessage) {
-    if (userSharedViewModel.errorMessage.isNotEmpty()) {
-      Toast.makeText(context, userSharedViewModel.errorMessage, Toast.LENGTH_SHORT).show()
-      userSharedViewModel.errorMessage = ""
+  LaunchedEffect(drugSharedViewModel.errorMessage) {
+    if (drugSharedViewModel.errorMessage.isNotEmpty()) {
+      Toast.makeText(context, drugSharedViewModel.errorMessage, Toast.LENGTH_SHORT).show()
+      drugSharedViewModel.errorMessage = ""
     }
   }
 
   Scaffold(
     topBar = {
       AppBar(
-        title = stringResource(R.string.user_management),
+        title = stringResource(R.string.drug_management),
         onBack = {
           if (canClick) {
             canClick = false
@@ -107,7 +100,7 @@ fun ManageUserScreen(
     },
     floatingActionButton = {
       ExtendedFloatingActionButton(
-        onClick = { navController.navigate(Routes.AddUser.route) },
+        onClick = { navController.navigate(Routes.AddDrug.route) },
         containerColor = Colors.BluePrimary,
         icon = {
           Icon(
@@ -119,7 +112,7 @@ fun ManageUserScreen(
         },
         text = {
           Text(
-            stringResource(R.string.add_user),
+            stringResource(R.string.add_drug),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp
           )
@@ -137,7 +130,7 @@ fun ManageUserScreen(
       contentAlignment = Alignment.Center
     ) {
       when {
-        userSharedViewModel.isLoading && userSharedViewModel.userState.isEmpty() && !pullState -> {
+        drugSharedViewModel.isLoading && drugSharedViewModel.drugState.isEmpty() && !pullState -> {
           Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -159,7 +152,7 @@ fun ManageUserScreen(
           }
         }
 
-        userSharedViewModel.userState.isEmpty() -> {
+        drugSharedViewModel.drugState.isEmpty() -> {
           Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -186,10 +179,10 @@ fun ManageUserScreen(
         else -> {
           var searchText by remember { mutableStateOf("") }
 
-          val filteredList = userSharedViewModel.userState.filter {
-            (it.display.contains(searchText, ignoreCase = true) ||
-                    it.username.contains(searchText, ignoreCase = true)) &&
-                    it.username != userData?.username
+          val filteredList = drugSharedViewModel.drugState.filter {
+            it.drugName.contains(searchText, ignoreCase = true) ||
+                    it.drugCode.contains(searchText, ignoreCase = true) ||
+                    it.unit.contains(searchText, ignoreCase = true)
           }
 
           Column(modifier = Modifier.fillMaxSize()) {
@@ -201,7 +194,7 @@ fun ManageUserScreen(
               OutlinedTextField(
                 value = searchText,
                 onValueChange = { searchText = it },
-                label = { Text(stringResource(R.string.search_user)) },
+                label = { Text(stringResource(R.string.search_drug_two)) },
                 modifier = Modifier
                   .padding(horizontal = 14.dp, vertical = 8.dp)
                   .fillMaxWidth()
@@ -257,9 +250,9 @@ fun ManageUserScreen(
                   .padding(top = 8.dp)
               ) {
                 itemsIndexed(filteredList) { index, item ->
-                  AnimatedUserItem(index, item, filteredList, onClick = {
-                    userSharedViewModel.setUser(item)
-                    navController.navigate(Routes.EditUser.route)
+                  AnimatedDrugItem(index, item, filteredList, onClick = {
+                    drugSharedViewModel.setDrug(item)
+                    navController.navigate(Routes.EditDrug.route)
                   })
                 }
               }
@@ -267,7 +260,7 @@ fun ManageUserScreen(
           }
 
           PullRefreshIndicator(
-            refreshing = userSharedViewModel.isLoading,
+            refreshing = drugSharedViewModel.isLoading,
             state = pullRefreshState,
             modifier = Modifier.align(Alignment.TopCenter),
             backgroundColor = Colors.BlueGrey120,
