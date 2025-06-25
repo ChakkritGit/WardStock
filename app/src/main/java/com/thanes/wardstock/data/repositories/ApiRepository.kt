@@ -15,9 +15,7 @@ import com.thanes.wardstock.remote.configs.RetrofitInstance
 import com.thanes.wardstock.remote.configs.RetrofitInstance.createApiWithAuth
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.File
 
 object ApiRepository {
   suspend fun login(userName: String, userPassword: String): Response<ApiResponse<UserData>> {
@@ -87,5 +85,9 @@ object ApiRepository {
       display = displayPart,
       role = rolePart
     )
+  }
+
+  suspend fun removeUser(context: Context, userId: String): Response<ApiResponse<String>> {
+    return createApiWithAuth(context).removeUser(userId = userId)
   }
 }

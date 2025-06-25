@@ -50,11 +50,14 @@ fun AddUser(navController: NavHostController, userSharedViewModel: UserViewModel
     containerColor = Colors.BlueGrey100
   ) { innerPadding ->
     UserFormScreen(
+      context = context,
+      navController = null,
+      userSharedViewModel = null,
       innerPadding = innerPadding,
       isLoading = isLoading,
       showPasswordField = true,
       onSubmit = { formState, uri ->
-        isLoading = true
+        if (isLoading == true) return@UserFormScreen true
 
         val isValid = formState.username.isNotBlank()
                 && formState.password.isNotBlank()
@@ -69,6 +72,8 @@ fun AddUser(navController: NavHostController, userSharedViewModel: UserViewModel
         }
 
         try {
+          isLoading = true
+
           val imagePart = uriToMultipartBodyPart(context, uri)
 
           val response = ApiRepository.createUserWithImage(

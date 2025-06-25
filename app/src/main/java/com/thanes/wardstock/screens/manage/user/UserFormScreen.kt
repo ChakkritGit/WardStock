@@ -1,7 +1,9 @@
 package com.thanes.wardstock.screens.manage.user
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
@@ -41,6 +43,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -66,15 +69,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
+import androidx.navigation.NavHostController
 import coil3.compose.rememberAsyncImagePainter
 import com.thanes.wardstock.R
+import com.thanes.wardstock.data.repositories.ApiRepository
+import com.thanes.wardstock.data.viewModel.UserViewModel
+import com.thanes.wardstock.ui.components.loading.LoadingDialog
 import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 data class UserFormState(
+  val userId: String = "",
   val imageUri: Uri? = null,
   val username: String = "",
   val password: String = "",
@@ -85,6 +94,9 @@ data class UserFormState(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserFormScreen(
+  context: Context,
+  navController: NavHostController?,
+  userSharedViewModel: UserViewModel?,
   initialData: UserFormState? = null,
   innerPadding: PaddingValues,
   isLoading: Boolean,
@@ -101,6 +113,11 @@ fun UserFormScreen(
   val keyboardController = LocalSoftwareKeyboardController.current
   var passwordVisible by remember { mutableStateOf(false) }
   var showDeleteDialog by remember { mutableStateOf(false) }
+  var errorMessage by remember { mutableStateOf("") }
+  val somethingWrongMessage = stringResource(R.string.something_wrong)
+  var isRemoving by remember { mutableStateOf(false) }
+  val deleteMessage = stringResource(R.string.delete)
+  val successMessage = stringResource(R.string.successfully)
   val scope = rememberCoroutineScope()
 
   val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
@@ -112,13 +129,66 @@ fun UserFormScreen(
     }
   }
 
+  fun removeUser() {
+    if (isRemoving == true) return
+
+    scope.launch {
+      try {
+        isRemoving = true
+        val response = ApiRepository.removeUser(context, userId = initialData?.userId ?: "")
+
+        if (response.isSuccessful) {
+          errorMessage = deleteMessage + successMessage
+          userSharedViewModel?.fetchUser()
+          navController?.popBackStack()
+        } else {
+          val errorJson = response.errorBody()?.string()
+          val message = try {
+            JSONObject(errorJson ?: "").getString("message")
+          } catch (_: Exception) {
+            when (response.code()) {
+              400 -> "Invalid request data"
+              401 -> "Authentication required"
+              403 -> "Access denied"
+              404 -> "Prescription not found"
+              500 -> "Server error, please try again later"
+              else -> "HTTP Error ${response.code()}: ${response.message()}"
+            }
+          }
+          errorMessage = message
+        }
+      } catch (e: Exception) {
+        errorMessage = when (e) {
+          is java.net.UnknownHostException -> "No internet connection"
+          is java.net.SocketTimeoutException -> "Request timeout, please try again"
+          is java.net.ConnectException -> "Unable to connect to server"
+          is javax.net.ssl.SSLException -> "Secure connection failed"
+          is com.google.gson.JsonSyntaxException -> "Invalid response format"
+          is java.io.IOException -> "Network error occurred"
+          else -> {
+            Log.e("AddUser", "Unexpected error", e)
+            "Unexpected error occurred: $somethingWrongMessage"
+          }
+        }
+      } finally {
+        isRemoving = false
+      }
+    }
+  }
+
+  LaunchedEffect(errorMessage) {
+    if (errorMessage.isNotEmpty()) {
+      Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+      errorMessage = ""
+    }
+  }
+
   Column(
     modifier = Modifier
       .padding(innerPadding)
       .fillMaxSize()
       .verticalScroll(rememberScrollState())
-      .padding(24.dp),
-    horizontalAlignment = Alignment.CenterHorizontally
+      .padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally
   ) {
     Box(
       modifier = Modifier.size(164.dp)
@@ -131,8 +201,7 @@ fun UserFormScreen(
           .border(2.dp, Colors.BlueGrey80, CircleShape)
           .clickable {
             pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
-          },
-        contentAlignment = Alignment.Center
+          }, contentAlignment = Alignment.Center
       ) {
         val imagePainter = rememberAsyncImagePainter(selectedImageUri ?: initialData?.imageUri)
 
@@ -144,8 +213,7 @@ fun UserFormScreen(
             .border(2.dp, Colors.BlueGrey80, CircleShape)
             .clickable {
               pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
-            },
-          contentAlignment = Alignment.Center
+            }, contentAlignment = Alignment.Center
         ) {
           if (selectedImageUri != null || initialData?.imageUri != null) {
             Image(
@@ -157,7 +225,10 @@ fun UserFormScreen(
               contentScale = ContentScale.Crop
             )
           } else {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+              horizontalAlignment = Alignment.CenterHorizontally,
+              verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
               Icon(
                 imageVector = Icons.Default.Person,
                 contentDescription = null,
@@ -166,7 +237,7 @@ fun UserFormScreen(
               )
               Text(
                 text = stringResource(R.string.add_image),
-                fontSize = 12.sp,
+                fontSize = 16.sp,
                 color = Colors.BlueGrey40,
                 textAlign = TextAlign.Center
               )
@@ -183,8 +254,7 @@ fun UserFormScreen(
           .align(Alignment.BottomEnd)
           .clickable {
             pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
-          },
-        contentAlignment = Alignment.Center
+          }, contentAlignment = Alignment.Center
       ) {
         Icon(
           painter = painterResource(R.drawable.add_24px),
@@ -198,15 +268,13 @@ fun UserFormScreen(
     Spacer(modifier = Modifier.height(32.dp))
 
     Column(
-      modifier = Modifier.fillMaxWidth(),
-      verticalArrangement = Arrangement.spacedBy(20.dp)
+      modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
       OutlinedTextField(
         value = display,
         onValueChange = { display = it },
         label = { Text(stringResource(R.string.display_name)) },
-        modifier = Modifier
-          .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(RoundRadius.Large),
         textStyle = TextStyle(fontSize = 20.sp),
         leadingIcon = {
@@ -344,9 +412,7 @@ fun UserFormScreen(
         listOf("SUPER", "SERVICE", "PHARMACIST", "PHARMACIST_ASSISTANCE", "HEAD_NURSE", "NURSE")
 
       ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
-      ) {
+        expanded = expanded, onExpandedChange = { expanded = !expanded }) {
         OutlinedTextField(
           value = role,
           onValueChange = {},
@@ -383,20 +449,16 @@ fun UserFormScreen(
           expanded = expanded,
           onDismissRequest = { expanded = false },
           shadowElevation = 6.dp,
-          modifier = Modifier
-            .background(
-              Colors.BlueGrey100
-            ),
+          modifier = Modifier.background(
+            Colors.BlueGrey100
+          ),
           shape = RoundedCornerShape(RoundRadius.Large),
         ) {
           roles.forEach { option ->
-            DropdownMenuItem(
-              text = { Text(option) },
-              onClick = {
-                role = option
-                expanded = false
-              }
-            )
+            DropdownMenuItem(text = { Text(option) }, onClick = {
+              role = option
+              expanded = false
+            })
           }
         }
       }
@@ -414,8 +476,7 @@ fun UserFormScreen(
               password = password,
               display = display,
               role = role
-            ),
-            selectedImageUri
+            ), selectedImageUri
           )
         }
       },
@@ -427,9 +488,7 @@ fun UserFormScreen(
     ) {
       if (isLoading) {
         CircularProgressIndicator(
-          color = Colors.BlueGrey100,
-          strokeWidth = 2.dp,
-          modifier = Modifier.size(24.dp)
+          color = Colors.BlueGrey100, strokeWidth = 2.dp, modifier = Modifier.size(24.dp)
         )
       } else {
         Text(
@@ -461,94 +520,84 @@ fun UserFormScreen(
           fontSize = 20.sp
         )
       }
-
-      if (showDeleteDialog) {
-        AlertDialog(
-          properties = DialogProperties(
-            dismissOnBackPress = true,
-            dismissOnClickOutside = true,
-            usePlatformDefaultWidth = true
-          ),
-          icon = {
-            Surface(
-              modifier = Modifier.clip(CircleShape),
-              color = Color(0xFFD32F2F).copy(alpha = 0.3f)
-            ) {
-              Icon(
-                painter = painterResource(R.drawable.delete_24px),
-                contentDescription = "delete_user",
-                modifier = Modifier
-                  .size(56.dp)
-                  .padding(6.dp),
-                tint = Color(0xFFD32F2F)
-              )
-            }
-          },
-          text = {
-            Column(
-              verticalArrangement = Arrangement.spacedBy(6.dp),
-              horizontalAlignment = Alignment.CenterHorizontally,
-              modifier = Modifier.fillMaxWidth(0.7f)
-            ) {
-              Text(
-                text = stringResource(R.string.delete_user),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = ibmpiexsansthailooped
-              )
-              Text(
-                text = stringResource(R.string.confirm_delete_desc),
-                fontSize = 20.sp,
-                fontFamily = ibmpiexsansthailooped
-              )
-            }
-          },
-          onDismissRequest = {
-            showDeleteDialog = false
-          },
-          confirmButton = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-              GradientButton(
-                onClick = {
-                  // TODO: เรียก delete user API ที่นี่
-                  showDeleteDialog = false
-                },
-                text = stringResource(R.string.delete),
-                fontWeight = FontWeight.Medium,
-                shape = RoundedCornerShape(RoundRadius.Medium),
-                textSize = 20.sp,
-                modifier = Modifier
-                  .fillMaxWidth(0.7f)
-                  .height(56.dp),
-                gradient = Brush.verticalGradient(
-                  colors = listOf(Color(0xFFD32F2F), Color(0xFFB71C1C))
-                )
-              )
-
-              GradientButton(
-                onClick = {
-                  showDeleteDialog = false
-                },
-                shape = RoundedCornerShape(RoundRadius.Medium),
-                gradient = Brush.verticalGradient(
-                  colors = listOf(Colors.BlueGrey80, Colors.BlueGrey80),
-                ),
-                modifier = Modifier
-                  .fillMaxWidth(0.7f)
-                  .height(56.dp)
-              ) {
-                Text(
-                  stringResource(R.string.cancel),
-                  color = Colors.BlueSecondary,
-                  fontSize = 20.sp
-                )
-              }
-            }
-          },
-          dismissButton = {},
-          containerColor = Colors.BlueGrey100
-        )
-      }
     }
+
+    LoadingDialog(isRemoving = isRemoving)
+  }
+  if (showDeleteDialog) {
+    AlertDialog(
+      properties = DialogProperties(
+        dismissOnBackPress = true, dismissOnClickOutside = true, usePlatformDefaultWidth = true
+      ), icon = {
+        Surface(
+          modifier = Modifier.clip(CircleShape), color = Color(0xFFD32F2F).copy(alpha = 0.3f)
+        ) {
+          Icon(
+            painter = painterResource(R.drawable.delete_24px),
+            contentDescription = "delete_user",
+            modifier = Modifier
+              .size(56.dp)
+              .padding(6.dp),
+            tint = Color(0xFFD32F2F)
+          )
+        }
+      }, text = {
+        Column(
+          verticalArrangement = Arrangement.spacedBy(6.dp),
+          horizontalAlignment = Alignment.CenterHorizontally,
+          modifier = Modifier.fillMaxWidth(0.7f)
+        ) {
+          Text(
+            text = stringResource(R.string.delete_user),
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = ibmpiexsansthailooped
+          )
+          Text(
+            text = stringResource(R.string.confirm_delete_desc),
+            fontSize = 20.sp,
+            fontFamily = ibmpiexsansthailooped
+          )
+        }
+      }, onDismissRequest = {
+        showDeleteDialog = false
+      }, confirmButton = {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+          GradientButton(
+            onClick = {
+              removeUser()
+              showDeleteDialog = false
+            },
+            text = stringResource(R.string.delete),
+            fontWeight = FontWeight.Medium,
+            shape = RoundedCornerShape(RoundRadius.Medium),
+            textSize = 20.sp,
+            modifier = Modifier
+              .fillMaxWidth(0.7f)
+              .height(56.dp),
+            gradient = Brush.verticalGradient(
+              colors = listOf(Color(0xFFD32F2F), Color(0xFFB71C1C))
+            )
+          )
+
+          GradientButton(
+            onClick = {
+              showDeleteDialog = false
+            },
+            shape = RoundedCornerShape(RoundRadius.Medium),
+            gradient = Brush.verticalGradient(
+              colors = listOf(Colors.BlueGrey80, Colors.BlueGrey80),
+            ),
+            modifier = Modifier
+              .fillMaxWidth(0.7f)
+              .height(56.dp)
+          ) {
+            Text(
+              stringResource(R.string.cancel), color = Colors.BlueSecondary, fontSize = 20.sp
+            )
+          }
+        }
+      }, dismissButton = {}, containerColor = Colors.BlueGrey100
+    )
   }
 }

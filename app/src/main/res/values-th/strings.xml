@@ -60,7 +60,7 @@
   <string name="display_name">ชื่อ</string>
   <string name="user_role">สิทธิ์</string>
   <string name="edit">แก้ไข</string>
-  <string name="delete_user">ลบผู้ใช้</string>
+  <string name="delete_user">ลบ</string>
   <string name="delete">ลบ</string>
   <string name="confirm_delete_desc">คุณต้องการลบผู้ใช้หรือไม่?</string>
 </resources>

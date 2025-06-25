@@ -14,9 +14,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import com.thanes.wardstock.data.viewModel.AuthViewModel
 import com.thanes.wardstock.data.viewModel.OrderViewModel
 import com.thanes.wardstock.data.viewModel.RefillViewModel
@@ -34,7 +31,6 @@ import com.thanes.wardstock.ui.components.Refill.RefillDrug
 import com.thanes.wardstock.screens.refill.RefillScreen
 import com.thanes.wardstock.screens.setting.SettingScreen
 import com.thanes.wardstock.screens.setting.dispense.DispenseTestTool
-import com.thanes.wardstock.ui.components.splashscreen.SplashScreen
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -45,18 +41,18 @@ fun AppNavigation(navController: NavHostController, innerPadding: PaddingValues,
   val userSharedViewModel: UserViewModel = viewModel()
 
   val authState by authViewModel.authState.collectAsState()
-  var showSplash by remember { mutableStateOf(true) }
+//  var showSplash by remember { mutableStateOf(true) }
 
   LaunchedEffect(Unit) {
     authViewModel.initializeAuth(context)
   }
 
-  if (authState.isLoading || showSplash) {
-    SplashScreen(
-      onAnimationComplete = {
-        showSplash = false
-      }
-    )
+  if (authState.isLoading) {
+//    SplashScreen(
+//      onAnimationComplete = {
+//        showSplash = false
+//      }
+//    )
     return
   }
 

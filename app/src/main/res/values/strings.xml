@@ -60,7 +60,7 @@
   <string name="display_name">Name</string>
   <string name="user_role">Role</string>
   <string name="edit">Edit</string>
-  <string name="delete_user">Delete User</string>
+  <string name="delete_user">Delete</string>
   <string name="delete">Delete</string>
   <string name="confirm_delete_desc">Do you want to delete user?</string>
 </resources>

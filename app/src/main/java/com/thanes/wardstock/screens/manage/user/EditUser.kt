@@ -52,9 +52,13 @@ fun EditUser(navController: NavHostController, userSharedViewModel: UserViewMode
   ) { innerPadding ->
     if (user != null) {
       UserFormScreen(
+        context = context,
+        navController = navController,
+        userSharedViewModel = userSharedViewModel,
         innerPadding = innerPadding,
         isLoading = isLoading,
         initialData = UserFormState(
+          userId = user.id,
           username = user.username,
           display = user.display,
           imageUri = user.picture.let { "${ImageUrl}${it}".toUri() },
@@ -62,9 +66,11 @@ fun EditUser(navController: NavHostController, userSharedViewModel: UserViewMode
         ),
         showPasswordField = false,
         onSubmit = { formState, uri ->
-          isLoading = true
+          if (isLoading == true) return@UserFormScreen true
 
           try {
+            isLoading = true
+
             val imagePart = uri?.let { uriToMultipartBodyPart(context, it) }
 
             val response = if (imagePart != null) {
