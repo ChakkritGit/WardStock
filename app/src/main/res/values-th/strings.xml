@@ -69,4 +69,15 @@
 
   <string name="no_connection">โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ต!</string>
   <string name="drug_code">รหัสยา</string>
+  <string name="date">วันที่</string>
+  <string name="drug_name">ชื่อยา</string>
+  <string name="drug_unit">หน่วยยา</string>
+  <string name="drug_weight">น้ำหนักยา</string>
+  <string name="drug_lot">ล็อตยา</string>
+  <string name="drug_expire">วันหมดอายุยา</string>
+  <string name="drug_priority">ยาสำคัญ</string>
+  <string name="comment">หมายเหตุ</string>
+  <string name="active_true">ใช้งาน</string>
+  <string name="active_false">ปิดใช้งาน</string>
+  <string name="active_status">การใช้งานยา</string>
 </resources>

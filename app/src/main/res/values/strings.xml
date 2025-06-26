@@ -69,4 +69,15 @@
 
   <string name="no_connection">Please check your internet connection!</string>
   <string name="drug_code">Drug Code</string>
+  <string name="date">Date</string>
+  <string name="drug_name">Drug Name</string>
+  <string name="drug_unit">Drug Unit</string>
+  <string name="drug_weight">Drug Weight</string>
+  <string name="drug_lot">Drug Lot</string>
+  <string name="drug_expire">Drug Expire</string>
+  <string name="drug_priority">Drug Priority</string>
+  <string name="comment">Comment</string>
+  <string name="active_true">Active</string>
+  <string name="active_false">Inactive</string>
+  <string name="active_status">Drug Status</string>
 </resources>

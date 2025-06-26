@@ -524,6 +524,7 @@ fun UserFormScreen(
 
     LoadingDialog(isRemoving = isRemoving)
   }
+
   if (showDeleteDialog) {
     AlertDialog(
       properties = DialogProperties(
