@@ -48,7 +48,7 @@ class App : Application() {
     val languageManager = LanguageManager.getInstance()
     val savedLanguage = languageManager.getSavedLanguage(context)
 
-    val locale = Locale(savedLanguage)
+    val locale = Locale.forLanguageTag(savedLanguage)
     Locale.setDefault(locale)
 
     val config = Configuration(context.resources.configuration)

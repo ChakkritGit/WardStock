@@ -66,4 +66,38 @@ interface ApiService {
 
   @GET("drugs")
   suspend fun getDrug(): Response<ApiResponse<List<DrugModel>>>
+
+  @Multipart
+  @POST("drugs")
+  suspend fun createDrug(
+    @Part image: MultipartBody.Part,
+    @Part("drugCode") drugCode: RequestBody,
+    @Part("drugName") drugName: RequestBody,
+    @Part("unit") unit: RequestBody,
+    @Part("weight") weight: RequestBody,
+    @Part("drugLot") drugLot: RequestBody,
+    @Part("drugExpire") drugExpire: RequestBody,
+    @Part("drugPriority") drugPriority: RequestBody,
+    @Part("drugStatus") drugStatus: RequestBody,
+    @Part("comment") comment: RequestBody?
+  ): Response<ApiResponse<DrugModel>>
+
+  @Multipart
+  @PATCH("drugs/{drugId}")
+  suspend fun updateDrug(
+    @Path("drugId") drugId: String,
+    @Part image: MultipartBody.Part?,
+    @Part("drugCode") drugCode: RequestBody,
+    @Part("drugName") drugName: RequestBody,
+    @Part("unit") unit: RequestBody,
+    @Part("weight") weight: RequestBody,
+    @Part("drugLot") drugLot: RequestBody,
+    @Part("drugExpire") drugExpire: RequestBody,
+    @Part("drugPriority") drugPriority: RequestBody,
+    @Part("status") drugStatus: RequestBody,
+    @Part("comment") comment: RequestBody?
+  ): Response<ApiResponse<DrugModel>>
+
+  @DELETE("drugs/{drugId}")
+  suspend fun removeDrug(@Path("drugId") drugId: String,): Response<ApiResponse<String>>
 }

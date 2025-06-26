@@ -1,8 +1,8 @@
 package com.thanes.wardstock.screens.manage.drug
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -13,9 +13,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.R
+import com.thanes.wardstock.data.repositories.ApiRepository
 import com.thanes.wardstock.data.viewModel.DrugViewModel
+import com.thanes.wardstock.services.upload.uriToMultipartBodyPart
 import com.thanes.wardstock.ui.components.appbar.AppBar
 import com.thanes.wardstock.ui.theme.Colors
+import org.json.JSONObject
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun AddDrug(navController: NavHostController, drugSharedViewModel: DrugViewModel) {
@@ -59,6 +63,8 @@ fun AddDrug(navController: NavHostController, drugSharedViewModel: DrugViewModel
 
         val isValid = formState.drugCode.isNotBlank()
                 && formState.drugName.isNotBlank()
+                && formState.unit.isNotBlank()
+                && uri != null
 
         if (!isValid) {
           errorMessage = completeFieldMessage
@@ -66,7 +72,68 @@ fun AddDrug(navController: NavHostController, drugSharedViewModel: DrugViewModel
           return@DrugFormScreen false
         }
 
-        true
+        try {
+          isLoading = true
+
+          val imagePart = uriToMultipartBodyPart(context, uri)
+
+          val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+          val formattedDrugLot = formState.drugLot.format(formatter)
+          val formattedDrugExpire = formState.drugExpire.format(formatter)
+
+          val response = ApiRepository.createDrugWithImage(
+            context = context,
+            imagePart = imagePart!!,
+            drugCode = formState.drugCode,
+            drugName = formState.drugName,
+            unit = formState.unit,
+            weight = formState.weight,
+            drugLot = formattedDrugLot,
+            drugExpire = formattedDrugExpire,
+            drugPriority = formState.drugPriority,
+            drugStatus = formState.status,
+            comment = formState.comment
+          )
+
+          return@DrugFormScreen if (response.isSuccessful) {
+            errorMessage = successMessage
+            drugSharedViewModel.fetchDrug()
+            navController.popBackStack()
+            true
+          } else {
+            val errorJson = response.errorBody()?.string()
+            val message = try {
+              JSONObject(errorJson ?: "").getString("message")
+            } catch (_: Exception) {
+              when (response.code()) {
+                400 -> "Invalid request data"
+                401 -> "Authentication required"
+                403 -> "Access denied"
+                404 -> "Prescription not found"
+                500 -> "Server error, please try again later"
+                else -> "HTTP Error ${response.code()}: ${response.message()}"
+              }
+            }
+            errorMessage = message
+            false
+          }
+        } catch (e: Exception) {
+          errorMessage = when (e) {
+            is java.net.UnknownHostException -> "No internet connection"
+            is java.net.SocketTimeoutException -> "Request timeout, please try again"
+            is java.net.ConnectException -> "Unable to connect to server"
+            is javax.net.ssl.SSLException -> "Secure connection failed"
+            is com.google.gson.JsonSyntaxException -> "Invalid response format"
+            is java.io.IOException -> "Network error occurred"
+            else -> {
+              Log.e("AddUser", "Unexpected error", e)
+              "Unexpected error occurred: $somethingWrongMessage"
+            }
+          }
+          false
+        } finally {
+          isLoading = false
+        }
       }
     )
   }

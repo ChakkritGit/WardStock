@@ -95,4 +95,89 @@ object ApiRepository {
   suspend fun getDrug(context: Context): Response<ApiResponse<List<DrugModel>>> {
     return createApiWithAuth(context).getDrug()
   }
+
+  suspend fun createDrugWithImage(
+    context: Context,
+    imagePart: MultipartBody.Part,
+    drugCode: String,
+    drugName: String,
+    unit: String,
+    weight: Int,
+    drugLot: String,
+    drugExpire: String,
+    drugPriority: Int,
+    drugStatus: Boolean,
+    comment: String?
+  ): Response<ApiResponse<DrugModel>> {
+
+    val mediaType = "text/plain".toMediaTypeOrNull()
+
+    val codePart = drugCode.toRequestBody(mediaType)
+    val namePart = drugName.toRequestBody(mediaType)
+    val unitPart = unit.toRequestBody(mediaType)
+    val weightPart = weight.toString().toRequestBody(mediaType)
+    val lotPart = drugLot.toRequestBody(mediaType)
+    val expirePart = drugExpire.toRequestBody(mediaType)
+    val priorityPart = drugPriority.toString().toRequestBody(mediaType)
+    val statusPart = drugStatus.toString().toRequestBody(mediaType)
+    val commentPart = comment?.toRequestBody(mediaType)
+
+    return createApiWithAuth(context).createDrug(
+      image = imagePart,
+      drugCode = codePart,
+      drugName = namePart,
+      unit = unitPart,
+      weight = weightPart,
+      drugLot = lotPart,
+      drugExpire = expirePart,
+      drugPriority = priorityPart,
+      drugStatus = statusPart,
+      comment = commentPart
+    )
+  }
+
+  suspend fun updateDrugWithImage(
+    context: Context,
+    drugId: String,
+    imagePart: MultipartBody.Part?,
+    drugCode: String,
+    drugName: String,
+    unit: String,
+    weight: Int,
+    drugLot: String,
+    drugExpire: String,
+    drugPriority: Int,
+    drugStatus: Boolean,
+    comment: String?
+  ): Response<ApiResponse<DrugModel>> {
+    val mediaType = "text/plain".toMediaTypeOrNull()
+
+    val codePart = drugCode.toRequestBody(mediaType)
+    val namePart = drugName.toRequestBody(mediaType)
+    val unitPart = unit.toRequestBody(mediaType)
+    val weightPart = weight.toString().toRequestBody(mediaType)
+    val lotPart = drugLot.toRequestBody(mediaType)
+    val expirePart = drugExpire.toRequestBody(mediaType)
+    val priorityPart = drugPriority.toString().toRequestBody(mediaType)
+    val statusPart = drugStatus.toString().toRequestBody(mediaType)
+    val commentPart = comment?.toRequestBody(mediaType)
+
+    return createApiWithAuth(context).updateDrug(
+      drugId = drugId,
+      image = imagePart,
+      drugCode = codePart,
+      drugName = namePart,
+      unit = unitPart,
+      weight = weightPart,
+      drugLot = lotPart,
+      drugExpire = expirePart,
+      drugPriority = priorityPart,
+      drugStatus = statusPart,
+      comment = commentPart
+    )
+  }
+
+  suspend fun removeDrug(context: Context, drugId: String): Response<ApiResponse<String>> {
+    return createApiWithAuth(context).removeDrug(drugId = drugId)
+  }
 }
