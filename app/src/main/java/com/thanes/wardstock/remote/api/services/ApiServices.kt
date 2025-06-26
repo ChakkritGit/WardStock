@@ -2,6 +2,7 @@ package com.thanes.wardstock.remote.api.services
 
 import com.thanes.wardstock.data.models.ApiResponse
 import com.thanes.wardstock.data.models.DrugModel
+import com.thanes.wardstock.data.models.MachineModel
 import com.thanes.wardstock.data.models.OrderModel
 import com.thanes.wardstock.data.models.RefillDrugModel
 import com.thanes.wardstock.data.models.RefillModel
@@ -100,4 +101,7 @@ interface ApiService {
 
   @DELETE("drugs/{drugId}")
   suspend fun removeDrug(@Path("drugId") drugId: String,): Response<ApiResponse<String>>
+
+  @GET("machine")
+  suspend fun getMachine(): Response<ApiResponse<List<MachineModel>>>
 }

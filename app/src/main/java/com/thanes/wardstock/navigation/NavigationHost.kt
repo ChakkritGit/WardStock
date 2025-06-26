@@ -18,17 +18,18 @@ import androidx.compose.runtime.remember
 import androidx.core.splashscreen.SplashScreen
 import com.thanes.wardstock.data.viewModel.AuthViewModel
 import com.thanes.wardstock.data.viewModel.DrugViewModel
+import com.thanes.wardstock.data.viewModel.MachineViewModel
 import com.thanes.wardstock.data.viewModel.OrderViewModel
 import com.thanes.wardstock.data.viewModel.RefillViewModel
 import com.thanes.wardstock.data.viewModel.UserViewModel
 import com.thanes.wardstock.screens.home.HomeScreen
 import com.thanes.wardstock.screens.login.LoginScreen
 import com.thanes.wardstock.screens.manage.drug.ManageDrugScreen
-import com.thanes.wardstock.screens.manage.ManageMachineScreen
 import com.thanes.wardstock.screens.manage.ManageScreen
 import com.thanes.wardstock.screens.manage.ManageStockScreen
 import com.thanes.wardstock.screens.manage.drug.AddDrug
 import com.thanes.wardstock.screens.manage.drug.EditDrug
+import com.thanes.wardstock.screens.manage.machine.ManageMachineScreen
 import com.thanes.wardstock.screens.manage.user.AddUser
 import com.thanes.wardstock.screens.manage.user.EditUser
 import com.thanes.wardstock.screens.manage.user.ManageUserScreen
@@ -52,6 +53,7 @@ fun AppNavigation(
   val orderSharedViewModel: OrderViewModel = viewModel()
   val userSharedViewModel: UserViewModel = viewModel()
   val drugSharedViewModel: DrugViewModel = viewModel()
+  val machineSharedViewModel: MachineViewModel = viewModel()
 
   val authState by authViewModel.authState.collectAsState()
 
@@ -127,7 +129,7 @@ fun AppNavigation(
     }
 
     composable(route = Routes.MachineManagement.route) {
-      ManageMachineScreen(navController)
+      ManageMachineScreen(navController, machineSharedViewModel)
     }
 
     composable(route = Routes.EditUser.route) {

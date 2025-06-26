@@ -4,6 +4,7 @@ import android.content.Context
 import retrofit2.Response
 import com.thanes.wardstock.data.models.ApiResponse
 import com.thanes.wardstock.data.models.DrugModel
+import com.thanes.wardstock.data.models.MachineModel
 import com.thanes.wardstock.data.models.OrderModel
 import com.thanes.wardstock.data.models.RefillDrugModel
 import com.thanes.wardstock.data.models.RefillModel
@@ -179,5 +180,9 @@ object ApiRepository {
 
   suspend fun removeDrug(context: Context, drugId: String): Response<ApiResponse<String>> {
     return createApiWithAuth(context).removeDrug(drugId = drugId)
+  }
+
+  suspend fun getMachine(context: Context): Response<ApiResponse<List<MachineModel>>> {
+    return createApiWithAuth(context).getMachine()
   }
 }
