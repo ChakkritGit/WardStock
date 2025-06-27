@@ -1,4 +1,4 @@
-package com.thanes.wardstock.screens.manage
+package com.thanes.wardstock.screens.manage.manage
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

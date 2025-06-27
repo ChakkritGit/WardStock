@@ -72,7 +72,7 @@ class MainActivity : ComponentActivity() {
   }
 
   private fun updateContextLocale(context: Context, language: String): Context {
-    val locale = Locale(language)
+    val locale = Locale.forLanguageTag(language)
     Locale.setDefault(locale)
 
     val config = Configuration(context.resources.configuration)

@@ -1,4 +1,4 @@
-package com.thanes.wardstock.screens.manage.group
+package com.thanes.wardstock.screens.manage.manage
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +33,9 @@ import androidx.navigation.compose.rememberNavController
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.viewModel.GroupViewModel
 import com.thanes.wardstock.data.viewModel.InventoryViewModel
+import com.thanes.wardstock.screens.manage.group.GroupTab
+import com.thanes.wardstock.screens.manage.group.Tabs
+import com.thanes.wardstock.screens.manage.inventory.InventoryTab
 import com.thanes.wardstock.ui.components.appbar.AppBar
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped

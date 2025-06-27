@@ -134,11 +134,11 @@ fun InventoryItemCard(index: Int, item: InventoryModel, filteredList: List<Inven
               .background(Color.Transparent, RoundedCornerShape(RoundRadius.Small))
               .border(
                 1.5.dp,
-                if (item.qty > 0) Colors.BluePrimary else Colors.alert,
+                if (item.qty == 0) Colors.alert else if (item.qty < item.min) Colors.Warning else Colors.grey,
                 RoundedCornerShape(RoundRadius.Small)
               )
               .padding(horizontal = 8.dp, vertical = 1.5.dp),
-            color = if (item.qty > 0) Colors.BluePrimary else Colors.alert
+            color = if (item.qty == 0) Colors.alert else if (item.qty < item.min) Colors.Warning else Colors.grey
           )
           Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(

@@ -1,4 +1,4 @@
-package com.thanes.wardstock.screens.manage.group
+package com.thanes.wardstock.screens.manage.inventory
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
