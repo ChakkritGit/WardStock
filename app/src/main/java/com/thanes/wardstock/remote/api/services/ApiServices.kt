@@ -2,6 +2,8 @@ package com.thanes.wardstock.remote.api.services
 
 import com.thanes.wardstock.data.models.ApiResponse
 import com.thanes.wardstock.data.models.DrugModel
+import com.thanes.wardstock.data.models.GroupInventoryModel
+import com.thanes.wardstock.data.models.InventoryModel
 import com.thanes.wardstock.data.models.MachineModel
 import com.thanes.wardstock.data.models.OrderModel
 import com.thanes.wardstock.data.models.RefillDrugModel
@@ -22,6 +24,13 @@ import retrofit2.http.Path
 
 data class LoginRequest(val username: String, val password: String)
 data class AddDrugRequest(val inventoryQty: Int)
+data class MachineRequest(
+  val machineName: String,
+  val location: String,
+  val capacity: Int,
+  val status: Boolean,
+  val comment: String
+)
 
 interface ApiService {
   @POST("auth/login")
@@ -100,8 +109,23 @@ interface ApiService {
   ): Response<ApiResponse<DrugModel>>
 
   @DELETE("drugs/{drugId}")
-  suspend fun removeDrug(@Path("drugId") drugId: String,): Response<ApiResponse<String>>
+  suspend fun removeDrug(@Path("drugId") drugId: String): Response<ApiResponse<String>>
 
   @GET("machine")
   suspend fun getMachine(): Response<ApiResponse<List<MachineModel>>>
+
+  @POST("machine")
+  suspend fun createMachine(@Body request: MachineRequest): Response<ApiResponse<MachineModel>>
+
+  @PATCH("machine/{machineId}")
+  suspend fun updateMachine(@Path("machineId") machineId: String, @Body request: MachineRequest): Response<ApiResponse<MachineModel>>
+
+  @DELETE("machine/{machineId}")
+  suspend fun removeMachine(@Path("machineId") machineId: String): Response<ApiResponse<String>>
+
+  @GET("inventory")
+  suspend fun getInventory(): Response<ApiResponse<List<InventoryModel>>>
+
+  @GET("group-inventory")
+  suspend fun getGroupInventory(): Response<ApiResponse<List<GroupInventoryModel>>>
 }

@@ -1,6 +1,6 @@
 package com.thanes.wardstock.navigation
 
-sealed  class Routes(val route: String) {
+sealed class Routes(val route: String) {
   object Login: Routes(route = "login_route")
   object Home: Routes(route = "home_route")
   object Setting: Routes(route = "setting_route")
@@ -15,5 +15,7 @@ sealed  class Routes(val route: String) {
   object AddUser: Routes(route = "add_user_route")
   object EditDrug: Routes(route = "edit_drug_route")
   object AddDrug: Routes(route = "add_drug_route")
+  object EditMachine: Routes(route = "edit_machine_route")
+  object AddMachine: Routes(route = "add_machine_route")
   object DispenseTestTool: Routes(route = "dispensetesttool_route")
 }

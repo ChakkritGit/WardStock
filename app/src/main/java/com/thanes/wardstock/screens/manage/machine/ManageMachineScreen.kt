@@ -51,7 +51,6 @@ import com.thanes.wardstock.data.viewModel.MachineViewModel
 import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.components.appbar.AppBar
 import com.thanes.wardstock.ui.components.keyboard.Keyboard
-
 import com.thanes.wardstock.ui.components.manage.AnimatedMachineItem
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
@@ -103,7 +102,7 @@ fun ManageMachineScreen(
     },
     floatingActionButton = {
       ExtendedFloatingActionButton(
-        onClick = { navController.navigate(Routes.AddDrug.route) },
+        onClick = { navController.navigate(Routes.AddMachine.route) },
         containerColor = Colors.BluePrimary,
         icon = {
           Icon(
@@ -115,7 +114,7 @@ fun ManageMachineScreen(
         },
         text = {
           Text(
-            stringResource(R.string.add_drug),
+            stringResource(R.string.add_machine),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp
           )
@@ -255,7 +254,7 @@ fun ManageMachineScreen(
                 itemsIndexed(filteredList) { index, item ->
                   AnimatedMachineItem(index, item, filteredList, onClick = {
                     machineSharedViewModel.setMachine(item)
-                    navController.navigate(Routes.EditDrug.route)
+                    navController.navigate(Routes.EditMachine.route)
                   })
                 }
               }

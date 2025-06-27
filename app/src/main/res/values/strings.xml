@@ -57,6 +57,7 @@
 
   <string name="add_user">Add user</string>
   <string name="add_drug">Add drug</string>
+  <string name="add_machine">Add machine</string>
   <string name="unknown">UNKNOWN</string>
 
   <string name="add_image">Add Image</string>
@@ -81,4 +82,9 @@
   <string name="active_false">Inactive</string>
   <string name="active_status">Drug Status</string>
   <string name="confirm_delete_desc_drug">Do you want to delete drug?</string>
+  <string name="machine_capacity">Capacity</string>
+  <string name="machine_name">Machine Name</string>
+  <string name="machine_location">Machine Location</string>
+  <string name="tab_inventory">Inventory</string>
+  <string name="tab_group">Group</string>
 </resources>

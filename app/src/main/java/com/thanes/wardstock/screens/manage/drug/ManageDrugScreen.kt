@@ -52,7 +52,6 @@ import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.components.appbar.AppBar
 import com.thanes.wardstock.ui.components.keyboard.Keyboard
 import com.thanes.wardstock.ui.components.manage.AnimatedDrugItem
-import com.thanes.wardstock.ui.components.manage.AnimatedUserItem
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped

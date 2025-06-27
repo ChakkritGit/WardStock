@@ -4,6 +4,8 @@ import android.content.Context
 import retrofit2.Response
 import com.thanes.wardstock.data.models.ApiResponse
 import com.thanes.wardstock.data.models.DrugModel
+import com.thanes.wardstock.data.models.GroupInventoryModel
+import com.thanes.wardstock.data.models.InventoryModel
 import com.thanes.wardstock.data.models.MachineModel
 import com.thanes.wardstock.data.models.OrderModel
 import com.thanes.wardstock.data.models.RefillDrugModel
@@ -13,6 +15,7 @@ import com.thanes.wardstock.data.models.UserModel
 import com.thanes.wardstock.data.models.UserRole
 import com.thanes.wardstock.remote.api.services.AddDrugRequest
 import com.thanes.wardstock.remote.api.services.LoginRequest
+import com.thanes.wardstock.remote.api.services.MachineRequest
 import com.thanes.wardstock.remote.configs.RetrofitInstance
 import com.thanes.wardstock.remote.configs.RetrofitInstance.createApiWithAuth
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -25,7 +28,10 @@ object ApiRepository {
     return RetrofitInstance.api.login(request)
   }
 
-  suspend fun orderWithPresId(context: Context, prescriptionId: String): Response<ApiResponse<OrderModel>> {
+  suspend fun orderWithPresId(
+    context: Context,
+    prescriptionId: String
+  ): Response<ApiResponse<OrderModel>> {
     return createApiWithAuth(context).orderWithPresId(prescriptionId)
   }
 
@@ -37,7 +43,11 @@ object ApiRepository {
     return createApiWithAuth(context).refill()
   }
 
-  suspend fun addDrug(context: Context, prescriptionId: String, inventoryQty: Int): Response<ApiResponse<RefillDrugModel>> {
+  suspend fun addDrug(
+    context: Context,
+    prescriptionId: String,
+    inventoryQty: Int
+  ): Response<ApiResponse<RefillDrugModel>> {
     val request = AddDrugRequest(inventoryQty)
     return createApiWithAuth(context).addDrug(prescriptionId, request)
   }
@@ -184,5 +194,56 @@ object ApiRepository {
 
   suspend fun getMachine(context: Context): Response<ApiResponse<List<MachineModel>>> {
     return createApiWithAuth(context).getMachine()
+  }
+
+  suspend fun createMachine(
+    context: Context,
+    machineName: String,
+    location: String,
+    capacity: Int,
+    status: Boolean,
+    comment: String
+  ): Response<ApiResponse<MachineModel>> {
+    val request = MachineRequest(
+      machineName = machineName,
+      location = location,
+      capacity = capacity,
+      status = status,
+      comment = comment
+    )
+
+    return createApiWithAuth(context).createMachine(request)
+  }
+
+  suspend fun updateMachine(
+    context: Context,
+    id: String,
+    machineName: String,
+    location: String,
+    capacity: Int,
+    status: Boolean,
+    comment: String
+  ): Response<ApiResponse<MachineModel>> {
+    val request = MachineRequest(
+      machineName = machineName,
+      location = location,
+      capacity = capacity,
+      status = status,
+      comment = comment
+    )
+
+    return createApiWithAuth(context).updateMachine(id, request)
+  }
+
+  suspend fun removeMachine(context: Context, machineId: String): Response<ApiResponse<String>> {
+    return createApiWithAuth(context).removeMachine(machineId = machineId)
+  }
+
+  suspend fun getInventory(context: Context): Response<ApiResponse<List<InventoryModel>>> {
+    return createApiWithAuth(context).getInventory()
+  }
+
+  suspend fun getGroupInventory(context: Context): Response<ApiResponse<List<GroupInventoryModel>>> {
+    return createApiWithAuth(context).getGroupInventory()
   }
 }

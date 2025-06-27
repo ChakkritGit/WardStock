@@ -18,6 +18,8 @@ import androidx.compose.runtime.remember
 import androidx.core.splashscreen.SplashScreen
 import com.thanes.wardstock.data.viewModel.AuthViewModel
 import com.thanes.wardstock.data.viewModel.DrugViewModel
+import com.thanes.wardstock.data.viewModel.GroupViewModel
+import com.thanes.wardstock.data.viewModel.InventoryViewModel
 import com.thanes.wardstock.data.viewModel.MachineViewModel
 import com.thanes.wardstock.data.viewModel.OrderViewModel
 import com.thanes.wardstock.data.viewModel.RefillViewModel
@@ -26,9 +28,11 @@ import com.thanes.wardstock.screens.home.HomeScreen
 import com.thanes.wardstock.screens.login.LoginScreen
 import com.thanes.wardstock.screens.manage.drug.ManageDrugScreen
 import com.thanes.wardstock.screens.manage.ManageScreen
-import com.thanes.wardstock.screens.manage.ManageStockScreen
+import com.thanes.wardstock.screens.manage.group.ManageStockScreen
 import com.thanes.wardstock.screens.manage.drug.AddDrug
 import com.thanes.wardstock.screens.manage.drug.EditDrug
+import com.thanes.wardstock.screens.manage.machine.AddMachine
+import com.thanes.wardstock.screens.manage.machine.EditMachine
 import com.thanes.wardstock.screens.manage.machine.ManageMachineScreen
 import com.thanes.wardstock.screens.manage.user.AddUser
 import com.thanes.wardstock.screens.manage.user.EditUser
@@ -54,6 +58,8 @@ fun AppNavigation(
   val userSharedViewModel: UserViewModel = viewModel()
   val drugSharedViewModel: DrugViewModel = viewModel()
   val machineSharedViewModel: MachineViewModel = viewModel()
+  val inventorySharedViewModel: InventoryViewModel = viewModel()
+  val groupSharedViewModel: GroupViewModel = viewModel()
 
   val authState by authViewModel.authState.collectAsState()
 
@@ -125,7 +131,7 @@ fun AppNavigation(
     }
 
     composable(route = Routes.StockManagement.route) {
-      ManageStockScreen(navController)
+      ManageStockScreen(navController, inventorySharedViewModel, groupSharedViewModel)
     }
 
     composable(route = Routes.MachineManagement.route) {
@@ -146,6 +152,14 @@ fun AppNavigation(
 
     composable(route = Routes.AddDrug.route) {
       AddDrug(navController, drugSharedViewModel)
+    }
+
+    composable(route = Routes.EditMachine.route) {
+      EditMachine(navController, machineSharedViewModel)
+    }
+
+    composable(route = Routes.AddMachine.route) {
+      AddMachine(navController, machineSharedViewModel)
     }
   }
 }

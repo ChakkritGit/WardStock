@@ -57,6 +57,7 @@
 
   <string name="add_user">เพิ่มผู้ใช้</string>
   <string name="add_drug">เพิ่มยา</string>
+  <string name="add_machine">เพิ่มเครื่อง</string>
   <string name="unknown">ไม่ทราบ</string>
 
   <string name="add_image">เพิ่มรูปภาพ</string>
@@ -81,4 +82,9 @@
   <string name="active_false">ปิดใช้งาน</string>
   <string name="active_status">การใช้งานยา</string>
   <string name="confirm_delete_desc_drug">คุณต้องการลบยานี้หรือไม่?</string>
+  <string name="machine_capacity">ความจุ</string>
+  <string name="machine_name">ชื่อเครื่อง</string>
+  <string name="machine_location">ตำแหน่งเครื่อง</string>
+  <string name="tab_inventory">ช่อง</string>
+  <string name="tab_group">กรุ๊ป</string>
 </resources>

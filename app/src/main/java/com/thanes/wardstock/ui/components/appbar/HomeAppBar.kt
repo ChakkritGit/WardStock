@@ -187,8 +187,8 @@ fun HomeAppBar(
           color = Colors.BlueGrey80.copy(alpha = 0.5f)
         ) {
           Icon(
-            painter = painterResource(R.drawable.logout_24px),
-            contentDescription = "logout_24px",
+            painter = painterResource(R.drawable.lock_24px),
+            contentDescription = "lock_24px",
             modifier = Modifier
               .size(56.dp)
               .padding(6.dp)

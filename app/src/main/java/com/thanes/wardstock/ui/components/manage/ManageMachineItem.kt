@@ -30,25 +30,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
-import coil3.request.error
-import coil3.request.fallback
 import com.thanes.wardstock.R
-import com.thanes.wardstock.data.models.DrugModel
 import com.thanes.wardstock.data.models.MachineModel
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
-import com.thanes.wardstock.utils.ImageUrl
 import kotlinx.coroutines.delay
 
 @Composable
@@ -102,12 +93,12 @@ fun AnimatedMachineItem(
       }
       .clickable { onClick() },
   ) {
-    DrugItemCard(index, item, filteredList)
+    MachineItemCard(index, item, filteredList)
   }
 }
 
 @Composable
-fun DrugItemCard(index: Int, item: DrugModel, filteredList: List<DrugModel>) {
+fun MachineItemCard(index: Int, item: MachineModel, filteredList: List<MachineModel>) {
   Column(
     modifier = Modifier.background(color = Colors.BlueGrey120)
   ) {
@@ -115,17 +106,7 @@ fun DrugItemCard(index: Int, item: DrugModel, filteredList: List<DrugModel>) {
       HorizontalDivider(color = Colors.BlueGrey80)
     }
 
-    val drugLabel = when (item.drugPriority) {
-      1 -> stringResource((R.string.normal_drug))
-      2 -> stringResource(R.string.Had_drug)
-      else -> stringResource(R.string.Narcotic_drug)
-    }
-
-    val drugPriorityColor = when (item.drugPriority) {
-      1 -> Color(0xFF78909C)
-      2 -> Color(0xFFFF9800)
-      else -> Color(0xFFE91E63)
-    }
+    val machineStatusBade = if (item.status) Color(0xFF2196F3) else Color(0xFFF44336)
 
     Row(
       modifier = Modifier
@@ -142,40 +123,19 @@ fun DrugItemCard(index: Int, item: DrugModel, filteredList: List<DrugModel>) {
             .size(72.dp)
             .clip(RoundedCornerShape(RoundRadius.Medium))
         ) {
-          if (item.picture.isNotEmpty()) {
-            Box(
+          Box(
+            modifier = Modifier
+              .matchParentSize()
+              .background(Colors.BlueGrey40),
+            contentAlignment = Alignment.Center
+          ) {
+            Icon(
+              painter = painterResource(R.drawable.precision_manufacturing_24px),
+              contentDescription = "precision_manufacturing_24px",
+              tint = Colors.BlueGrey80,
               modifier = Modifier
-                .matchParentSize()
-                .background(Colors.BlueGrey40)
-
-            ) {
-              AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                  .data(ImageUrl + item.picture)
-                  .crossfade(true)
-                  .error(R.drawable.face_24px)
-                  .fallback(R.drawable.face_24px)
-                  .build(),
-                contentDescription = item.drugName,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.matchParentSize()
-              )
-            }
-          } else {
-            Box(
-              modifier = Modifier
-                .matchParentSize()
-                .background(Colors.BlueGrey40),
-              contentAlignment = Alignment.Center
-            ) {
-              Icon(
-                painter = painterResource(R.drawable.face_24px),
-                contentDescription = "Drug Image",
-                tint = Colors.BlueGrey80,
-                modifier = Modifier
-                  .size(48.dp)
-              )
-            }
+                .size(48.dp)
+            )
           }
         }
 
@@ -183,7 +143,7 @@ fun DrugItemCard(index: Int, item: DrugModel, filteredList: List<DrugModel>) {
           verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
           Text(
-            item.drugName,
+            item.machineName,
             fontSize = 20.sp,
             fontWeight = FontWeight.Medium,
             maxLines = 1,
@@ -192,7 +152,7 @@ fun DrugItemCard(index: Int, item: DrugModel, filteredList: List<DrugModel>) {
           )
           Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(
-              item.unit,
+              "${stringResource(R.string.machine_capacity)}: ${item.capacity}",
               fontSize = 18.sp,
               fontWeight = FontWeight.Medium,
               color = Colors.BlueGrey40,
@@ -204,11 +164,11 @@ fun DrugItemCard(index: Int, item: DrugModel, filteredList: List<DrugModel>) {
               color = Colors.BlueGrey40,
             )
             Text(
-              drugLabel,
-              fontSize = 14.sp,
+              if (item.status) stringResource(R.string.active_true) else stringResource(R.string.active_false),
+              fontSize = 18.sp,
               color = Color.White,
               modifier = Modifier
-                .background(drugPriorityColor, RoundedCornerShape(RoundRadius.Small))
+                .background(machineStatusBade, RoundedCornerShape(RoundRadius.Small))
                 .padding(horizontal = 8.dp, vertical = 1.5.dp),
             )
           }
