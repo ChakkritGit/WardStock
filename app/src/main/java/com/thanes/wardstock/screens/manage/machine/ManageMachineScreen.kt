@@ -196,7 +196,7 @@ fun ManageMachineScreen(
               OutlinedTextField(
                 value = searchText,
                 onValueChange = { searchText = it },
-                label = { Text(stringResource(R.string.search_drug_two)) },
+                label = { Text(stringResource(R.string.search_machine)) },
                 modifier = Modifier
                   .padding(horizontal = 14.dp, vertical = 8.dp)
                   .fillMaxWidth()

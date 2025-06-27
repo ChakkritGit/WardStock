@@ -16,5 +16,7 @@ object Colors {
   val Warning = Color(0xFFFF9011)
   val WarningText = Color(0xFF4F2700)
 
+  val alert = Color(0xFFF44336)
+
   val black = Color(0xFF000000)
 }

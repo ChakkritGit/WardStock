@@ -51,6 +51,7 @@ import com.thanes.wardstock.data.viewModel.GroupViewModel
 import com.thanes.wardstock.data.viewModel.InventoryViewModel
 import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.components.keyboard.Keyboard
+import com.thanes.wardstock.ui.components.manage.AnimatedInventoryItem
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
@@ -182,7 +183,7 @@ fun InventoryTab(
               OutlinedTextField(
                 value = searchText,
                 onValueChange = { searchText = it },
-                label = { Text(stringResource(R.string.search_drug_two)) },
+                label = { Text(stringResource(R.string.search_position)) },
                 modifier = Modifier
                   .padding(horizontal = 14.dp, vertical = 8.dp)
                   .fillMaxWidth()
@@ -238,10 +239,10 @@ fun InventoryTab(
                   .padding(top = 8.dp)
               ) {
                 itemsIndexed(filteredList) { index, item ->
-//                AnimatedMachineItem(index, item, filteredList, onClick = {
-//                  inventorySharedViewModel.setInventory(item)
-//                  navController.navigate(Routes.EditMachine.route)
-//                })
+                  AnimatedInventoryItem(index, item, filteredList, onClick = {
+                  inventorySharedViewModel.setInventory(item)
+                  navController.navigate(Routes.EditInventory.route)
+                })
                 }
               }
             }

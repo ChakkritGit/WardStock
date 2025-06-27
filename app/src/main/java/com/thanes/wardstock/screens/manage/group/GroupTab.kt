@@ -51,6 +51,7 @@ import com.thanes.wardstock.data.viewModel.GroupViewModel
 import com.thanes.wardstock.data.viewModel.InventoryViewModel
 import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.components.keyboard.Keyboard
+import com.thanes.wardstock.ui.components.manage.AnimatedGroupItem
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
@@ -182,7 +183,7 @@ fun GroupTab(
               OutlinedTextField(
                 value = searchText,
                 onValueChange = { searchText = it },
-                label = { Text(stringResource(R.string.search_drug_two)) },
+                label = { Text(stringResource(R.string.search_group_drug)) },
                 modifier = Modifier
                   .padding(horizontal = 14.dp, vertical = 8.dp)
                   .fillMaxWidth()
@@ -238,10 +239,10 @@ fun GroupTab(
                   .padding(top = 8.dp)
               ) {
                 itemsIndexed(filteredList) { index, item ->
-//                AnimatedMachineItem(index, item, filteredList, onClick = {
-//                  inventorySharedViewModel.setInventory(item)
-//                  navController.navigate(Routes.EditMachine.route)
-//                })
+                  AnimatedGroupItem(index, item, filteredList, onClick = {
+                  groupSharedViewModel.setGroup(item)
+                  navController.navigate(Routes.EditGroup.route)
+                })
                 }
               }
             }

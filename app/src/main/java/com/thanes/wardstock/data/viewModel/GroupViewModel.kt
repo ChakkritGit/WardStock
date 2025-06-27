@@ -32,7 +32,7 @@ class GroupViewModel(application: Application) : AndroidViewModel(application) {
   var selectedGroupInventory by mutableStateOf<GroupInventoryModel?>(null)
     private set
 
-  fun setInventory(groupInventory: GroupInventoryModel) {
+  fun setGroup(groupInventory: GroupInventoryModel) {
     selectedGroupInventory = groupInventory
   }
 

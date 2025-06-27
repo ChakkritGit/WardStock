@@ -32,6 +32,9 @@
   <string name="search_drug">ค้นหาชื่อยาหรือช่องยา</string>
   <string name="search_user">ค้นหาชื่อผู้ใช้หรือชื่อแสดงผล</string>
   <string name="search_drug_two">ค้นหาชื่อยาหรือรหัสยาหรือหน่วย</string>
+  <string name="search_machine">ค้นหาชื่อเครื่อง</string>
+  <string name="search_position">ค้นหาช่องยา</string>
+  <string name="search_group_drug">ค้นหาชื่อยา</string>
   <string name="no_drug_name">ไม่พบชื่อยา</string>
   <string name="remaining_stock">จำนวนคงเหลือ</string>
   <string name="normal_drug">ยาทั่วไป</string>

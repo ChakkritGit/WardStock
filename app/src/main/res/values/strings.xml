@@ -32,6 +32,9 @@
   <string name="search_drug">Search drug name or inventory position</string>
   <string name="search_user">Search username or display name</string>
   <string name="search_drug_two">Search drug name or drug code or unit</string>
+  <string name="search_machine">Search machine name</string>
+  <string name="search_position">Search inventory position</string>
+  <string name="search_group_drug">Search drug name</string>
   <string name="no_drug_name">Drug name not found</string>
   <string name="remaining_stock">Remaining Stock</string>
   <string name="normal_drug">Normal Drug</string>
