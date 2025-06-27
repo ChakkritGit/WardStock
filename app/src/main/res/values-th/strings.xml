@@ -87,4 +87,6 @@
   <string name="machine_location">ตำแหน่งเครื่อง</string>
   <string name="tab_inventory">ช่อง</string>
   <string name="tab_group">กรุ๊ป</string>
+  <string name="add_inventory">เพิ่มช่อง</string>
+  <string name="add_group">เพิ่มกรุ๊ป</string>
 </resources>

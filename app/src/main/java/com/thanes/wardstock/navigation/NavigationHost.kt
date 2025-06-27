@@ -31,6 +31,10 @@ import com.thanes.wardstock.screens.manage.ManageScreen
 import com.thanes.wardstock.screens.manage.group.ManageStockScreen
 import com.thanes.wardstock.screens.manage.drug.AddDrug
 import com.thanes.wardstock.screens.manage.drug.EditDrug
+import com.thanes.wardstock.screens.manage.group.AddGroup
+import com.thanes.wardstock.screens.manage.group.AddInventory
+import com.thanes.wardstock.screens.manage.group.EditGroup
+import com.thanes.wardstock.screens.manage.group.EditInventory
 import com.thanes.wardstock.screens.manage.machine.AddMachine
 import com.thanes.wardstock.screens.manage.machine.EditMachine
 import com.thanes.wardstock.screens.manage.machine.ManageMachineScreen
@@ -160,6 +164,22 @@ fun AppNavigation(
 
     composable(route = Routes.AddMachine.route) {
       AddMachine(navController, machineSharedViewModel)
+    }
+
+    composable(route = Routes.AddInventory.route) {
+      AddInventory(navController, inventorySharedViewModel, groupSharedViewModel)
+    }
+
+    composable(route = Routes.EditInventory.route) {
+      EditInventory(navController, inventorySharedViewModel, groupSharedViewModel)
+    }
+
+    composable(route = Routes.AddGroup.route) {
+      AddGroup(navController, inventorySharedViewModel, groupSharedViewModel)
+    }
+
+    composable(route = Routes.EditGroup.route) {
+      EditGroup(navController, inventorySharedViewModel, groupSharedViewModel)
     }
   }
 }

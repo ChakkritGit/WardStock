@@ -87,4 +87,6 @@
   <string name="machine_location">Machine Location</string>
   <string name="tab_inventory">Inventory</string>
   <string name="tab_group">Group</string>
+  <string name="add_inventory">Add Inventory</string>
+  <string name="add_group">Add Group</string>
 </resources>
