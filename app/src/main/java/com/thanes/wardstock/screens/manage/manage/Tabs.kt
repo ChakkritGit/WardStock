@@ -1,4 +1,4 @@
-package com.thanes.wardstock.screens.manage.group
+package com.thanes.wardstock.screens.manage.manage
 
 import androidx.annotation.StringRes
 import com.thanes.wardstock.R

@@ -92,4 +92,5 @@
   <string name="tab_group">Group</string>
   <string name="add_inventory">Add Inventory</string>
   <string name="add_group">Add Group</string>
+  <string name="re_launch">Try again</string>
 </resources>
