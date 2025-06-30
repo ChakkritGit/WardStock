@@ -135,7 +135,7 @@ fun DrugFormScreen(
   }
 
   fun removeDrug() {
-    if (isRemoving == true) return
+    if (isRemoving) return
 
     scope.launch {
       try {

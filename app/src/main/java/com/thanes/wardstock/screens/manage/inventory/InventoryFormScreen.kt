@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
@@ -43,13 +45,17 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.viewModel.InventoryViewModel
+import com.thanes.wardstock.data.viewModel.MachineViewModel
 import com.thanes.wardstock.ui.components.loading.LoadingDialog
 import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
@@ -60,7 +66,6 @@ import kotlinx.coroutines.launch
 data class InventoryFormState(
   val id: String = "",
   val position: Int = 1,
-  val qty: Int = 0,
   val min: Int = 0,
   val max: Int = 0,
   val status: Boolean = true,
@@ -76,6 +81,7 @@ fun InventoryFormScreen(
   isLoading: Boolean,
   navController: NavHostController?,
   inventorySharedViewModel: InventoryViewModel,
+  machineSharedViewModel: MachineViewModel,
   initialData: InventoryFormState? = null,
   onSubmit: suspend (InventoryFormState) -> Boolean
 ) {
@@ -87,7 +93,6 @@ fun InventoryFormScreen(
   val somethingWrongMessage = stringResource(R.string.something_wrong)
 
   var position by remember { mutableIntStateOf(initialData?.position ?: 1) }
-  var qty by remember { mutableIntStateOf(initialData?.qty ?: 0) }
   var min by remember { mutableIntStateOf(initialData?.min ?: 0) }
   var max by remember { mutableIntStateOf(initialData?.max ?: 0) }
   var status by remember { mutableStateOf(initialData?.status != false) }
@@ -132,7 +137,7 @@ fun InventoryFormScreen(
       verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
       var expandedPosition by remember { mutableStateOf(false) }
-      val  availablePositions = getAvailablePositions(context, inventorySharedViewModel, 60)
+      val availablePositions = getAvailablePositions(context, inventorySharedViewModel, 60)
 
       val selectedPosition = availablePositions.find { it.value == position }?.label ?: ""
 
@@ -191,6 +196,163 @@ fun InventoryFormScreen(
           }
         }
       }
+
+      OutlinedTextField(
+        value = min.toString(),
+        onValueChange = {
+          val value = it.toIntOrNull()
+          min = when {
+            value == null -> 0
+            value <= 0 -> 0
+            value > 60 -> 60
+            else -> value
+          }
+        },
+        label = { Text("Min") },
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(RoundRadius.Large),
+        textStyle = TextStyle(fontSize = 20.sp),
+        leadingIcon = {
+          Icon(
+            painter = painterResource(R.drawable.arrow_drop_down_24px),
+            contentDescription = "arrow_drop_down_24px",
+            tint = Colors.BlueGrey40,
+            modifier = Modifier.size(32.dp),
+          )
+        },
+        singleLine = true,
+        maxLines = 1,
+        keyboardOptions = KeyboardOptions.Default.copy(
+          imeAction = ImeAction.Next,
+          keyboardType = KeyboardType.Number
+        ),
+        keyboardActions = KeyboardActions(
+          onNext = {
+//            focusRequesterUsername.requestFocus()
+          }),
+        colors = TextFieldDefaults.colors(
+          focusedTextColor = Colors.BlueSecondary,
+          focusedIndicatorColor = Colors.BlueSecondary,
+          unfocusedIndicatorColor = Colors.BlueSecondary.copy(alpha = 0.3f),
+          focusedLabelColor = Colors.BlueSecondary,
+          unfocusedLabelColor = Colors.BlueGrey40,
+          cursorColor = Colors.BlueSecondary,
+          focusedContainerColor = Color.Transparent,
+          unfocusedContainerColor = Color.Transparent,
+          disabledContainerColor = Color.Transparent,
+          errorContainerColor = Color.Transparent,
+          focusedLeadingIconColor = Colors.BlueSecondary
+        )
+      )
+
+      OutlinedTextField(
+        value = max.toString(),
+        onValueChange = {
+          val value = it.toIntOrNull()
+          max = when {
+            value == null -> 0
+            value <= 0 -> 0
+            value > 60 -> 60
+            else -> value
+          }
+        },
+        label = { Text("Max") },
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(RoundRadius.Large),
+        textStyle = TextStyle(fontSize = 20.sp),
+        leadingIcon = {
+          Icon(
+            painter = painterResource(R.drawable.arrow_drop_up_24px),
+            contentDescription = "arrow_drop_up_24px",
+            tint = Colors.BlueGrey40,
+            modifier = Modifier.size(32.dp),
+          )
+        },
+        singleLine = true,
+        maxLines = 1,
+        keyboardOptions = KeyboardOptions.Default.copy(
+          imeAction = ImeAction.Next,
+          keyboardType = KeyboardType.Number
+        ),
+        keyboardActions = KeyboardActions(
+          onNext = {
+//            focusRequesterUsername.requestFocus()
+          }),
+        colors = TextFieldDefaults.colors(
+          focusedTextColor = Colors.BlueSecondary,
+          focusedIndicatorColor = Colors.BlueSecondary,
+          unfocusedIndicatorColor = Colors.BlueSecondary.copy(alpha = 0.3f),
+          focusedLabelColor = Colors.BlueSecondary,
+          unfocusedLabelColor = Colors.BlueGrey40,
+          cursorColor = Colors.BlueSecondary,
+          focusedContainerColor = Color.Transparent,
+          unfocusedContainerColor = Color.Transparent,
+          disabledContainerColor = Color.Transparent,
+          errorContainerColor = Color.Transparent,
+          focusedLeadingIconColor = Colors.BlueSecondary
+        )
+      )
+
+      var expandedMachine by remember { mutableStateOf(false) }
+      val machineList = machineSharedViewModel.machineState
+
+      val selectedMachine: String = machineList.find { it.id == machineId }?.machineName ?: ""
+
+      ExposedDropdownMenuBox(
+        expanded = expandedMachine,
+        onExpandedChange = { expandedMachine = !expandedMachine }
+      ) {
+        OutlinedTextField(
+          value = selectedMachine,
+          onValueChange = {},
+          readOnly = true,
+          label = { Text(stringResource(R.string.machine)) },
+          trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedMachine) },
+          modifier = Modifier
+            .fillMaxWidth()
+            .menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true),
+          leadingIcon = {
+            Icon(
+              painter = painterResource(R.drawable.precision_manufacturing_24px),
+              contentDescription = "precision_manufacturing_24px",
+              tint = Colors.BlueGrey40,
+              modifier = Modifier.size(32.dp),
+            )
+          },
+          shape = RoundedCornerShape(RoundRadius.Large),
+          colors = TextFieldDefaults.colors(
+            focusedTextColor = Colors.BlueSecondary,
+            focusedIndicatorColor = Colors.BlueSecondary,
+            unfocusedIndicatorColor = Colors.BlueSecondary.copy(alpha = 0.3f),
+            focusedLabelColor = Colors.BlueSecondary,
+            unfocusedLabelColor = Colors.BlueGrey40,
+            cursorColor = Colors.BlueSecondary,
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            disabledContainerColor = Color.Transparent,
+            errorContainerColor = Color.Transparent,
+            focusedLeadingIconColor = Colors.BlueSecondary
+          )
+        )
+
+        ExposedDropdownMenu(
+          expanded = expandedMachine,
+          onDismissRequest = { expandedMachine = false },
+          shadowElevation = 6.dp,
+          modifier = Modifier.background(Colors.BlueGrey100),
+          shape = RoundedCornerShape(RoundRadius.Large)
+        ) {
+          machineList.forEach { machine ->
+            DropdownMenuItem(
+              text = { Text(machine.machineName) },
+              onClick = {
+                machineId = machine.id
+                expandedMachine = false
+              }
+            )
+          }
+        }
+      }
     }
 
     Spacer(modifier = Modifier.height(40.dp))
@@ -201,7 +363,6 @@ fun InventoryFormScreen(
           onSubmit(
             InventoryFormState(
               position = position,
-              qty = qty,
               min = min,
               max = max,
               status = status,

@@ -167,7 +167,12 @@ fun AppNavigation(
     }
 
     composable(route = Routes.AddInventory.route) {
-      AddInventory(navController, inventorySharedViewModel, groupSharedViewModel)
+      AddInventory(
+        navController,
+        inventorySharedViewModel,
+        groupSharedViewModel,
+        machineSharedViewModel
+      )
     }
 
     composable(route = Routes.EditInventory.route) {

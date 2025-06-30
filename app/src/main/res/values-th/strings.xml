@@ -87,6 +87,7 @@
   <string name="confirm_delete_desc_drug">คุณต้องการลบยานี้หรือไม่?</string>
   <string name="machine_capacity">ความจุ</string>
   <string name="machine_name">ชื่อเครื่อง</string>
+  <string name="machine">เครื่อง</string>
   <string name="machine_location">ตำแหน่งเครื่อง</string>
   <string name="tab_inventory">ช่อง</string>
   <string name="tab_group">กรุ๊ป</string>

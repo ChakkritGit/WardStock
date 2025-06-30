@@ -14,6 +14,7 @@ import com.thanes.wardstock.data.models.UserData
 import com.thanes.wardstock.data.models.UserModel
 import com.thanes.wardstock.data.models.UserRole
 import com.thanes.wardstock.remote.api.services.AddDrugRequest
+import com.thanes.wardstock.remote.api.services.InventoryRequest
 import com.thanes.wardstock.remote.api.services.LoginRequest
 import com.thanes.wardstock.remote.api.services.MachineRequest
 import com.thanes.wardstock.remote.configs.RetrofitInstance
@@ -245,5 +246,26 @@ object ApiRepository {
 
   suspend fun getGroupInventory(context: Context): Response<ApiResponse<List<GroupInventoryModel>>> {
     return createApiWithAuth(context).getGroupInventory()
+  }
+
+  suspend fun createInventory(
+    context: Context,
+    position: Int,
+    min: Int,
+    max: Int,
+    machineId: String,
+    status: Boolean,
+    comment: String
+  ): Response<ApiResponse<InventoryModel>> {
+    val request = InventoryRequest(
+      position = position,
+      min = min,
+      max = max,
+      machineId = machineId,
+      status = status,
+      comment = comment
+    )
+
+    return createApiWithAuth(context).createInventory(request)
   }
 }

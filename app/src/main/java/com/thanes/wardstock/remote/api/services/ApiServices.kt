@@ -31,6 +31,14 @@ data class MachineRequest(
   val status: Boolean,
   val comment: String
 )
+data class InventoryRequest(
+  val position: Int,
+  val min: Int,
+  val max: Int,
+  val machineId: String,
+  val status: Boolean,
+  val comment: String
+)
 
 interface ApiService {
   @POST("auth/login")
@@ -128,4 +136,7 @@ interface ApiService {
 
   @GET("group-inventory")
   suspend fun getGroupInventory(): Response<ApiResponse<List<GroupInventoryModel>>>
+
+  @POST("inventory")
+  suspend fun createInventory(@Body request: InventoryRequest): Response<ApiResponse<InventoryModel>>
 }

@@ -87,6 +87,7 @@
   <string name="confirm_delete_desc_drug">Do you want to delete drug?</string>
   <string name="machine_capacity">Capacity</string>
   <string name="machine_name">Machine Name</string>
+  <string name="machine">Machine</string>
   <string name="machine_location">Machine Location</string>
   <string name="tab_inventory">Inventory</string>
   <string name="tab_group">Group</string>
