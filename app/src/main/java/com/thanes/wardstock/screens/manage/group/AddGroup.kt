@@ -64,6 +64,12 @@ fun AddGroup(
     }
   }
 
+  LaunchedEffect(inventorySharedViewModel.inventoryExitsState) {
+    if (inventorySharedViewModel.inventoryExitsState.isEmpty()) {
+      inventorySharedViewModel.fetchInventoryExits()
+    }
+  }
+
   Scaffold(
     topBar = {
       AppBar(

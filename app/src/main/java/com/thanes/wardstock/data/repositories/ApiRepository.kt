@@ -6,6 +6,7 @@ import com.thanes.wardstock.data.models.ApiResponse
 import com.thanes.wardstock.data.models.DrugExitsModel
 import com.thanes.wardstock.data.models.DrugModel
 import com.thanes.wardstock.data.models.GroupInventoryModel
+import com.thanes.wardstock.data.models.InventoryExitsModel
 import com.thanes.wardstock.data.models.InventoryModel
 import com.thanes.wardstock.data.models.MachineModel
 import com.thanes.wardstock.data.models.OrderModel
@@ -247,6 +248,10 @@ object ApiRepository {
 
   suspend fun getInventory(context: Context): Response<ApiResponse<List<InventoryModel>>> {
     return createApiWithAuth(context).getInventory()
+  }
+
+  suspend fun getInventoryExits(context: Context): Response<ApiResponse<List<InventoryExitsModel>>> {
+    return createApiWithAuth(context).getInventoryExits()
   }
 
   suspend fun getGroupInventory(context: Context): Response<ApiResponse<List<GroupInventoryModel>>> {

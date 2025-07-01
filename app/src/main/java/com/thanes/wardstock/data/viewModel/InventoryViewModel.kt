@@ -9,6 +9,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonSyntaxException
+import com.thanes.wardstock.data.models.InventoryExitsModel
 import com.thanes.wardstock.data.models.InventoryModel
 import com.thanes.wardstock.data.repositories.ApiRepository
 import kotlinx.coroutines.launch
@@ -21,6 +22,9 @@ import javax.net.ssl.SSLException
 
 class InventoryViewModel(application: Application) : AndroidViewModel(application)  {
   var inventoryState by mutableStateOf<List<InventoryModel>>(emptyList())
+    private set
+
+  var inventoryExitsState by mutableStateOf<List<InventoryExitsModel>>(emptyList())
     private set
 
   var isLoading by mutableStateOf(false)
@@ -49,6 +53,68 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
         val response = ApiRepository.getInventory(application)
         if (response.isSuccessful) {
           inventoryState = response.body()?.data ?: emptyList()
+        } else {
+          val errorJson = response.errorBody()?.string()
+          val message = try {
+            JSONObject(errorJson ?: "").getString("message")
+          } catch (_: Exception) {
+            when (response.code()) {
+              400 -> "Invalid request data"
+              401 -> "Authentication required"
+              403 -> "Access denied"
+              404 -> "Prescription not found"
+              500 -> "Server error, please try again later"
+              else -> "HTTP Error ${response.code()}: ${response.message()}"
+            }
+          }
+          errorMessage = message
+        }
+      } catch (e: Exception) {
+        errorMessage = when (e) {
+          is UnknownHostException -> {
+            "No internet connection"
+          }
+
+          is SocketTimeoutException -> {
+            "Request timeout, please try again"
+          }
+
+          is ConnectException -> {
+            "Unable to connect to server"
+          }
+
+          is SSLException -> {
+            "Secure connection failed"
+          }
+
+          is JsonSyntaxException -> {
+            "Invalid response format"
+          }
+
+          is IOException -> {
+            "Network error occurred"
+          }
+
+          else -> {
+            Log.e("OrderAPI", "Unexpected error: ${e.javaClass.simpleName}", e)
+            "Unexpected error occurred"
+          }
+        }
+      } finally {
+        isLoading = false
+      }
+    }
+  }
+
+  fun fetchInventoryExits() {
+    errorMessage = ""
+    isLoading = true
+
+    viewModelScope.launch {
+      try {
+        val response = ApiRepository.getInventoryExits(application)
+        if (response.isSuccessful) {
+          inventoryExitsState = response.body()?.data ?: emptyList()
         } else {
           val errorJson = response.errorBody()?.string()
           val message = try {

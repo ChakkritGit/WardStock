@@ -4,6 +4,7 @@ import com.thanes.wardstock.data.models.ApiResponse
 import com.thanes.wardstock.data.models.DrugExitsModel
 import com.thanes.wardstock.data.models.DrugModel
 import com.thanes.wardstock.data.models.GroupInventoryModel
+import com.thanes.wardstock.data.models.InventoryExitsModel
 import com.thanes.wardstock.data.models.InventoryModel
 import com.thanes.wardstock.data.models.MachineModel
 import com.thanes.wardstock.data.models.OrderModel
@@ -137,6 +138,9 @@ interface ApiService {
 
   @GET("inventory")
   suspend fun getInventory(): Response<ApiResponse<List<InventoryModel>>>
+
+  @GET("inventory/exist")
+  suspend fun getInventoryExits(): Response<ApiResponse<List<InventoryExitsModel>>>
 
   @GET("group-inventory")
   suspend fun getGroupInventory(): Response<ApiResponse<List<GroupInventoryModel>>>

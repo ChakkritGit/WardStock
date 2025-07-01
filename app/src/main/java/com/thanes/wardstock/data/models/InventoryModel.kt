@@ -12,3 +12,7 @@ data class InventoryModel(
   val createdAt: String,
   val updatedAt: String
 )
+
+data class InventoryExitsModel(
+  val inventoryId: String
+)

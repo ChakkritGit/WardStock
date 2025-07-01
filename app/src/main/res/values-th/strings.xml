@@ -23,6 +23,7 @@
   <string name="good_night">สวัสดีตอนกลางคืน,</string>
 
   <string name="refill_medicine">เติมยา</string>
+  <string name="medicines">ยา</string>
   <string name="drug_report">รายงาน</string>
   <string name="all_manage">จัดการ</string>
   <string name="settings">การตั้งค่า</string>
@@ -94,4 +95,5 @@
   <string name="add_inventory">เพิ่มช่อง</string>
   <string name="add_group">เพิ่มกรุ๊ป</string>
   <string name="re_launch">ลองอีกครั้ง</string>
+  <string name="no_item">ไม่มีรายการ</string>
 </resources>

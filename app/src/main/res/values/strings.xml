@@ -23,6 +23,7 @@
   <string name="good_night">Good Night,</string>
 
   <string name="refill_medicine">Refill</string>
+  <string name="medicines">Medicines</string>
   <string name="drug_report">Reports</string>
   <string name="all_manage">Managements</string>
   <string name="settings">Settings</string>
@@ -94,4 +95,5 @@
   <string name="add_inventory">Add Inventory</string>
   <string name="add_group">Add Group</string>
   <string name="re_launch">Try again</string>
+  <string name="no_item">No item</string>
 </resources>
