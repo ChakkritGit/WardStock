@@ -75,7 +75,7 @@ fun AddInventory(
       onSubmit = { formState ->
         if (isLoading) return@InventoryFormScreen true
 
-        val isValid = formState.position != 0
+        val isValid = formState.position != null
                 && formState.min != 0
                 && formState.max != 0
                 && formState.machineId.isNotBlank()

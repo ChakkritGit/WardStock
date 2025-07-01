@@ -8,7 +8,7 @@ data class InventoryModel(
   val max: Int,
   val status: Boolean,
   val machineId: String,
-  val comment: String,
+  val comment: String?,
   val createdAt: String,
   val updatedAt: String
 )

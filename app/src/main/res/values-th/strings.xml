@@ -83,7 +83,7 @@
   <string name="comment">หมายเหตุ</string>
   <string name="active_true">ใช้งาน</string>
   <string name="active_false">ปิดใช้งาน</string>
-  <string name="active_status">การใช้งานยา</string>
+  <string name="active_status">การใช้งาน</string>
   <string name="confirm_delete_desc_drug">คุณต้องการลบยานี้หรือไม่?</string>
   <string name="machine_capacity">ความจุ</string>
   <string name="machine_name">ชื่อเครื่อง</string>

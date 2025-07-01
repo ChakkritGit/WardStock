@@ -83,7 +83,7 @@
   <string name="comment">Comment</string>
   <string name="active_true">Active</string>
   <string name="active_false">Inactive</string>
-  <string name="active_status">Drug Status</string>
+  <string name="active_status">Usage</string>
   <string name="confirm_delete_desc_drug">Do you want to delete drug?</string>
   <string name="machine_capacity">Capacity</string>
   <string name="machine_name">Machine Name</string>

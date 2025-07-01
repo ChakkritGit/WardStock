@@ -101,7 +101,7 @@ fun MachineFormScreen(
   val scope = rememberCoroutineScope()
 
   fun removeMachine() {
-    if (isRemoving == true) return
+    if (isRemoving) return
 
     scope.launch {
       try {

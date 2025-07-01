@@ -41,16 +41,13 @@ fun EditMachine(navController: NavHostController, machineSharedViewModel: Machin
   Scaffold(
     topBar = {
       AppBar(
-        title = stringResource(R.string.edit),
-        onBack = {
+        title = stringResource(R.string.edit), onBack = {
           if (canClick) {
             canClick = false
             navController.popBackStack()
           }
-        }
-      )
-    },
-    containerColor = Colors.BlueGrey100
+        })
+    }, containerColor = Colors.BlueGrey100
   ) { innerPadding ->
     if (machine != null) {
       MachineFormScreen(
@@ -68,10 +65,19 @@ fun EditMachine(navController: NavHostController, machineSharedViewModel: Machin
           comment = machine.comment
         ),
         onSubmit = { formState ->
-          if (isLoading == true) return@MachineFormScreen true
+          if (isLoading) return@MachineFormScreen true
 
           try {
             isLoading = true
+
+            val isValid =
+              formState.machineName.isNotBlank() && formState.location.isNotBlank() && formState.capacity != 0
+
+            if (!isValid) {
+              errorMessage = completeFieldMessage
+              isLoading = false
+              return@MachineFormScreen false
+            }
 
             val response = ApiRepository.updateMachine(
               context = context,
@@ -122,8 +128,7 @@ fun EditMachine(navController: NavHostController, machineSharedViewModel: Machin
           } finally {
             isLoading = false
           }
-        }
-      )
+        })
     }
   }
 }

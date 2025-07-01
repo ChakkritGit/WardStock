@@ -139,4 +139,10 @@ interface ApiService {
 
   @POST("inventory")
   suspend fun createInventory(@Body request: InventoryRequest): Response<ApiResponse<InventoryModel>>
+
+  @PATCH("inventory/{inventoryId}")
+  suspend fun updateInventory(@Path("inventoryId") inventoryId: String, @Body request: InventoryRequest): Response<ApiResponse<InventoryModel>>
+
+  @DELETE("inventory/{inventoryId}")
+  suspend fun removeInventory(@Path("inventoryId") inventoryId: String): Response<ApiResponse<String>>
 }

@@ -1,6 +1,7 @@
 package com.thanes.wardstock.screens.manage.inventory
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -54,6 +55,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.R
+import com.thanes.wardstock.data.repositories.ApiRepository
 import com.thanes.wardstock.data.viewModel.InventoryViewModel
 import com.thanes.wardstock.data.viewModel.MachineViewModel
 import com.thanes.wardstock.ui.components.loading.LoadingDialog
@@ -62,10 +64,11 @@ import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 data class InventoryFormState(
   val id: String = "",
-  val position: Int = 1,
+  val position: Int? = null,
   val min: Int = 0,
   val max: Int = 0,
   val status: Boolean = true,
@@ -92,7 +95,8 @@ fun InventoryFormScreen(
   val successMessage = stringResource(R.string.successfully)
   val somethingWrongMessage = stringResource(R.string.something_wrong)
 
-  var position by remember { mutableIntStateOf(initialData?.position ?: 1) }
+  var position by remember { mutableStateOf(initialData?.position) }
+  var positionEdit by remember { mutableStateOf(initialData?.position) }
   var min by remember { mutableIntStateOf(initialData?.min ?: 0) }
   var max by remember { mutableIntStateOf(initialData?.max ?: 0) }
   var status by remember { mutableStateOf(initialData?.status != false) }
@@ -100,21 +104,82 @@ fun InventoryFormScreen(
   var comment by remember { mutableStateOf(initialData?.comment ?: "") }
   val scope = rememberCoroutineScope()
 
-  fun removeInventory() {}
+  fun removeInventory() {
+    if (isRemoving) return
+
+    scope.launch {
+      try {
+        isRemoving = true
+        val response = ApiRepository.removeInventory(context, inventoryId = initialData?.id ?: "")
+
+        if (response.isSuccessful) {
+          errorMessage = deleteMessage + successMessage
+          inventorySharedViewModel.fetchInventory()
+          navController?.popBackStack()
+        } else {
+          val errorJson = response.errorBody()?.string()
+          val message = try {
+            JSONObject(errorJson ?: "").getString("message")
+          } catch (_: Exception) {
+            when (response.code()) {
+              400 -> "Invalid request data"
+              401 -> "Authentication required"
+              403 -> "Access denied"
+              404 -> "Prescription not found"
+              500 -> "Server error, please try again later"
+              else -> "HTTP Error ${response.code()}: ${response.message()}"
+            }
+          }
+          errorMessage = message
+        }
+      } catch (e: Exception) {
+        errorMessage = when (e) {
+          is java.net.UnknownHostException -> "No internet connection"
+          is java.net.SocketTimeoutException -> "Request timeout, please try again"
+          is java.net.ConnectException -> "Unable to connect to server"
+          is javax.net.ssl.SSLException -> "Secure connection failed"
+          is com.google.gson.JsonSyntaxException -> "Invalid response format"
+          is java.io.IOException -> "Network error occurred"
+          else -> {
+            Log.e("AddUser", "Unexpected error", e)
+            "Unexpected error occurred: $somethingWrongMessage"
+          }
+        }
+      } finally {
+        isRemoving = false
+      }
+    }
+  }
 
   fun getAvailablePositions(
     context: Context,
     inventorySharedViewModel: InventoryViewModel,
-    capacity: Int = 60
+    capacity: Int = 60,
+    positionFromEdit: Int? = null
   ): List<Position> {
     val labelPrefix = context.getString(R.string.drug_inventory_no)
     val usedPositions = inventorySharedViewModel.inventoryState.map { it.position }
     val allPositions = (1..capacity).map { pos ->
       Position(label = "$labelPrefix $pos", value = pos)
     }
-    val availablePositions = allPositions.filter { it.value !in usedPositions }
 
-    return availablePositions
+    if (positionFromEdit == null) {
+      val availablePositions = allPositions.filter { it.value !in usedPositions }
+      return availablePositions
+    } else {
+      val editPosition = usedPositions.filter { it != positionFromEdit }
+      val availablePositions =
+        allPositions.filter { it.value !in editPosition }
+      return availablePositions
+    }
+  }
+
+  LaunchedEffect(initialData) {
+    if (initialData != null) {
+      positionEdit = initialData.position ?: 1
+    } else {
+      positionEdit = null
+    }
   }
 
   LaunchedEffect(errorMessage) {
@@ -137,7 +202,8 @@ fun InventoryFormScreen(
       verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
       var expandedPosition by remember { mutableStateOf(false) }
-      val availablePositions = getAvailablePositions(context, inventorySharedViewModel, 60)
+      val availablePositions =
+        getAvailablePositions(context, inventorySharedViewModel, 60, positionEdit)
 
       val selectedPosition = availablePositions.find { it.value == position }?.label ?: ""
 
@@ -350,6 +416,74 @@ fun InventoryFormScreen(
                 expandedMachine = false
               }
             )
+          }
+        }
+      }
+
+      if (initialData != null) {
+        var expandedActive by remember { mutableStateOf(false) }
+        val activeOptions = listOf(
+          true to R.string.active_true,
+          false to R.string.active_false
+        )
+
+        val selectedActiveLabel = stringResource(
+          id = if (status) R.string.active_true else R.string.active_false
+        )
+
+        ExposedDropdownMenuBox(
+          expanded = expandedActive,
+          onExpandedChange = { expandedActive = !expandedActive }
+        ) {
+          OutlinedTextField(
+            value = selectedActiveLabel,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text(stringResource(R.string.active_status)) },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedActive) },
+            modifier = Modifier
+              .fillMaxWidth()
+              .menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true),
+            leadingIcon = {
+              Icon(
+                painter = painterResource(R.drawable.mode_standby_24px),
+                contentDescription = "active icon",
+                tint = Colors.BlueGrey40,
+                modifier = Modifier.size(32.dp),
+              )
+            },
+            shape = RoundedCornerShape(RoundRadius.Large),
+            colors = TextFieldDefaults.colors(
+              focusedTextColor = Colors.BlueSecondary,
+              focusedIndicatorColor = Colors.BlueSecondary,
+              unfocusedIndicatorColor = Colors.BlueSecondary.copy(alpha = 0.3f),
+              focusedLabelColor = Colors.BlueSecondary,
+              unfocusedLabelColor = Colors.BlueGrey40,
+              cursorColor = Colors.BlueSecondary,
+              focusedContainerColor = Color.Transparent,
+              unfocusedContainerColor = Color.Transparent,
+              disabledContainerColor = Color.Transparent,
+              errorContainerColor = Color.Transparent,
+              focusedLeadingIconColor = Colors.BlueSecondary
+            )
+          )
+
+          ExposedDropdownMenu(
+            expanded = expandedActive,
+            onDismissRequest = { expandedActive = false },
+            shadowElevation = 6.dp,
+            modifier = Modifier.background(Colors.BlueGrey100),
+            shape = RoundedCornerShape(RoundRadius.Large)
+          ) {
+            activeOptions.forEach { (value, stringResId) ->
+              DropdownMenuItem(
+                text = { Text(stringResource(id = stringResId)) },
+                onClick = {
+                  status = value
+                  expandedActive = false
+                }
+              )
+            }
           }
         }
       }

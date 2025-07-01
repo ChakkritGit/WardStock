@@ -250,11 +250,33 @@ object ApiRepository {
 
   suspend fun createInventory(
     context: Context,
-    position: Int,
+    position: Int?,
     min: Int,
     max: Int,
     machineId: String,
     status: Boolean,
+    comment: String
+  ): Response<ApiResponse<InventoryModel>> {
+    val request = InventoryRequest(
+      position = position!!,
+      min = min,
+      max = max,
+      machineId = machineId,
+      status = status,
+      comment = comment
+    )
+
+    return createApiWithAuth(context).createInventory(request)
+  }
+
+  suspend fun updateInventory(
+    context: Context,
+    id: String,
+    position: Int,
+    min: Int,
+    max: Int,
+    status: Boolean,
+    machineId: String,
     comment: String
   ): Response<ApiResponse<InventoryModel>> {
     val request = InventoryRequest(
@@ -266,6 +288,10 @@ object ApiRepository {
       comment = comment
     )
 
-    return createApiWithAuth(context).createInventory(request)
+    return createApiWithAuth(context).updateInventory(id, request)
+  }
+
+  suspend fun removeInventory(context: Context, inventoryId: String): Response<ApiResponse<String>> {
+    return createApiWithAuth(context).removeInventory(inventoryId = inventoryId)
   }
 }
