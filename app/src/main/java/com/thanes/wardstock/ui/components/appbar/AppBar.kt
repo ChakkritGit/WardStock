@@ -1,5 +1,7 @@
 package com.thanes.wardstock.ui.components.appbar
 
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.*
@@ -31,12 +33,17 @@ fun AppBar(
       )
     },
     navigationIcon = {
-      IconButton(onClick = onBack) {
+      IconButton(
+        onClick = onBack,
+        modifier = Modifier
+          .size(54.dp)
+          .padding(4.dp)
+      ) {
         Icon(
           painter = painterResource(R.drawable.chevron_left_24px),
-          contentDescription = "Back",
+          contentDescription = "chevron_left_24px",
           tint = Colors.BluePrimary,
-          modifier = Modifier.size(64.dp)
+          modifier = Modifier.fillMaxSize()
         )
       }
     },

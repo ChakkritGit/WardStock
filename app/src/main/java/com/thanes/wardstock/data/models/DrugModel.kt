@@ -15,3 +15,7 @@ data class DrugModel(
   val createdAt: String,
   val updatedAt: String
 )
+
+data class DrugExitsModel(
+  val drugId: String
+)

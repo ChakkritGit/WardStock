@@ -1,6 +1,7 @@
 package com.thanes.wardstock.remote.api.services
 
 import com.thanes.wardstock.data.models.ApiResponse
+import com.thanes.wardstock.data.models.DrugExitsModel
 import com.thanes.wardstock.data.models.DrugModel
 import com.thanes.wardstock.data.models.GroupInventoryModel
 import com.thanes.wardstock.data.models.InventoryModel
@@ -84,6 +85,9 @@ interface ApiService {
 
   @GET("drugs")
   suspend fun getDrug(): Response<ApiResponse<List<DrugModel>>>
+
+  @GET("drugs/exist")
+  suspend fun getDrugExits(): Response<ApiResponse<List<DrugExitsModel>>>
 
   @Multipart
   @POST("drugs")
