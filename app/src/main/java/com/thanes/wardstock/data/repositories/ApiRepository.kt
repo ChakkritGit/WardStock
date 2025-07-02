@@ -7,6 +7,7 @@ import com.thanes.wardstock.data.models.DrugExitsModel
 import com.thanes.wardstock.data.models.DrugModel
 import com.thanes.wardstock.data.models.GroupInventoryModel
 import com.thanes.wardstock.data.models.InventoryExitsModel
+import com.thanes.wardstock.data.models.InventoryItem
 import com.thanes.wardstock.data.models.InventoryModel
 import com.thanes.wardstock.data.models.MachineModel
 import com.thanes.wardstock.data.models.OrderModel
@@ -16,6 +17,7 @@ import com.thanes.wardstock.data.models.UserData
 import com.thanes.wardstock.data.models.UserModel
 import com.thanes.wardstock.data.models.UserRole
 import com.thanes.wardstock.remote.api.services.AddDrugRequest
+import com.thanes.wardstock.remote.api.services.GroupInventoryRequest
 import com.thanes.wardstock.remote.api.services.InventoryRequest
 import com.thanes.wardstock.remote.api.services.LoginRequest
 import com.thanes.wardstock.remote.api.services.MachineRequest
@@ -303,5 +305,44 @@ object ApiRepository {
 
   suspend fun removeInventory(context: Context, inventoryId: String): Response<ApiResponse<String>> {
     return createApiWithAuth(context).removeInventory(inventoryId = inventoryId)
+  }
+
+  suspend fun removeGroup(context: Context, groupId: String): Response<ApiResponse<String>> {
+    return createApiWithAuth(context).removeGroup(groupId = groupId)
+  }
+
+  suspend fun createGroup(
+    context: Context,
+    drugId: String?,
+    groupMin: Int,
+    groupMax: Int,
+    inventories: List<InventoryItem>?
+  ): Response<ApiResponse<String>> {
+    val request = GroupInventoryRequest(
+      drugId = drugId!!,
+      groupMin = groupMin,
+      groupMax = groupMax,
+      inventories = inventories!!
+    )
+
+    return createApiWithAuth(context).createGroup(request)
+  }
+
+  suspend fun updateGroup(
+    context: Context,
+    groupId: String,
+    drugId: String?,
+    groupMin: Int,
+    groupMax: Int,
+    inventories: List<InventoryItem>?
+  ): Response<ApiResponse<InventoryModel>> {
+    val request = GroupInventoryRequest(
+      drugId = drugId!!,
+      groupMin = groupMin,
+      groupMax = groupMax,
+      inventories = inventories!!
+    )
+
+    return createApiWithAuth(context).updateGroup(groupId, request)
   }
 }

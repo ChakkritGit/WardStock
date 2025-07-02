@@ -1,6 +1,8 @@
 package com.thanes.wardstock.screens.manage.group
 
 import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,6 +36,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -58,7 +61,9 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.models.DrugModel
+import com.thanes.wardstock.data.models.InventoryItem
 import com.thanes.wardstock.data.models.InventoryModel
+import com.thanes.wardstock.data.repositories.ApiRepository
 import com.thanes.wardstock.data.viewModel.DrugViewModel
 import com.thanes.wardstock.data.viewModel.GroupViewModel
 import com.thanes.wardstock.data.viewModel.InventoryViewModel
@@ -69,16 +74,14 @@ import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 data class GroupFormState(
-  val drugId: String = "",
+  val groupId: String = "",
+  val drugId: String? = null,
   val groupMin: Int = 0,
   val groupMax: Int = 0,
-  val inventories: List<InventoryList> = emptyList()
-)
-
-data class InventoryList(
-  val inventoryId: String = ""
+  val inventories: List<InventoryItem> = emptyList()
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -103,35 +106,119 @@ fun GroupFormScreen(
   val somethingWrongMessage = stringResource(R.string.something_wrong)
 
   var drugId by remember { mutableStateOf(initialData?.drugId ?: "") }
-  val inventories = remember { mutableStateListOf<InventoryList>() }
+  var drugIdFromEdit by remember { mutableStateOf(initialData?.drugId) }
+  val inventories = remember { mutableStateListOf<InventoryItem>() }
+  var inventoriesEdit = remember { mutableStateListOf<InventoryItem>() }
   var groupMin by remember { mutableIntStateOf(initialData?.groupMin ?: 0) }
   var groupMax by remember { mutableIntStateOf(initialData?.groupMax ?: 0) }
   val scope = rememberCoroutineScope()
 
   fun removeGroup() {
+    if (isRemoving) return
 
+    scope.launch {
+      try {
+        isRemoving = true
+        val response = ApiRepository.removeGroup(context, groupId = initialData?.groupId ?: "")
+
+        if (response.isSuccessful) {
+          errorMessage = deleteMessage + successMessage
+          groupSharedViewModel.fetchGroup()
+          drugSharedViewModel.fetchDrugExits()
+          inventorySharedViewModel.fetchInventoryExits()
+          refillSharedViewModel.fetchRefill()
+          navController?.popBackStack()
+        } else {
+          val errorJson = response.errorBody()?.string()
+          val message = try {
+            JSONObject(errorJson ?: "").getString("message")
+          } catch (_: Exception) {
+            when (response.code()) {
+              400 -> "Invalid request data"
+              401 -> "Authentication required"
+              403 -> "Access denied"
+              404 -> "Prescription not found"
+              500 -> "Server error, please try again later"
+              else -> "HTTP Error ${response.code()}: ${response.message()}"
+            }
+          }
+          errorMessage = message
+        }
+      } catch (e: Exception) {
+        errorMessage = when (e) {
+          is java.net.UnknownHostException -> "No internet connection"
+          is java.net.SocketTimeoutException -> "Request timeout, please try again"
+          is java.net.ConnectException -> "Unable to connect to server"
+          is javax.net.ssl.SSLException -> "Secure connection failed"
+          is com.google.gson.JsonSyntaxException -> "Invalid response format"
+          is java.io.IOException -> "Network error occurred"
+          else -> {
+            Log.e("AddUser", "Unexpected error", e)
+            "Unexpected error occurred: $somethingWrongMessage"
+          }
+        }
+      } finally {
+        isRemoving = false
+      }
+    }
   }
 
   fun getAvailableDrug(
-    drugSharedViewModel: DrugViewModel
+    drugSharedViewModel: DrugViewModel,
+    drugIdFromEdit: String? = null
   ): List<DrugModel> {
     val exitsDrug = drugSharedViewModel.drugExitsState.map { it.drugId }
     val allDrug = drugSharedViewModel.drugState
 
-    val availableDrug = allDrug.filter { it.id !in exitsDrug }
-
-    return availableDrug
+    if (drugIdFromEdit == null) {
+      val availableDrug = allDrug.filter { it.id !in exitsDrug }
+      return availableDrug
+    } else {
+      val editDrugId = exitsDrug.filter { it != drugIdFromEdit }
+      val availableDrug = allDrug.filter { it.id !in editDrugId }
+      return availableDrug
+    }
   }
 
   fun getAvailableInventory(
-    inventorySharedViewModel: InventoryViewModel
+    inventorySharedViewModel: InventoryViewModel,
+    inventoriesEdit: List<InventoryItem> = emptyList()
   ): List<InventoryModel> {
     val exitsInventory = inventorySharedViewModel.inventoryExitsState.map { it.inventoryId }
     val allInventory = inventorySharedViewModel.inventoryState
 
-    val availableInventory = allInventory.filter { it.id !in exitsInventory }
+    if (inventoriesEdit.isEmpty()) {
+      val availableInventory = allInventory.filter { it.id !in exitsInventory }
 
-    return availableInventory
+      return availableInventory
+    } else {
+      val editInventoryIds = inventoriesEdit.map { it.inventoryId }
+      val editInventory = exitsInventory.filter { it !in editInventoryIds }
+      val availableInventory = allInventory.filter { it.id !in editInventory }
+      return availableInventory
+    }
+  }
+
+  LaunchedEffect(initialData) {
+    drugIdFromEdit = if (initialData != null) {
+      initialData.drugId ?: ""
+    } else {
+      null
+    }
+  }
+
+  LaunchedEffect(initialData) {
+    inventories.clear()
+    inventoriesEdit.clear()
+    inventories.addAll(initialData?.inventories ?: emptyList())
+    inventoriesEdit.addAll(initialData?.inventories ?: emptyList())
+  }
+
+  LaunchedEffect(errorMessage) {
+    if (errorMessage.isNotEmpty()) {
+      Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+      errorMessage = ""
+    }
   }
 
   Column(
@@ -148,7 +235,7 @@ fun GroupFormScreen(
     ) {
       if (drugSharedViewModel.drugState.isNotEmpty() && drugSharedViewModel.drugExitsState.isNotEmpty()) {
         var expandedPosition by remember { mutableStateOf(false) }
-        val availablePositions = getAvailableDrug(drugSharedViewModel)
+        val availablePositions = getAvailableDrug(drugSharedViewModel, drugIdFromEdit)
 
         val selectedPosition = availablePositions.find { it.id == drugId }?.drugName ?: ""
 
@@ -221,7 +308,7 @@ fun GroupFormScreen(
 
       if (inventorySharedViewModel.inventoryState.isNotEmpty() && inventorySharedViewModel.inventoryExitsState.isNotEmpty()) {
         var expanded by remember { mutableStateOf(false) }
-        val availablePositions = getAvailableInventory(inventorySharedViewModel)
+        val availablePositions = getAvailableInventory(inventorySharedViewModel, inventoriesEdit)
         val selectedIds = inventories.map { it.inventoryId }
 
         ExposedDropdownMenuBox(
@@ -249,7 +336,7 @@ fun GroupFormScreen(
             },
             modifier = Modifier
               .fillMaxWidth()
-              .menuAnchor(),
+              .menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true),
             shape = RoundedCornerShape(RoundRadius.Large),
             colors = TextFieldDefaults.colors(
               focusedTextColor = Colors.BlueSecondary,
@@ -276,6 +363,7 @@ fun GroupFormScreen(
             if (availablePositions.isNotEmpty()) {
               availablePositions.forEach { item ->
                 val isSelected = inventories.find { it.inventoryId == item.id } != null
+                Log.d("Item: ", item.toString())
                 DropdownMenuItem(
                   text = {
                     Row(
@@ -295,7 +383,7 @@ fun GroupFormScreen(
                     if (isSelected) {
                       inventories.removeIf { it.inventoryId == item.id }
                     } else {
-                      inventories.add(InventoryList(inventoryId = item.id))
+                      inventories.add(InventoryItem(inventoryId = item.id))
                     }
                   }
                 )

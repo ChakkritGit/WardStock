@@ -168,17 +168,16 @@ fun InventoryFormScreen(
       return availablePositions
     } else {
       val editPosition = usedPositions.filter { it != positionFromEdit }
-      val availablePositions =
-        allPositions.filter { it.value !in editPosition }
+      val availablePositions = allPositions.filter { it.value !in editPosition }
       return availablePositions
     }
   }
 
   LaunchedEffect(initialData) {
-    if (initialData != null) {
-      positionEdit = initialData.position ?: 1
+    positionEdit = if (initialData != null) {
+      initialData.position ?: 1
     } else {
-      positionEdit = null
+      null
     }
   }
 

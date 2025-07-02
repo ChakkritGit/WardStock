@@ -14,6 +14,6 @@ data class GroupInventoryModel(
 
 data class InventoryItem(
   val inventoryId: String,
-  val inventoryPosition: Int,
-  val inventoryQty: Int
+  val inventoryPosition: Int = 0,
+  val inventoryQty: Int = 0
 )

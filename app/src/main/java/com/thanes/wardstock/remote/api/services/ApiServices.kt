@@ -5,6 +5,7 @@ import com.thanes.wardstock.data.models.DrugExitsModel
 import com.thanes.wardstock.data.models.DrugModel
 import com.thanes.wardstock.data.models.GroupInventoryModel
 import com.thanes.wardstock.data.models.InventoryExitsModel
+import com.thanes.wardstock.data.models.InventoryItem
 import com.thanes.wardstock.data.models.InventoryModel
 import com.thanes.wardstock.data.models.MachineModel
 import com.thanes.wardstock.data.models.OrderModel
@@ -40,6 +41,13 @@ data class InventoryRequest(
   val machineId: String,
   val status: Boolean,
   val comment: String
+)
+
+data class GroupInventoryRequest(
+  val drugId: String,
+  val groupMin: Int,
+  val groupMax: Int,
+  val inventories: List<InventoryItem>
 )
 
 interface ApiService {
@@ -153,4 +161,13 @@ interface ApiService {
 
   @DELETE("inventory/{inventoryId}")
   suspend fun removeInventory(@Path("inventoryId") inventoryId: String): Response<ApiResponse<String>>
+
+  @DELETE("group-inventory/{groupId}")
+  suspend fun removeGroup(@Path("groupId") groupId: String): Response<ApiResponse<String>>
+
+  @POST("group-inventory")
+  suspend fun createGroup(@Body request: GroupInventoryRequest): Response<ApiResponse<String>>
+
+  @PATCH("group-inventory/{groupId}")
+  suspend fun updateGroup(@Path("groupId") groupId: String, @Body request: GroupInventoryRequest): Response<ApiResponse<InventoryModel>>
 }
