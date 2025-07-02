@@ -57,7 +57,7 @@ fun AddMachine(navController: NavHostController, machineSharedViewModel: Machine
       navController = null,
       machineSharedViewModel = null,
       onSubmit = { formState ->
-        if (isLoading == true) return@MachineFormScreen true
+        if (isLoading) return@MachineFormScreen true
 
         val isValid = formState.machineName.isNotBlank()
                 && formState.location.isNotBlank()
@@ -73,7 +73,6 @@ fun AddMachine(navController: NavHostController, machineSharedViewModel: Machine
           isLoading = true
 
           val response = ApiRepository.createMachine(
-            context = context,
             machineName = formState.machineName,
             location = formState.location,
             capacity = formState.capacity,

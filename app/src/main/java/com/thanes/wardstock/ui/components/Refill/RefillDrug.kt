@@ -79,7 +79,7 @@ fun RefillDrug(
       }
 
       try {
-        val response = ApiRepository.addDrug(context, item.inventoryId.toString(), quality)
+        val response = ApiRepository.addDrug(item.inventoryId.toString(), quality)
 
         if (response.isSuccessful) {
           errorMessage = successSubmit

@@ -81,7 +81,7 @@ fun AddGroup(
         val isValid = formState.drugId != null
                 && formState.groupMin != 0
                 && formState.groupMax != 0
-                && formState.inventories != null
+                && formState.inventories.isNotEmpty()
 
         if (!isValid) {
           errorMessage = completeFieldMessage
@@ -93,7 +93,6 @@ fun AddGroup(
           isLoading = true
 
           val response = ApiRepository.createGroup(
-            context = context,
             drugId = formState.drugId,
             groupMin = formState.groupMin,
             groupMax = formState.groupMax,

@@ -130,12 +130,12 @@ fun UserFormScreen(
   }
 
   fun removeUser() {
-    if (isRemoving == true) return
+    if (isRemoving) return
 
     scope.launch {
       try {
         isRemoving = true
-        val response = ApiRepository.removeUser(context, userId = initialData?.userId ?: "")
+        val response = ApiRepository.removeUser(userId = initialData?.userId ?: "")
 
         if (response.isSuccessful) {
           errorMessage = deleteMessage + successMessage

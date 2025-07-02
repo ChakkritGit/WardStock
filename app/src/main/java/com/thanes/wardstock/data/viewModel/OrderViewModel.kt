@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import com.thanes.wardstock.data.models.OrderModel
 import com.thanes.wardstock.data.repositories.ApiRepository
@@ -29,7 +28,7 @@ class OrderViewModel(application: Application) : AndroidViewModel(application) {
 
     viewModelScope.launch {
       try {
-        val response = ApiRepository.orderWithPresId(application, prescriptionId)
+        val response = ApiRepository.orderWithPresId(prescriptionId)
         if (response.isSuccessful) {
           orderState = response.body()?.data
         } else {
@@ -91,7 +90,7 @@ class OrderViewModel(application: Application) : AndroidViewModel(application) {
 
     viewModelScope.launch {
       try {
-        val response = ApiRepository.orderWithInitial(application)
+        val response = ApiRepository.orderWithInitial()
         if (response.isSuccessful) {
           orderState = response.body()?.data
         } else {

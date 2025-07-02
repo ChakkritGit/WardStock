@@ -1,7 +1,7 @@
 package com.thanes.wardstock.remote.configs
 
-import android.content.Context
-import com.thanes.wardstock.data.store.DataManager
+import android.util.Log
+import com.thanes.wardstock.data.viewModel.TokenHolder
 import com.thanes.wardstock.remote.api.services.ApiService
 import com.thanes.wardstock.utils.BaseURL
 import okhttp3.Interceptor
@@ -19,9 +19,9 @@ object RetrofitInstance {
       .create(ApiService::class.java)
   }
 
-  fun createApiWithAuth(context: Context): ApiService {
+  fun createApiWithAuth(): ApiService {
     val client = OkHttpClient.Builder()
-      .addInterceptor(AuthInterceptor(context))
+      .addInterceptor(AuthInterceptor())
       .build()
 
     return Retrofit.Builder()
@@ -33,9 +33,9 @@ object RetrofitInstance {
   }
 }
 
-class AuthInterceptor(private val context: Context) : Interceptor {
+class AuthInterceptor : Interceptor {
   override fun intercept(chain: Interceptor.Chain): Response {
-    val token = DataManager.getToken(context)
+    val token = TokenHolder.token.orEmpty()
 
     val request = if (token.isNotEmpty()) {
       chain.request().newBuilder()
@@ -48,4 +48,3 @@ class AuthInterceptor(private val context: Context) : Interceptor {
     return chain.proceed(request)
   }
 }
-

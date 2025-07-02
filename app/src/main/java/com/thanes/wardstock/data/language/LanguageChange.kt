@@ -63,7 +63,7 @@ class LanguageManager {
   }
 
   private fun setLegacyLocale(context: Context, languageCode: String) {
-    val locale = Locale(languageCode)
+    val locale = Locale.forLanguageTag(languageCode)
     Locale.setDefault(locale)
 
     val config = Configuration(context.resources.configuration)
@@ -85,7 +85,7 @@ class LanguageManager {
     val savedLanguage = getSavedLanguage(activity)
 
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-      val locale = Locale(savedLanguage)
+      val locale = Locale.forLanguageTag(savedLanguage)
       Locale.setDefault(locale)
 
       val config = Configuration()

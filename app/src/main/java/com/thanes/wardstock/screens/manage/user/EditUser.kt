@@ -66,7 +66,7 @@ fun EditUser(navController: NavHostController, userSharedViewModel: UserViewMode
         ),
         showPasswordField = false,
         onSubmit = { formState, uri ->
-          if (isLoading == true) return@UserFormScreen true
+          if (isLoading) return@UserFormScreen true
 
           try {
             isLoading = true
@@ -75,7 +75,6 @@ fun EditUser(navController: NavHostController, userSharedViewModel: UserViewMode
 
             val response = if (imagePart != null) {
               ApiRepository.updateUserWithImage(
-                context = context,
                 userId = user.id,
                 imagePart = imagePart,
                 username = formState.username,
@@ -84,7 +83,6 @@ fun EditUser(navController: NavHostController, userSharedViewModel: UserViewMode
               )
             } else {
               ApiRepository.updateUserWithImage(
-                context = context,
                 userId = user.id,
                 imagePart = null,
                 username = formState.username,

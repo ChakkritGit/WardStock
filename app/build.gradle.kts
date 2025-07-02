@@ -30,6 +30,7 @@ android {
   }
   kotlinOptions {
     jvmTarget = "11"
+    freeCompilerArgs = listOf("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
   }
   buildFeatures {
     compose = true
@@ -59,6 +60,7 @@ dependencies {
   implementation(libs.androidx.core.splashscreen)
   implementation(libs.glide)
   implementation(libs.compose)
+  implementation(libs.androidx.datastore.preferences)
 
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)

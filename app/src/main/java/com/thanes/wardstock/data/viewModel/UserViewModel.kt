@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonSyntaxException
 import com.thanes.wardstock.data.models.UserModel
@@ -46,7 +45,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     viewModelScope.launch {
       try {
-        val response = ApiRepository.userWithInitial(application)
+        val response = ApiRepository.userWithInitial()
         if (response.isSuccessful) {
           userState = response.body()?.data ?: emptyList()
         } else {

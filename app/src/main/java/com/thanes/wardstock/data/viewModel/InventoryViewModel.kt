@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonSyntaxException
 import com.thanes.wardstock.data.models.InventoryExitsModel
@@ -50,7 +49,7 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
 
     viewModelScope.launch {
       try {
-        val response = ApiRepository.getInventory(application)
+        val response = ApiRepository.getInventory()
         if (response.isSuccessful) {
           inventoryState = response.body()?.data ?: emptyList()
         } else {
@@ -112,7 +111,7 @@ class InventoryViewModel(application: Application) : AndroidViewModel(applicatio
 
     viewModelScope.launch {
       try {
-        val response = ApiRepository.getInventoryExits(application)
+        val response = ApiRepository.getInventoryExits()
         if (response.isSuccessful) {
           inventoryExitsState = response.body()?.data ?: emptyList()
         } else {

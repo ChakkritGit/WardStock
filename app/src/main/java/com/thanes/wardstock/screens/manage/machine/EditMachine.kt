@@ -80,7 +80,6 @@ fun EditMachine(navController: NavHostController, machineSharedViewModel: Machin
             }
 
             val response = ApiRepository.updateMachine(
-              context = context,
               id = machine.id,
               machineName = formState.machineName,
               location = formState.location,

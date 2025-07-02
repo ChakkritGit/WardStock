@@ -36,6 +36,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.viewModel.AuthViewModel
+import com.thanes.wardstock.data.viewModel.TokenHolder
 import com.thanes.wardstock.ui.components.keyboard.Keyboard
 import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
@@ -77,7 +78,9 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, 
           val userData = response.body()?.data
 
           if (userData != null) {
-            authViewModel.login(context, userData.token, userData)
+            val token = userData.token
+            authViewModel.login(context, token, userData)
+            TokenHolder.token = token
             navController.navigate(Routes.Home.route) {
               popUpTo(Routes.Login.route) { inclusive = true }
             }

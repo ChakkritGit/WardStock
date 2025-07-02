@@ -1,6 +1,7 @@
 package com.thanes.wardstock.data.viewModel
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.thanes.wardstock.data.models.UserData
@@ -8,6 +9,7 @@ import com.thanes.wardstock.data.store.DataManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 data class AuthState(
@@ -18,6 +20,10 @@ data class AuthState(
   val error: String? = null
 )
 
+object TokenHolder {
+  var token: String? = null
+}
+
 class AuthViewModel : ViewModel() {
   private val _authState = MutableStateFlow(AuthState())
   val authState: StateFlow<AuthState> = _authState.asStateFlow()
@@ -27,9 +33,10 @@ class AuthViewModel : ViewModel() {
       try {
         _authState.value = _authState.value.copy(isLoading = true, error = null)
 
-        val token = DataManager.getToken(context)
+        val token = DataManager.getToken(context).first()
+        TokenHolder.token = token
         val userData = if (token.isNotEmpty()) {
-          DataManager.getUserData(context)
+          DataManager.getUserData(context).first()
         } else {
           null
         }

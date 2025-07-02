@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import com.thanes.wardstock.data.models.RefillModel
 import com.thanes.wardstock.data.repositories.ApiRepository
@@ -43,7 +42,7 @@ class RefillViewModel(application: Application) : AndroidViewModel(application) 
 
     viewModelScope.launch {
       try {
-        val response = ApiRepository.refill(application)
+        val response = ApiRepository.refill()
         if (response.isSuccessful) {
           refillState = response.body()?.data ?: emptyList()
         } else {

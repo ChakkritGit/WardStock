@@ -91,7 +91,6 @@ fun AddInventory(
           isLoading = true
 
           val response = ApiRepository.createInventory(
-            context = context,
             position = formState.position,
             min = formState.min,
             max = formState.max,

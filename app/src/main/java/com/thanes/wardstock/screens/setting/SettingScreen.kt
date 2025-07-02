@@ -28,6 +28,7 @@ import com.thanes.wardstock.data.models.UserRole
 import com.thanes.wardstock.data.store.DataManager
 import com.thanes.wardstock.screens.setting.dispense.DispenseTestToolList
 import com.thanes.wardstock.screens.setting.language.LanguageSwitcher
+import kotlinx.coroutines.flow.first
 
 @Composable
 fun SettingScreen(navController: NavHostController, context: Context) {
@@ -35,7 +36,7 @@ fun SettingScreen(navController: NavHostController, context: Context) {
   var canClick by remember { mutableStateOf(true) }
 
   LaunchedEffect(Unit) {
-    userData = DataManager.getUserData(context)
+    userData = DataManager.getUserData(context).first()
   }
 
   Scaffold(

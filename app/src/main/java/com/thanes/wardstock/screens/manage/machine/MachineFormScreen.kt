@@ -106,7 +106,7 @@ fun MachineFormScreen(
     scope.launch {
       try {
         isRemoving = true
-        val response = ApiRepository.removeMachine(context, machineId = initialData?.id ?: "")
+        val response = ApiRepository.removeMachine(machineId = initialData?.id ?: "")
 
         if (response.isSuccessful) {
           errorMessage = deleteMessage + successMessage

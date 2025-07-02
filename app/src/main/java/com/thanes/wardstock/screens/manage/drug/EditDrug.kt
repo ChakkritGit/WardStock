@@ -84,7 +84,7 @@ fun EditDrug(navController: NavHostController, drugSharedViewModel: DrugViewMode
           comment = drug.comment
         ),
         onSubmit = { formState, uri ->
-          if (isLoading == true) return@DrugFormScreen true
+          if (isLoading) return@DrugFormScreen true
 
           try {
             isLoading = true
@@ -97,7 +97,6 @@ fun EditDrug(navController: NavHostController, drugSharedViewModel: DrugViewMode
 
             val response = if (imagePart != null) {
               ApiRepository.updateDrugWithImage(
-                context = context,
                 drugId = drug.id,
                 imagePart = imagePart,
                 drugCode = formState.drugCode,
@@ -112,7 +111,6 @@ fun EditDrug(navController: NavHostController, drugSharedViewModel: DrugViewMode
               )
             } else {
               ApiRepository.updateDrugWithImage(
-                context = context,
                 drugId = drug.id,
                 imagePart = null,
                 drugCode = formState.drugCode,

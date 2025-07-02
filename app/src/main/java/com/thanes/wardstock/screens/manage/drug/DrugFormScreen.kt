@@ -140,7 +140,7 @@ fun DrugFormScreen(
     scope.launch {
       try {
         isRemoving = true
-        val response = ApiRepository.removeDrug(context, drugId = initialData?.id ?: "")
+        val response = ApiRepository.removeDrug(drugId = initialData?.id ?: "")
 
         if (response.isSuccessful) {
           errorMessage = deleteMessage + successMessage

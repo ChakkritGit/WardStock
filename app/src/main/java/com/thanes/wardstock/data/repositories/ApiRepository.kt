@@ -1,6 +1,5 @@
 package com.thanes.wardstock.data.repositories
 
-import android.content.Context
 import retrofit2.Response
 import com.thanes.wardstock.data.models.ApiResponse
 import com.thanes.wardstock.data.models.DrugExitsModel
@@ -34,35 +33,32 @@ object ApiRepository {
   }
 
   suspend fun orderWithPresId(
-    context: Context,
     prescriptionId: String
   ): Response<ApiResponse<OrderModel>> {
-    return createApiWithAuth(context).orderWithPresId(prescriptionId)
+    return createApiWithAuth().orderWithPresId(prescriptionId)
   }
 
-  suspend fun orderWithInitial(context: Context): Response<ApiResponse<OrderModel>> {
-    return createApiWithAuth(context).orderWithOutPresId()
+  suspend fun orderWithInitial(): Response<ApiResponse<OrderModel>> {
+    return createApiWithAuth().orderWithOutPresId()
   }
 
-  suspend fun refill(context: Context): Response<ApiResponse<List<RefillModel>>> {
-    return createApiWithAuth(context).refill()
+  suspend fun refill(): Response<ApiResponse<List<RefillModel>>> {
+    return createApiWithAuth().refill()
   }
 
   suspend fun addDrug(
-    context: Context,
     prescriptionId: String,
     inventoryQty: Int
   ): Response<ApiResponse<RefillDrugModel>> {
     val request = AddDrugRequest(inventoryQty)
-    return createApiWithAuth(context).addDrug(prescriptionId, request)
+    return createApiWithAuth().addDrug(prescriptionId, request)
   }
 
-  suspend fun userWithInitial(context: Context): Response<ApiResponse<List<UserModel>>> {
-    return createApiWithAuth(context).getUser()
+  suspend fun userWithInitial(): Response<ApiResponse<List<UserModel>>> {
+    return createApiWithAuth().getUser()
   }
 
   suspend fun createUserWithImage(
-    context: Context,
     imagePart: MultipartBody.Part,
     username: String,
     password: String,
@@ -74,7 +70,7 @@ object ApiRepository {
     val displayPart = display.toRequestBody("text/plain".toMediaTypeOrNull())
     val rolePart = role.name.toRequestBody("text/plain".toMediaTypeOrNull())
 
-    return createApiWithAuth(context).createUser(
+    return createApiWithAuth().createUser(
       image = imagePart,
       username = usernamePart,
       password = passwordPart,
@@ -84,7 +80,6 @@ object ApiRepository {
   }
 
   suspend fun updateUserWithImage(
-    context: Context,
     userId: String,
     imagePart: MultipartBody.Part?,
     username: String,
@@ -95,7 +90,7 @@ object ApiRepository {
     val displayPart = display.toRequestBody("text/plain".toMediaTypeOrNull())
     val rolePart = role.name.toRequestBody("text/plain".toMediaTypeOrNull())
 
-    return createApiWithAuth(context).updatedUser(
+    return createApiWithAuth().updatedUser(
       userId = userId,
       image = imagePart,
       username = usernamePart,
@@ -104,20 +99,19 @@ object ApiRepository {
     )
   }
 
-  suspend fun removeUser(context: Context, userId: String): Response<ApiResponse<String>> {
-    return createApiWithAuth(context).removeUser(userId = userId)
+  suspend fun removeUser(userId: String): Response<ApiResponse<String>> {
+    return createApiWithAuth().removeUser(userId = userId)
   }
 
-  suspend fun getDrug(context: Context): Response<ApiResponse<List<DrugModel>>> {
-    return createApiWithAuth(context).getDrug()
+  suspend fun getDrug(): Response<ApiResponse<List<DrugModel>>> {
+    return createApiWithAuth().getDrug()
   }
 
-  suspend fun getDrugExits(context: Context): Response<ApiResponse<List<DrugExitsModel>>> {
-    return createApiWithAuth(context).getDrugExits()
+  suspend fun getDrugExits(): Response<ApiResponse<List<DrugExitsModel>>> {
+    return createApiWithAuth().getDrugExits()
   }
 
   suspend fun createDrugWithImage(
-    context: Context,
     imagePart: MultipartBody.Part,
     drugCode: String,
     drugName: String,
@@ -142,7 +136,7 @@ object ApiRepository {
     val statusPart = drugStatus.toString().toRequestBody(mediaType)
     val commentPart = comment?.toRequestBody(mediaType)
 
-    return createApiWithAuth(context).createDrug(
+    return createApiWithAuth().createDrug(
       image = imagePart,
       drugCode = codePart,
       drugName = namePart,
@@ -157,7 +151,6 @@ object ApiRepository {
   }
 
   suspend fun updateDrugWithImage(
-    context: Context,
     drugId: String,
     imagePart: MultipartBody.Part?,
     drugCode: String,
@@ -182,7 +175,7 @@ object ApiRepository {
     val statusPart = drugStatus.toString().toRequestBody(mediaType)
     val commentPart = comment?.toRequestBody(mediaType)
 
-    return createApiWithAuth(context).updateDrug(
+    return createApiWithAuth().updateDrug(
       drugId = drugId,
       image = imagePart,
       drugCode = codePart,
@@ -197,16 +190,15 @@ object ApiRepository {
     )
   }
 
-  suspend fun removeDrug(context: Context, drugId: String): Response<ApiResponse<String>> {
-    return createApiWithAuth(context).removeDrug(drugId = drugId)
+  suspend fun removeDrug(drugId: String): Response<ApiResponse<String>> {
+    return createApiWithAuth().removeDrug(drugId = drugId)
   }
 
-  suspend fun getMachine(context: Context): Response<ApiResponse<List<MachineModel>>> {
-    return createApiWithAuth(context).getMachine()
+  suspend fun getMachine(): Response<ApiResponse<List<MachineModel>>> {
+    return createApiWithAuth().getMachine()
   }
 
   suspend fun createMachine(
-    context: Context,
     machineName: String,
     location: String,
     capacity: Int,
@@ -221,11 +213,10 @@ object ApiRepository {
       comment = comment
     )
 
-    return createApiWithAuth(context).createMachine(request)
+    return createApiWithAuth().createMachine(request)
   }
 
   suspend fun updateMachine(
-    context: Context,
     id: String,
     machineName: String,
     location: String,
@@ -241,27 +232,26 @@ object ApiRepository {
       comment = comment
     )
 
-    return createApiWithAuth(context).updateMachine(id, request)
+    return createApiWithAuth().updateMachine(id, request)
   }
 
-  suspend fun removeMachine(context: Context, machineId: String): Response<ApiResponse<String>> {
-    return createApiWithAuth(context).removeMachine(machineId = machineId)
+  suspend fun removeMachine(machineId: String): Response<ApiResponse<String>> {
+    return createApiWithAuth().removeMachine(machineId = machineId)
   }
 
-  suspend fun getInventory(context: Context): Response<ApiResponse<List<InventoryModel>>> {
-    return createApiWithAuth(context).getInventory()
+  suspend fun getInventory(): Response<ApiResponse<List<InventoryModel>>> {
+    return createApiWithAuth().getInventory()
   }
 
-  suspend fun getInventoryExits(context: Context): Response<ApiResponse<List<InventoryExitsModel>>> {
-    return createApiWithAuth(context).getInventoryExits()
+  suspend fun getInventoryExits(): Response<ApiResponse<List<InventoryExitsModel>>> {
+    return createApiWithAuth().getInventoryExits()
   }
 
-  suspend fun getGroupInventory(context: Context): Response<ApiResponse<List<GroupInventoryModel>>> {
-    return createApiWithAuth(context).getGroupInventory()
+  suspend fun getGroupInventory(): Response<ApiResponse<List<GroupInventoryModel>>> {
+    return createApiWithAuth().getGroupInventory()
   }
 
   suspend fun createInventory(
-    context: Context,
     position: Int?,
     min: Int,
     max: Int,
@@ -278,11 +268,10 @@ object ApiRepository {
       comment = comment
     )
 
-    return createApiWithAuth(context).createInventory(request)
+    return createApiWithAuth().createInventory(request)
   }
 
   suspend fun updateInventory(
-    context: Context,
     id: String,
     position: Int,
     min: Int,
@@ -300,19 +289,18 @@ object ApiRepository {
       comment = comment
     )
 
-    return createApiWithAuth(context).updateInventory(id, request)
+    return createApiWithAuth().updateInventory(id, request)
   }
 
-  suspend fun removeInventory(context: Context, inventoryId: String): Response<ApiResponse<String>> {
-    return createApiWithAuth(context).removeInventory(inventoryId = inventoryId)
+  suspend fun removeInventory(inventoryId: String): Response<ApiResponse<String>> {
+    return createApiWithAuth().removeInventory(inventoryId = inventoryId)
   }
 
-  suspend fun removeGroup(context: Context, groupId: String): Response<ApiResponse<String>> {
-    return createApiWithAuth(context).removeGroup(groupId = groupId)
+  suspend fun removeGroup(groupId: String): Response<ApiResponse<String>> {
+    return createApiWithAuth().removeGroup(groupId = groupId)
   }
 
   suspend fun createGroup(
-    context: Context,
     drugId: String?,
     groupMin: Int,
     groupMax: Int,
@@ -325,11 +313,10 @@ object ApiRepository {
       inventories = inventories!!
     )
 
-    return createApiWithAuth(context).createGroup(request)
+    return createApiWithAuth().createGroup(request)
   }
 
   suspend fun updateGroup(
-    context: Context,
     groupId: String,
     drugId: String?,
     groupMin: Int,
@@ -343,6 +330,6 @@ object ApiRepository {
       inventories = inventories!!
     )
 
-    return createApiWithAuth(context).updateGroup(groupId, request)
+    return createApiWithAuth().updateGroup(groupId, request)
   }
 }

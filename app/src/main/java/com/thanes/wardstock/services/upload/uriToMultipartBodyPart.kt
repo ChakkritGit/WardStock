@@ -11,6 +11,7 @@ import okhttp3.RequestBody
 import java.io.File
 import java.io.FileOutputStream
 import androidx.core.graphics.scale
+import okhttp3.RequestBody.Companion.asRequestBody
 
 fun uriToMultipartBodyPart(
   context: Context,
@@ -41,6 +42,6 @@ fun uriToMultipartBodyPart(
   outputStream.flush()
   outputStream.close()
 
-  val requestFile = RequestBody.create(mimeType.toMediaTypeOrNull(), tempFile)
+  val requestFile = tempFile.asRequestBody(mimeType.toMediaTypeOrNull())
   return MultipartBody.Part.createFormData(partName, tempFile.name, requestFile)
 }

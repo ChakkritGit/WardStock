@@ -82,7 +82,6 @@ fun AddDrug(navController: NavHostController, drugSharedViewModel: DrugViewModel
           val formattedDrugExpire = formState.drugExpire.format(formatter)
 
           val response = ApiRepository.createDrugWithImage(
-            context = context,
             imagePart = imagePart!!,
             drugCode = formState.drugCode,
             drugName = formState.drugName,

@@ -99,7 +99,6 @@ fun EditInventory(
             }
 
             val response = ApiRepository.updateInventory(
-              context = context,
               id = inventory.id,
               position = formState.position,
               min = formState.min,

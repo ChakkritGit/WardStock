@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonSyntaxException
 import com.thanes.wardstock.data.models.DrugExitsModel
@@ -50,7 +49,7 @@ class DrugViewModel(application: Application) : AndroidViewModel(application) {
 
     viewModelScope.launch {
       try {
-        val response = ApiRepository.getDrug(application)
+        val response = ApiRepository.getDrug()
         if (response.isSuccessful) {
           drugState = response.body()?.data ?: emptyList()
         } else {
@@ -112,7 +111,7 @@ class DrugViewModel(application: Application) : AndroidViewModel(application) {
 
     viewModelScope.launch {
       try {
-        val response = ApiRepository.getDrugExits(application)
+        val response = ApiRepository.getDrugExits()
         if (response.isSuccessful) {
           drugExitsState = response.body()?.data ?: emptyList()
         } else {

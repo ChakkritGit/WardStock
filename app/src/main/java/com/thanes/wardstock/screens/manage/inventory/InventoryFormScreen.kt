@@ -112,7 +112,7 @@ fun InventoryFormScreen(
     scope.launch {
       try {
         isRemoving = true
-        val response = ApiRepository.removeInventory(context, inventoryId = initialData?.id ?: "")
+        val response = ApiRepository.removeInventory(inventoryId = initialData?.id ?: "")
 
         if (response.isSuccessful) {
           errorMessage = deleteMessage + successMessage

@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonSyntaxException
 import com.thanes.wardstock.data.models.GroupInventoryModel
@@ -46,7 +45,7 @@ class GroupViewModel(application: Application) : AndroidViewModel(application) {
 
     viewModelScope.launch {
       try {
-        val response = ApiRepository.getGroupInventory(application)
+        val response = ApiRepository.getGroupInventory()
         if (response.isSuccessful) {
           groupInventoryState = response.body()?.data ?: emptyList()
         } else {

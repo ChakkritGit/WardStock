@@ -57,7 +57,7 @@ fun AddUser(navController: NavHostController, userSharedViewModel: UserViewModel
       isLoading = isLoading,
       showPasswordField = true,
       onSubmit = { formState, uri ->
-        if (isLoading == true) return@UserFormScreen true
+        if (isLoading) return@UserFormScreen true
 
         val isValid = formState.username.isNotBlank()
                 && formState.password.isNotBlank()
@@ -77,7 +77,6 @@ fun AddUser(navController: NavHostController, userSharedViewModel: UserViewModel
           val imagePart = uriToMultipartBodyPart(context, uri)
 
           val response = ApiRepository.createUserWithImage(
-            context = context,
             imagePart = imagePart!!,
             username = formState.username,
             password = formState.password,

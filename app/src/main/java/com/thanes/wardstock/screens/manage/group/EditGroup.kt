@@ -91,7 +91,7 @@ fun EditGroup(
             isLoading = true
 
             val isValid =
-              formState.drugId != null && formState.groupMin != 0 && formState.groupMax != 0 && formState.inventories != null
+              formState.drugId != null && formState.groupMin != 0 && formState.groupMax != 0 && formState.inventories.isNotEmpty()
 
             if (!isValid) {
               errorMessage = completeFieldMessage
@@ -100,7 +100,6 @@ fun EditGroup(
             }
 
             val response = ApiRepository.updateGroup(
-              context = context,
               groupId = group.groupid,
               drugId = formState.drugId,
               groupMin = formState.groupMin,

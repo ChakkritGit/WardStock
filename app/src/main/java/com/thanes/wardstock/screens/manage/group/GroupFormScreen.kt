@@ -108,7 +108,7 @@ fun GroupFormScreen(
   var drugId by remember { mutableStateOf(initialData?.drugId ?: "") }
   var drugIdFromEdit by remember { mutableStateOf(initialData?.drugId) }
   val inventories = remember { mutableStateListOf<InventoryItem>() }
-  var inventoriesEdit = remember { mutableStateListOf<InventoryItem>() }
+  val inventoriesEdit = remember { mutableStateListOf<InventoryItem>() }
   var groupMin by remember { mutableIntStateOf(initialData?.groupMin ?: 0) }
   var groupMax by remember { mutableIntStateOf(initialData?.groupMax ?: 0) }
   val scope = rememberCoroutineScope()
@@ -119,7 +119,7 @@ fun GroupFormScreen(
     scope.launch {
       try {
         isRemoving = true
-        val response = ApiRepository.removeGroup(context, groupId = initialData?.groupId ?: "")
+        val response = ApiRepository.removeGroup(groupId = initialData?.groupId ?: "")
 
         if (response.isSuccessful) {
           errorMessage = deleteMessage + successMessage
