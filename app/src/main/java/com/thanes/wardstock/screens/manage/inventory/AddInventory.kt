@@ -12,11 +12,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
-import com.thanes.wardstock.data.viewModel.GroupViewModel
 import com.thanes.wardstock.data.viewModel.InventoryViewModel
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.repositories.ApiRepository
 import com.thanes.wardstock.data.viewModel.MachineViewModel
+import com.thanes.wardstock.data.viewModel.RefillViewModel
 import com.thanes.wardstock.ui.components.appbar.AppBar
 import com.thanes.wardstock.ui.theme.Colors
 import org.json.JSONObject
@@ -27,8 +27,8 @@ data class Position(val label: String, val value: Int)
 fun AddInventory(
   navController: NavHostController,
   inventorySharedViewModel: InventoryViewModel,
-  groupSharedViewModel: GroupViewModel,
-  machineSharedViewModel: MachineViewModel
+  machineSharedViewModel: MachineViewModel,
+  refillSharedViewModel: RefillViewModel
 ) {
   val context = LocalContext.current
   var canClick by remember { mutableStateOf(true) }
@@ -72,6 +72,7 @@ fun AddInventory(
       navController = navController,
       inventorySharedViewModel = inventorySharedViewModel,
       machineSharedViewModel = machineSharedViewModel,
+      refillSharedViewModel = refillSharedViewModel,
       onSubmit = { formState ->
         if (isLoading) return@InventoryFormScreen true
 
@@ -102,6 +103,7 @@ fun AddInventory(
           return@InventoryFormScreen if (response.isSuccessful) {
             errorMessage = successMessage
             inventorySharedViewModel.fetchInventory()
+            refillSharedViewModel.fetchRefill()
             navController.popBackStack()
             true
           } else {

@@ -58,6 +58,7 @@ import com.thanes.wardstock.R
 import com.thanes.wardstock.data.repositories.ApiRepository
 import com.thanes.wardstock.data.viewModel.InventoryViewModel
 import com.thanes.wardstock.data.viewModel.MachineViewModel
+import com.thanes.wardstock.data.viewModel.RefillViewModel
 import com.thanes.wardstock.ui.components.loading.LoadingDialog
 import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
@@ -85,6 +86,7 @@ fun InventoryFormScreen(
   navController: NavHostController?,
   inventorySharedViewModel: InventoryViewModel,
   machineSharedViewModel: MachineViewModel,
+  refillSharedViewModel: RefillViewModel,
   initialData: InventoryFormState? = null,
   onSubmit: suspend (InventoryFormState) -> Boolean
 ) {
@@ -115,6 +117,7 @@ fun InventoryFormScreen(
         if (response.isSuccessful) {
           errorMessage = deleteMessage + successMessage
           inventorySharedViewModel.fetchInventory()
+          refillSharedViewModel.fetchRefill()
           navController?.popBackStack()
         } else {
           val errorJson = response.errorBody()?.string()

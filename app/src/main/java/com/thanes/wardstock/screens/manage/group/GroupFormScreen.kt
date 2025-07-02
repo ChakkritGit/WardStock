@@ -363,7 +363,6 @@ fun GroupFormScreen(
             if (availablePositions.isNotEmpty()) {
               availablePositions.forEach { item ->
                 val isSelected = inventories.find { it.inventoryId == item.id } != null
-                Log.d("Item: ", item.toString())
                 DropdownMenuItem(
                   text = {
                     Row(

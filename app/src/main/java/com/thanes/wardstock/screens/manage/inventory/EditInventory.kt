@@ -14,9 +14,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.repositories.ApiRepository
-import com.thanes.wardstock.data.viewModel.GroupViewModel
 import com.thanes.wardstock.data.viewModel.InventoryViewModel
 import com.thanes.wardstock.data.viewModel.MachineViewModel
+import com.thanes.wardstock.data.viewModel.RefillViewModel
 import com.thanes.wardstock.ui.components.appbar.AppBar
 import com.thanes.wardstock.ui.theme.Colors
 import org.json.JSONObject
@@ -25,8 +25,8 @@ import org.json.JSONObject
 fun EditInventory(
   navController: NavHostController,
   inventorySharedViewModel: InventoryViewModel,
-  groupSharedViewModel: GroupViewModel,
-  machineSharedViewModel: MachineViewModel
+  machineSharedViewModel: MachineViewModel,
+  refillSharedViewModel: RefillViewModel
 ) {
   val context = LocalContext.current
   var canClick by remember { mutableStateOf(true) }
@@ -73,6 +73,7 @@ fun EditInventory(
         navController = navController,
         inventorySharedViewModel,
         machineSharedViewModel = machineSharedViewModel,
+        refillSharedViewModel = refillSharedViewModel,
         initialData = InventoryFormState(
           id = inventory.id,
           position = inventory.position,
@@ -111,6 +112,7 @@ fun EditInventory(
             return@InventoryFormScreen if (response.isSuccessful) {
               errorMessage = successMessage
               machineSharedViewModel.fetchMachine()
+              refillSharedViewModel.fetchRefill()
               navController.popBackStack()
               true
             } else {

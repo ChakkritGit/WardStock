@@ -335,7 +335,7 @@ object ApiRepository {
     groupMin: Int,
     groupMax: Int,
     inventories: List<InventoryItem>?
-  ): Response<ApiResponse<InventoryModel>> {
+  ): Response<ApiResponse<String>> {
     val request = GroupInventoryRequest(
       drugId = drugId!!,
       groupMin = groupMin,

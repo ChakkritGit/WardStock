@@ -169,5 +169,5 @@ interface ApiService {
   suspend fun createGroup(@Body request: GroupInventoryRequest): Response<ApiResponse<String>>
 
   @PATCH("group-inventory/{groupId}")
-  suspend fun updateGroup(@Path("groupId") groupId: String, @Body request: GroupInventoryRequest): Response<ApiResponse<InventoryModel>>
+  suspend fun updateGroup(@Path("groupId") groupId: String, @Body request: GroupInventoryRequest): Response<ApiResponse<String>>
 }

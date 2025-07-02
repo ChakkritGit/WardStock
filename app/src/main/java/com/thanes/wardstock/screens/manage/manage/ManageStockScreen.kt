@@ -134,8 +134,7 @@ fun ManageStockScreen(
           composable(Tabs.Inventory.route) {
             InventoryTab(
               navController,
-              inventorySharedViewModel,
-              groupSharedViewModel
+              inventorySharedViewModel
             )
           }
           composable(Tabs.Group.route) {

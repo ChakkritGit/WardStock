@@ -61,7 +61,6 @@ import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 fun InventoryTab(
   navController: NavHostController,
   inventorySharedViewModel: InventoryViewModel,
-  groupSharedViewModel: GroupViewModel
 ) {
   val context = LocalContext.current
   var pullState by remember { mutableStateOf(false) }
