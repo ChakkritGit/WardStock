@@ -1,6 +1,5 @@
 package com.thanes.wardstock.data.repositories
 
-import retrofit2.Response
 import com.thanes.wardstock.data.models.ApiResponse
 import com.thanes.wardstock.data.models.DrugExitsModel
 import com.thanes.wardstock.data.models.DrugModel
@@ -25,6 +24,7 @@ import com.thanes.wardstock.remote.configs.RetrofitInstance.createApiWithAuth
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.Response
 
 object ApiRepository {
   suspend fun login(userName: String, userPassword: String): Response<ApiResponse<UserData>> {

@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
-import com.thanes.wardstock.data.language.LanguageManager
+import com.thanes.wardstock.data.language.LocalizedAppWrapper
 import com.thanes.wardstock.navigation.AppNavigation
 import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.theme.WardStockTheme
@@ -27,8 +27,6 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    LanguageManager.getInstance().applyLanguageToActivity(this)
-
     permissionRequest()
 
     HideSystemControll.manageSystemBars(this, hide = true)
@@ -38,12 +36,14 @@ class MainActivity : ComponentActivity() {
     val splashScreen = installSplashScreen()
 
     setContent {
-      WardStockTheme {
-        val context = LocalContext.current
-        val navController = rememberNavController()
+      LocalizedAppWrapper {
+        WardStockTheme {
+          val context = LocalContext.current
+          val navController = rememberNavController()
 
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-          AppNavigation(navController, innerPadding, splashScreen, context)
+          Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+            AppNavigation(navController, innerPadding, splashScreen, context)
+          }
         }
       }
     }

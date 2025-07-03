@@ -8,7 +8,6 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.thanes.wardstock.data.language.LanguageManager
 import com.thanes.wardstock.services.machine.Dispense
 import com.thanes.wardstock.services.rabbit.RabbitMQService
 import com.thanes.wardstock.services.usb.SerialPortManager
@@ -29,8 +28,6 @@ class App : Application() {
 
   override fun onCreate() {
     super.onCreate()
-
-    LanguageManager.getInstance().initializeLanguage(this)
 
     initializeServices()
   }
