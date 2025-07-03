@@ -1,6 +1,7 @@
 package com.thanes.wardstock.screens.setting.language
 
 import android.content.Context
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,9 +31,10 @@ import com.thanes.wardstock.R
 import com.thanes.wardstock.data.language.LanguageManager
 import com.thanes.wardstock.data.models.LanguageModel
 import com.thanes.wardstock.ui.components.LanguageSwitcher
-import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
@@ -111,11 +113,13 @@ fun LanguageSwitcher(context: Context) {
   }
 }
 
-private fun triggerAppRecomposition(context: Context) {
-  if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.R) {
-    if (context is android.app.Activity) {
+fun triggerAppRecomposition(context: Context) {
+  if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R && context is android.app.Activity) {
+    CoroutineScope(Dispatchers.Main).launch {
+      val savedLanguage = LanguageManager.getInstance().getSavedLanguage(context)
+
       val intent = android.content.Intent("LANGUAGE_CHANGED")
-      intent.putExtra("language", LanguageManager.getInstance().getSavedLanguage(context))
+      intent.putExtra("language", savedLanguage)
       context.sendBroadcast(intent)
 
       context.recreate()

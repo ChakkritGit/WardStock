@@ -15,7 +15,7 @@ import com.thanes.wardstock.services.usb.SerialPortManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.Locale
 
 class App : Application() {
 
@@ -45,10 +45,11 @@ class App : Application() {
   }
 
   private fun updateContextLocale(context: Context): Context {
-    val languageManager = LanguageManager.getInstance()
-    val savedLanguage = languageManager.getSavedLanguage(context)
+    val fallbackLanguage = context
+      .getSharedPreferences("language_prefs", MODE_PRIVATE)
+      .getString("selected_language", "en") ?: "en"
 
-    val locale = Locale.forLanguageTag(savedLanguage)
+    val locale = Locale.forLanguageTag(fallbackLanguage)
     Locale.setDefault(locale)
 
     val config = Configuration(context.resources.configuration)

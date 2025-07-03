@@ -20,7 +20,7 @@ import com.thanes.wardstock.data.language.LanguageManager
 import com.thanes.wardstock.navigation.AppNavigation
 import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.theme.WardStockTheme
-import java.util.*
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
   @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -62,12 +62,16 @@ class MainActivity : ComponentActivity() {
   }
 
   override fun attachBaseContext(newBase: Context) {
-    val languageManager = LanguageManager.getInstance()
+    val fallbackLanguage = newBase
+      .getSharedPreferences("language_prefs", MODE_PRIVATE)
+      .getString("selected_language", "en") ?: "en"
+
     val context = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-      updateContextLocale(newBase, languageManager.getSavedLanguage(newBase))
+      updateContextLocale(newBase, fallbackLanguage)
     } else {
       newBase
     }
+
     super.attachBaseContext(context)
   }
 

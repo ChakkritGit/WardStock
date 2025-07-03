@@ -1,6 +1,5 @@
 package com.thanes.wardstock.remote.configs
 
-import android.util.Log
 import com.thanes.wardstock.data.viewModel.TokenHolder
 import com.thanes.wardstock.remote.api.services.ApiService
 import com.thanes.wardstock.utils.BaseURL
