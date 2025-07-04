@@ -1,5 +1,6 @@
 package com.thanes.wardstock.data.language
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
@@ -12,11 +13,9 @@ import kotlinx.coroutines.flow.map
 import java.util.Locale
 
 @Composable
-fun LocalizedAppWrapper(content: @Composable () -> Unit) {
-  val baseContext = LocalContext.current
-
-  val langFlow = remember(baseContext) {
-    baseContext.languageDataStore.data.map { prefs ->
+fun LocalizedAppWrapper(context: Context, content: @Composable () -> Unit) {
+  val langFlow = remember(context) {
+    context.languageDataStore.data.map { prefs ->
       prefs[stringPreferencesKey("selected_language")] ?: "en"
     }
   }
@@ -25,7 +24,7 @@ fun LocalizedAppWrapper(content: @Composable () -> Unit) {
   val locale = remember(langCode) { Locale.forLanguageTag(langCode) }
 
   val localizedContext = remember(locale) {
-    baseContext.withLocale(locale)
+    context.withLocale(locale)
   }
 
   CompositionLocalProvider(
