@@ -1,46 +1,73 @@
 package com.thanes.wardstock.screens.login
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.*
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavHostController
-import com.thanes.wardstock.data.repositories.ApiRepository
-import com.thanes.wardstock.navigation.Routes
-import kotlinx.coroutines.launch
-import org.json.JSONObject
 import com.thanes.wardstock.R
+import com.thanes.wardstock.data.repositories.ApiRepository
 import com.thanes.wardstock.data.viewModel.AuthViewModel
 import com.thanes.wardstock.data.viewModel.TokenHolder
+import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.components.keyboard.Keyboard
 import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
+import com.thanes.wardstock.utils.parseErrorMessage
+import com.thanes.wardstock.utils.parseExceptionMessage
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, context: Context) {
@@ -57,7 +84,6 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, 
 
   val completeFieldMessage = stringResource(R.string.complete_field)
   val userDataInCompleteMessage = stringResource(R.string.userData_InComplete)
-  val somethingWrongMessage = stringResource(R.string.something_wrong)
 
   fun handleLogin() {
     errorMessage = ""
@@ -89,51 +115,11 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, 
           }
         } else {
           val errorJson = response.errorBody()?.string()
-          val message = try {
-            JSONObject(errorJson ?: "").getString("message")
-          } catch (_: Exception) {
-            when (response.code()) {
-              400 -> "Invalid request data"
-              401 -> "Authentication required"
-              403 -> "Access denied"
-              404 -> "Prescription not found"
-              500 -> "Server error, please try again later"
-              else -> "HTTP Error ${response.code()}: ${response.message()}"
-            }
-          }
+          val message = parseErrorMessage(response.code(), errorJson)
           errorMessage = message
         }
       } catch (e: Exception) {
-        errorMessage = when (e) {
-          is java.net.UnknownHostException -> {
-            "No internet connection"
-          }
-
-          is java.net.SocketTimeoutException -> {
-            "Request timeout, please try again"
-          }
-
-          is java.net.ConnectException -> {
-            "Unable to connect to server"
-          }
-
-          is javax.net.ssl.SSLException -> {
-            "Secure connection failed"
-          }
-
-          is com.google.gson.JsonSyntaxException -> {
-            "Invalid response format"
-          }
-
-          is java.io.IOException -> {
-            "Network error occurred"
-          }
-
-          else -> {
-            Log.e("OrderAPI", "Unexpected error: ${e.javaClass.simpleName}", e)
-            "Unexpected error occurred: $somethingWrongMessage"
-          }
-        }
+        errorMessage = parseExceptionMessage(e)
       } finally {
         isLoading = false
       }
