@@ -2,6 +2,7 @@ package com.thanes.wardstock.ui.components.home
 
 import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -90,6 +91,15 @@ fun HomeWrapperContent(
   val app = context.applicationContext as App
   val currentActivity = LocalContext.current
   val applicationScope = CoroutineScope(Dispatchers.IO)
+
+  fun Context.findActivity(): Activity? {
+    var context = this
+    while (context is ContextWrapper) {
+      if (context is Activity) return context
+      context = context.baseContext
+    }
+    return null
+  }
 
   LaunchedEffect(Unit) {
     applicationScope.launch {
@@ -338,7 +348,9 @@ fun HomeWrapperContent(
         LaunchedEffect(openAlertDialog) {
           if (openAlertDialog) {
             delay(20)
-            HideSystemControll.manageSystemBars(activity as Activity, true)
+            context.findActivity()?.let { activity ->
+              HideSystemControll.manageSystemBars(activity, true)
+            }
           }
         }
       }

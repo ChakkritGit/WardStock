@@ -11,7 +11,7 @@ data class DrugModel(
   val weight: Int,
   val status: Boolean,
   val picture: String,
-  val comment: String,
+  val comment: String?,
   val createdAt: String,
   val updatedAt: String
 )

@@ -6,7 +6,7 @@ data class MachineModel(
   val location: String,
   val capacity: Int,
   val status: Boolean,
-  val comment: String,
+  val comment: String?,
   val createdAt: String,
   val updatedAt: String
 )

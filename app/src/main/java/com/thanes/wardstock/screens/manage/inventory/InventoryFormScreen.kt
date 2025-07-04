@@ -1,7 +1,6 @@
 package com.thanes.wardstock.screens.manage.inventory
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -64,8 +63,9 @@ import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
+import com.thanes.wardstock.utils.parseErrorMessage
+import com.thanes.wardstock.utils.parseExceptionMessage
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 
 data class InventoryFormState(
   val id: String = "",
@@ -95,7 +95,6 @@ fun InventoryFormScreen(
   var showDeleteDialog by remember { mutableStateOf(false) }
   val deleteMessage = stringResource(R.string.delete)
   val successMessage = stringResource(R.string.successfully)
-  val somethingWrongMessage = stringResource(R.string.something_wrong)
 
   var position by remember { mutableStateOf(initialData?.position) }
   var positionEdit by remember { mutableStateOf(initialData?.position) }
@@ -121,33 +120,11 @@ fun InventoryFormScreen(
           navController?.popBackStack()
         } else {
           val errorJson = response.errorBody()?.string()
-          val message = try {
-            JSONObject(errorJson ?: "").getString("message")
-          } catch (_: Exception) {
-            when (response.code()) {
-              400 -> "Invalid request data"
-              401 -> "Authentication required"
-              403 -> "Access denied"
-              404 -> "Prescription not found"
-              500 -> "Server error, please try again later"
-              else -> "HTTP Error ${response.code()}: ${response.message()}"
-            }
-          }
+          val message = parseErrorMessage(response.code(), errorJson)
           errorMessage = message
         }
       } catch (e: Exception) {
-        errorMessage = when (e) {
-          is java.net.UnknownHostException -> "No internet connection"
-          is java.net.SocketTimeoutException -> "Request timeout, please try again"
-          is java.net.ConnectException -> "Unable to connect to server"
-          is javax.net.ssl.SSLException -> "Secure connection failed"
-          is com.google.gson.JsonSyntaxException -> "Invalid response format"
-          is java.io.IOException -> "Network error occurred"
-          else -> {
-            Log.e("AddUser", "Unexpected error", e)
-            "Unexpected error occurred: $somethingWrongMessage"
-          }
-        }
+        errorMessage = parseExceptionMessage(e)
       } finally {
         isRemoving = false
       }

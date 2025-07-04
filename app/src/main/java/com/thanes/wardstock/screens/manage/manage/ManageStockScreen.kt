@@ -34,7 +34,6 @@ import com.thanes.wardstock.R
 import com.thanes.wardstock.data.viewModel.GroupViewModel
 import com.thanes.wardstock.data.viewModel.InventoryViewModel
 import com.thanes.wardstock.screens.manage.group.GroupTab
-import com.thanes.wardstock.screens.manage.manage.Tabs
 import com.thanes.wardstock.screens.manage.inventory.InventoryTab
 import com.thanes.wardstock.ui.components.appbar.AppBar
 import com.thanes.wardstock.ui.theme.Colors
@@ -95,7 +94,7 @@ fun ManageStockScreen(
                   Icon(
                     painter = painterResource(R.drawable.box_24px),
                     contentDescription = "box_24px",
-                    tint = if (selectedTabIndex == index) Colors.BluePrimary else Colors.BlueGrey40,
+                    tint = if (selectedTabIndex == 0) Colors.BluePrimary else Colors.BlueGrey40,
                     modifier = Modifier
                       .size(32.dp)
                       .padding(bottom = 6.dp)

@@ -3,6 +3,7 @@ package com.thanes.wardstock.ui.components.appbar
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -85,6 +86,15 @@ fun HomeAppBar(
   var alertMessage by remember { mutableStateOf("") }
   val waitForDispenseMessage = stringResource(R.string.wait_for_dispensing)
   val userData = authState.userData
+
+  fun Context.findActivity(): Activity? {
+    var context = this
+    while (context is ContextWrapper) {
+      if (context is Activity) return context
+      context = context.baseContext
+    }
+    return null
+  }
 
   LaunchedEffect(Unit) {
     while (true) {
@@ -169,7 +179,9 @@ fun HomeAppBar(
       LaunchedEffect(openAlertDialog) {
         if (openAlertDialog) {
           delay(20)
-          HideSystemControll.manageSystemBars(activity as Activity, true)
+          context.findActivity()?.let { activity ->
+            HideSystemControll.manageSystemBars(activity, true)
+          }
         }
       }
     }

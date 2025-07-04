@@ -77,8 +77,9 @@ import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
+import com.thanes.wardstock.utils.parseErrorMessage
+import com.thanes.wardstock.utils.parseExceptionMessage
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import java.time.LocalDate
 
 data class DrugFormState(
@@ -112,7 +113,6 @@ fun DrugFormScreen(
   var showDeleteDialog by remember { mutableStateOf(false) }
   val deleteMessage = stringResource(R.string.delete)
   val successMessage = stringResource(R.string.successfully)
-  val somethingWrongMessage = stringResource(R.string.something_wrong)
 
   var drugCode by remember { mutableStateOf(initialData?.drugCode ?: "") }
   var drugName by remember { mutableStateOf(initialData?.drugName ?: "") }
@@ -148,33 +148,11 @@ fun DrugFormScreen(
           navController?.popBackStack()
         } else {
           val errorJson = response.errorBody()?.string()
-          val message = try {
-            JSONObject(errorJson ?: "").getString("message")
-          } catch (_: Exception) {
-            when (response.code()) {
-              400 -> "Invalid request data"
-              401 -> "Authentication required"
-              403 -> "Access denied"
-              404 -> "Prescription not found"
-              500 -> "Server error, please try again later"
-              else -> "HTTP Error ${response.code()}: ${response.message()}"
-            }
-          }
+          val message = parseErrorMessage(response.code(), errorJson)
           errorMessage = message
         }
       } catch (e: Exception) {
-        errorMessage = when (e) {
-          is java.net.UnknownHostException -> "No internet connection"
-          is java.net.SocketTimeoutException -> "Request timeout, please try again"
-          is java.net.ConnectException -> "Unable to connect to server"
-          is javax.net.ssl.SSLException -> "Secure connection failed"
-          is com.google.gson.JsonSyntaxException -> "Invalid response format"
-          is java.io.IOException -> "Network error occurred"
-          else -> {
-            Log.e("AddUser", "Unexpected error", e)
-            "Unexpected error occurred: $somethingWrongMessage"
-          }
-        }
+        errorMessage = parseExceptionMessage(e)
       } finally {
         isRemoving = false
       }
@@ -688,82 +666,82 @@ fun DrugFormScreen(
     }
 
     LoadingDialog(isRemoving = isRemoving)
-  }
 
-  if (showDeleteDialog) {
-    AlertDialog(
-      properties = DialogProperties(
-        dismissOnBackPress = true, dismissOnClickOutside = true, usePlatformDefaultWidth = true
-      ), icon = {
-        Surface(
-          modifier = Modifier.clip(CircleShape), color = Color(0xFFD32F2F).copy(alpha = 0.3f)
-        ) {
-          Icon(
-            painter = painterResource(R.drawable.delete_24px),
-            contentDescription = "delete_user",
-            modifier = Modifier
-              .size(56.dp)
-              .padding(6.dp),
-            tint = Color(0xFFD32F2F)
-          )
-        }
-      }, text = {
-        Column(
-          verticalArrangement = Arrangement.spacedBy(6.dp),
-          horizontalAlignment = Alignment.CenterHorizontally,
-          modifier = Modifier.fillMaxWidth(0.7f)
-        ) {
-          Text(
-            text = stringResource(R.string.delete_user),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = ibmpiexsansthailooped
-          )
-          Text(
-            text = stringResource(R.string.confirm_delete_desc_drug),
-            fontSize = 20.sp,
-            fontFamily = ibmpiexsansthailooped
-          )
-        }
-      }, onDismissRequest = {
-        showDeleteDialog = false
-      }, confirmButton = {
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-          GradientButton(
-            onClick = {
-              removeDrug()
-              showDeleteDialog = false
-            },
-            text = stringResource(R.string.delete),
-            fontWeight = FontWeight.Medium,
-            shape = RoundedCornerShape(RoundRadius.Medium),
-            textSize = 20.sp,
-            modifier = Modifier
-              .fillMaxWidth(0.7f)
-              .height(56.dp),
-            gradient = Brush.verticalGradient(
-              colors = listOf(Color(0xFFD32F2F), Color(0xFFB71C1C))
-            )
-          )
-
-          GradientButton(
-            onClick = {
-              showDeleteDialog = false
-            },
-            shape = RoundedCornerShape(RoundRadius.Medium),
-            gradient = Brush.verticalGradient(
-              colors = listOf(Colors.BlueGrey80, Colors.BlueGrey80),
-            ),
-            modifier = Modifier
-              .fillMaxWidth(0.7f)
-              .height(56.dp)
+    if (showDeleteDialog) {
+      AlertDialog(
+        properties = DialogProperties(
+          dismissOnBackPress = true, dismissOnClickOutside = true, usePlatformDefaultWidth = true
+        ), icon = {
+          Surface(
+            modifier = Modifier.clip(CircleShape), color = Color(0xFFD32F2F).copy(alpha = 0.3f)
           ) {
-            Text(
-              stringResource(R.string.cancel), color = Colors.BlueSecondary, fontSize = 20.sp
+            Icon(
+              painter = painterResource(R.drawable.delete_24px),
+              contentDescription = "delete_user",
+              modifier = Modifier
+                .size(56.dp)
+                .padding(6.dp),
+              tint = Color(0xFFD32F2F)
             )
           }
-        }
-      }, dismissButton = {}, containerColor = Colors.BlueGrey100
-    )
+        }, text = {
+          Column(
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth(0.7f)
+          ) {
+            Text(
+              text = stringResource(R.string.delete_user),
+              fontSize = 24.sp,
+              fontWeight = FontWeight.Bold,
+              fontFamily = ibmpiexsansthailooped
+            )
+            Text(
+              text = stringResource(R.string.confirm_delete_desc_drug),
+              fontSize = 20.sp,
+              fontFamily = ibmpiexsansthailooped
+            )
+          }
+        }, onDismissRequest = {
+          showDeleteDialog = false
+        }, confirmButton = {
+          Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            GradientButton(
+              onClick = {
+                removeDrug()
+                showDeleteDialog = false
+              },
+              text = stringResource(R.string.delete),
+              fontWeight = FontWeight.Medium,
+              shape = RoundedCornerShape(RoundRadius.Medium),
+              textSize = 20.sp,
+              modifier = Modifier
+                .fillMaxWidth(0.7f)
+                .height(56.dp),
+              gradient = Brush.verticalGradient(
+                colors = listOf(Color(0xFFD32F2F), Color(0xFFB71C1C))
+              )
+            )
+
+            GradientButton(
+              onClick = {
+                showDeleteDialog = false
+              },
+              shape = RoundedCornerShape(RoundRadius.Medium),
+              gradient = Brush.verticalGradient(
+                colors = listOf(Colors.BlueGrey80, Colors.BlueGrey80),
+              ),
+              modifier = Modifier
+                .fillMaxWidth(0.7f)
+                .height(56.dp)
+            ) {
+              Text(
+                stringResource(R.string.cancel), color = Colors.BlueSecondary, fontSize = 20.sp
+              )
+            }
+          }
+        }, dismissButton = {}, containerColor = Colors.BlueGrey100
+      )
+    }
   }
 }
