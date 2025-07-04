@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -46,7 +45,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -59,6 +57,7 @@ import com.thanes.wardstock.App
 import com.thanes.wardstock.R
 import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.components.appbar.AppBar
+import com.thanes.wardstock.ui.components.dialog.AlertDialog
 import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
@@ -337,26 +336,4 @@ fun SlotGridWithBottomSheet(app: App) {
       icon = Icons.Default.Info
     )
   }
-}
-
-@Composable
-fun AlertDialog(
-  dialogTitle: String,
-  dialogText: String,
-  icon: ImageVector,
-) {
-  AlertDialog(
-    icon = {
-      Icon(icon, contentDescription = "Example Icon")
-    },
-    title = {
-      Text(text = dialogTitle)
-    },
-    text = {
-      Text(text = dialogText)
-    },
-    onDismissRequest = {},
-    confirmButton = {},
-    dismissButton = {}
-  )
 }

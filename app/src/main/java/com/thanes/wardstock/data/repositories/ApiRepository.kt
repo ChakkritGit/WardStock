@@ -32,6 +32,11 @@ object ApiRepository {
     return RetrofitInstance.api.login(request)
   }
 
+  suspend fun veryUser(userName: String, userPassword: String): Response<ApiResponse<String?>> {
+    val request = LoginRequest(userName, userPassword)
+    return RetrofitInstance.api.verifyUser(request)
+  }
+
   suspend fun orderWithPresId(
     prescriptionId: String
   ): Response<ApiResponse<OrderModel>> {
@@ -331,5 +336,21 @@ object ApiRepository {
     )
 
     return createApiWithAuth().updateGroup(groupId, request)
+  }
+
+  suspend fun updateOrderToPending(orderId: String, prescriptionId: String): Response<ApiResponse<String>> {
+    return createApiWithAuth().updateOrderToPending(orderId, prescriptionId)
+  }
+
+  suspend fun updateOrderToReceive(orderId: String, prescriptionId: String): Response<ApiResponse<String>> {
+    return createApiWithAuth().updateOrderToReceive(orderId, prescriptionId)
+  }
+
+  suspend fun updateOrderToComplete(orderId: String, prescriptionId: String): Response<ApiResponse<String>> {
+    return createApiWithAuth().updateOrderToComplete(orderId, prescriptionId)
+  }
+
+  suspend fun updateOrderToError(orderId: String, prescriptionId: String): Response<ApiResponse<String>> {
+    return createApiWithAuth().updateOrderToError(orderId, prescriptionId)
   }
 }

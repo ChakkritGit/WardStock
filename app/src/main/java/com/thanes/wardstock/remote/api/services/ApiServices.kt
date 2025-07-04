@@ -54,6 +54,9 @@ interface ApiService {
   @POST("auth/login")
   suspend fun login(@Body request: LoginRequest): Response<ApiResponse<UserData>>
 
+  @POST("auth/verify-drug")
+  suspend fun verifyUser(@Body request: LoginRequest): Response<ApiResponse<String?>>
+
   @GET("dispense/{prescriptionId}")
   suspend fun orderWithPresId(@Path("prescriptionId") prescriptionId: String): Response<ApiResponse<OrderModel>>
 
@@ -170,4 +173,28 @@ interface ApiService {
 
   @PATCH("group-inventory/{groupId}")
   suspend fun updateGroup(@Path("groupId") groupId: String, @Body request: GroupInventoryRequest): Response<ApiResponse<String>>
+
+  @GET("dispense/order/status/pending/{orderId}/{prescriptionId}")
+  suspend fun updateOrderToPending(
+    @Path("orderId") orderId: String,
+    @Path("prescriptionId") prescriptionId: String
+  ): Response<ApiResponse<String>>
+
+  @GET("dispense/order/status/receive/{orderId}/{prescriptionId}")
+  suspend fun updateOrderToReceive(
+    @Path("orderId") orderId: String,
+    @Path("prescriptionId") prescriptionId: String
+  ): Response<ApiResponse<String>>
+
+  @GET("dispense/order/status/complete/{orderId}/{prescriptionId}")
+  suspend fun updateOrderToComplete(
+    @Path("orderId") orderId: String,
+    @Path("prescriptionId") prescriptionId: String
+  ): Response<ApiResponse<String>>
+
+  @GET("dispense/order/status/error/{orderId}/{prescriptionId}")
+  suspend fun updateOrderToError(
+    @Path("orderId") orderId: String,
+    @Path("prescriptionId") prescriptionId: String
+  ): Response<ApiResponse<String>>
 }

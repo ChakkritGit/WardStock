@@ -17,8 +17,6 @@ class RabbitMQService private constructor() {
   private var connection: Connection? = null
   private var channel: Channel? = null
   private var isListening = false
-//  private var ackMessage: Envelope? = null
-//  private var messageBody = ""
 
   private val tag = "RabbitMq"
 

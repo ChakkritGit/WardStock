@@ -23,7 +23,7 @@ fun HomeScreen(
   navController: NavHostController,
   context: Context,
   authViewModel: AuthViewModel,
-  orderSharedViewModel: OrderViewModel
+  orderSharedViewModel: OrderViewModel,
 ) {
   val authState by authViewModel.authState.collectAsState()
 
@@ -41,8 +41,72 @@ fun HomeScreen(
           .fillMaxHeight()
       ) {
         HomeMenu(navController, context, authState, orderSharedViewModel)
-        HomeWrapperContent(context, orderSharedViewModel)
+        HomeWrapperContent(context, orderSharedViewModel, authState)
       }
     }
   }
 }
+
+//@Composable
+//fun SlideToConfirm(
+//  modifier: Modifier = Modifier,
+//  width: Dp = 300.dp,
+//  height: Dp = 56.dp,
+//  onConfirm: () -> Unit
+//) {
+//  var sliderPosition by remember { mutableFloatStateOf(0f) }
+//  val maxPositionPx = with(LocalDensity.current) { (width - height).toPx() }
+//
+//  var confirmed by remember { mutableStateOf(false) }
+//
+//  Box(
+//    modifier = modifier
+//      .width(width)
+//      .height(height)
+//      .clip(RoundedCornerShape(28.dp))
+//      .background(Color.LightGray)
+//  ) {
+//    // background text
+//    if (!confirmed) {
+//      Text(
+//        "Slide to confirm",
+//        modifier = Modifier
+//          .align(Alignment.Center),
+//        color = Color.DarkGray,
+//        fontWeight = FontWeight.Bold
+//      )
+//    } else {
+//      Text(
+//        "Confirmed!",
+//        modifier = Modifier.align(Alignment.Center),
+//        color = Color.Green,
+//        fontWeight = FontWeight.Bold
+//      )
+//    }
+//
+//    Box(
+//      modifier = Modifier
+//        .offset { IntOffset(sliderPosition.roundToInt(), 0) }
+//        .size(height)
+//        .clip(RoundedCornerShape(28.dp))
+//        .background(Color.Green)
+//        .pointerInput(Unit) {
+//          detectDragGestures(
+//            onDragEnd = {
+//              if (sliderPosition >= maxPositionPx * 0.9f) {
+//                confirmed = true
+//                onConfirm()
+//              } else {
+//                sliderPosition = 0f
+//              }
+//            },
+//            onDrag = { change, dragAmount ->
+//              change.consume()
+//              val newPosition = (sliderPosition + dragAmount.x).coerceIn(0f, maxPositionPx)
+//              sliderPosition = newPosition
+//            }
+//          )
+//        }
+//    )
+//  }
+//}

@@ -1,5 +1,6 @@
 package com.thanes.wardstock.ui.components.home
 
+import android.app.Activity
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
@@ -18,6 +19,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -34,32 +37,48 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.rabbitmq.client.Channel
-import com.rabbitmq.client.Envelope
 import com.thanes.wardstock.App
 import com.thanes.wardstock.R
+import com.thanes.wardstock.data.models.RabbitOrderMessage
+import com.thanes.wardstock.data.models.UserRole
+import com.thanes.wardstock.data.repositories.ApiRepository
+import com.thanes.wardstock.data.viewModel.AuthState
 import com.thanes.wardstock.data.viewModel.OrderViewModel
+import com.thanes.wardstock.services.rabbit.RabbitMQPendingAck
 import com.thanes.wardstock.services.rabbit.RabbitMQService
 import com.thanes.wardstock.ui.components.BarcodeInputField
+import com.thanes.wardstock.ui.components.dialog.AlertDialog
+import com.thanes.wardstock.ui.components.dispense.showAuthDialogUntilVerified
+import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
+import com.thanes.wardstock.utils.objectStringToGson
+import com.thanes.wardstock.utils.parseErrorMessage
+import com.thanes.wardstock.utils.parseExceptionMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun HomeWrapperContent(context: Context, orderSharedViewModel: OrderViewModel) {
+fun HomeWrapperContent(
+  context: Context,
+  orderSharedViewModel: OrderViewModel,
+  authState: AuthState
+) {
   val viewModel = orderSharedViewModel
-  var pendingAckChannel by remember { mutableStateOf<Channel?>(null) }
-  var pendingEnvelope by remember { mutableStateOf<Envelope?>(null) }
   var pullState by remember { mutableStateOf(false) }
+  var openAlertDialog by remember { mutableStateOf(false) }
+  var errorMessage by remember { mutableStateOf("") }
   val pullRefreshState = rememberPullRefreshState(
     refreshing = viewModel.isLoading,
     onRefresh = {
@@ -69,6 +88,7 @@ fun HomeWrapperContent(context: Context, orderSharedViewModel: OrderViewModel) {
   )
 
   val app = context.applicationContext as App
+  val currentActivity = LocalContext.current
   val applicationScope = CoroutineScope(Dispatchers.IO)
 
   LaunchedEffect(Unit) {
@@ -77,21 +97,77 @@ fun HomeWrapperContent(context: Context, orderSharedViewModel: OrderViewModel) {
       if (app.isInitialized) {
         rabbitMQ.listenToQueue("vdOrder") { consumerTag, envelope, properties, body, channel ->
           val message = String(body, charset("UTF-8"))
+          val parsedMessage: RabbitOrderMessage? = objectStringToGson<RabbitOrderMessage>(message)
+          val userData = authState.userData
+
           Log.d("RabbitMQ", "Received message: $message")
 
-          pendingAckChannel = channel
-          pendingEnvelope = envelope
+          RabbitMQPendingAck.channel = channel
+          RabbitMQPendingAck.envelope = envelope
 
-//          CoroutineScope(Dispatchers.IO).launch {
-//            delay(3000)
-//            Log.d("Delay", "Passed 3 second ready to acknowledge message")
-//            try {
-//              channel?.basicAck(envelope.deliveryTag, false)
-//              Log.d("RabbitMQ", "Acked message: $message")
-//            } catch (e: Exception) {
-//              Log.e("RabbitMQ", "Failed to ack: ${e.message}")
-//            }
-//          }
+          parsedMessage?.let {
+            Log.d("RabbitMQ", "OrderID ID: ${it.id}")
+            Log.d("RabbitMQ", "Prescription ID: ${it.presId}")
+            Log.d("RabbitMQ", "Qty: ${it.qty}")
+            Log.d("RabbitMQ", "Position: ${it.position}")
+            Log.d(
+              "RabbitMQ",
+              "Priority: ${if (it.priority == 1) "ยาทั่วไป" else if (it.priority == 2) "ยา Had" else "ยา Narcotic"}"
+            )
+
+            if ((it.priority == 2 || it.priority == 3) && userData?.role == UserRole.NURSE) {
+              CoroutineScope(Dispatchers.Main).launch {
+                val verified = showAuthDialogUntilVerified(context)
+
+                if (!verified) {
+                  withContext(Dispatchers.IO) {
+                    try {
+                      channel?.basicReject(envelope.deliveryTag, true)
+                      Log.d("RabbitMQ", "Rejected and re-queued message: ${it.id}")
+                    } catch (e: Exception) {
+                      Log.e("RabbitMQ", "Failed to reject message: ${e.message}")
+                    }
+                  }
+                  return@launch
+                }
+              }
+            }
+
+            CoroutineScope(Dispatchers.Main).launch {
+              try {
+                ApiRepository.updateOrderToPending(it.id, it.presId)
+                viewModel.fetchOrderInitial()
+
+                app.dispenseService?.let { dispenseService ->
+                  openAlertDialog = true
+
+                  val continueReturn = withContext(Dispatchers.IO) {
+                    try {
+                      dispenseService.sendToMachine(
+                        dispenseQty = it.qty,
+                        position = it.position
+                      )
+                    } catch (e: Exception) {
+                      Log.e("Dispense", "Error during dispensing: ${e.message}")
+                      false
+                    }
+                  }
+
+                  if (continueReturn) {
+                    ApiRepository.updateOrderToReceive(it.id, it.presId)
+                  } else {
+                    ApiRepository.updateOrderToError(it.id, it.presId)
+                  }
+                  viewModel.fetchOrderInitial()
+                  openAlertDialog = false
+                } ?: run {
+                  Log.e("Dispense", "Dispense service is not available")
+                }
+              } catch (e: Exception) {
+                errorMessage = parseExceptionMessage(e)
+              }
+            }
+          }
         }
       } else {
         Log.d("RabbitMQ", "RabbitMQ is not initialized yet.")
@@ -112,30 +188,40 @@ fun HomeWrapperContent(context: Context, orderSharedViewModel: OrderViewModel) {
     }
   }
 
+  LaunchedEffect(errorMessage) {
+    if (errorMessage.isNotEmpty()) {
+      Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+      errorMessage = ""
+    }
+  }
+
   BarcodeInputField { scanned ->
     if (scanned.length == 1 && viewModel.orderState == null) {
       viewModel.fetchOrder(scanned)
     } else if (scanned.length > 1 && viewModel.orderState != null) {
-      Log.d("Barcode", "Scanned text: $scanned")
-
-      val channel = pendingAckChannel
-      val envelope = pendingEnvelope
+      val channel = RabbitMQPendingAck.channel
+      val envelope = RabbitMQPendingAck.envelope
 
       if (channel != null && envelope != null) {
         CoroutineScope(Dispatchers.IO).launch {
           try {
-            pendingAckChannel?.basicAck(pendingEnvelope?.deliveryTag ?: 0L, false)
-            Log.d("RabbitMQ", "Acked from BarcodeInputField")
-
-            pendingAckChannel = null
-            pendingEnvelope = null
+            val response = ApiRepository.updateOrderToComplete(scanned, viewModel.orderState!!.id)
+            if (response.isSuccessful) {
+              viewModel.fetchOrderInitial()
+              channel.basicAck(envelope.deliveryTag, false)
+              RabbitMQPendingAck.reset()
+              Log.d("RabbitMQ", "Acked from BarcodeInputField")
+            } else {
+              val errorJson = response.errorBody()?.string()
+              val message = parseErrorMessage(response.code(), errorJson)
+              errorMessage = message
+            }
           } catch (e: Exception) {
-            Log.e("RabbitMQ", "Failed to ack in BarcodeInputField: ${e.message}")
+            errorMessage = parseExceptionMessage(e)
           }
         }
       }
     }
-    Log.d("Barcode", "Scanned: $scanned")
   }
 
   Box(
@@ -245,6 +331,23 @@ fun HomeWrapperContent(context: Context, orderSharedViewModel: OrderViewModel) {
           }
         }
       }
+    }
+
+    if (openAlertDialog) {
+      currentActivity.let { activity ->
+        LaunchedEffect(openAlertDialog) {
+          if (openAlertDialog) {
+            delay(20)
+            HideSystemControll.manageSystemBars(activity as Activity, true)
+          }
+        }
+      }
+
+      AlertDialog(
+        dialogTitle = "กำลังหยิบ",
+        dialogText = "โปรดรอจนกว่าจะหยิบเสร็จ",
+        icon = Icons.Default.Info
+      )
     }
   }
 }
