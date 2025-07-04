@@ -1,16 +1,26 @@
 package com.thanes.wardstock.services.rabbit
 
 import android.util.Log
-import com.rabbitmq.client.*
-import com.thanes.wardstock.utils.*
+import com.rabbitmq.client.AMQP
+import com.rabbitmq.client.Channel
+import com.rabbitmq.client.Connection
+import com.rabbitmq.client.ConnectionFactory
+import com.rabbitmq.client.DefaultConsumer
+import com.rabbitmq.client.Envelope
+import com.thanes.wardstock.utils.RabbitHost
+import com.thanes.wardstock.utils.RabbitPass
+import com.thanes.wardstock.utils.RabbitPort
+import com.thanes.wardstock.utils.RabbitUser
 
 class RabbitMQService private constructor() {
 
   private var connection: Connection? = null
   private var channel: Channel? = null
   private var isListening = false
-  private var ackMessage: Envelope? = null
-  private var messageBody = ""
+//  private var ackMessage: Envelope? = null
+//  private var messageBody = ""
+
+  private val tag = "RabbitMq"
 
   companion object {
     @Volatile
@@ -25,13 +35,13 @@ class RabbitMQService private constructor() {
 
   fun connect() {
     if (connection?.isOpen == true && channel?.isOpen == true) {
-      Log.d("RabbitMq", "Already connected.")
+      Log.d(tag, "Already connected.")
       return
     }
 
     synchronized(this) {
       if (connection?.isOpen == true && channel?.isOpen == true) {
-        Log.d("RabbitMq", "Already connected (inside sync).")
+        Log.d(tag, "Already connected (inside sync).")
         return
       }
 
@@ -54,12 +64,12 @@ class RabbitMQService private constructor() {
           channel = connection!!.createChannel()
           channel!!.basicQos(1)
 
-          Log.d("RabbitMq", "New connection established on attempt $attempt.")
+          Log.d(tag, "New connection established on attempt $attempt.")
           break
         } catch (e: Exception) {
-          Log.e("RabbitMq", "Failed to connect on attempt $attempt: ${e.message}", e)
+          Log.e(tag, "Failed to connect on attempt $attempt: ${e.message}", e)
           if (attempt >= maxRetries) {
-            Log.e("RabbitMq", "All connection attempts failed.")
+            Log.e(tag, "All connection attempts failed.")
           } else {
             Thread.sleep(2000)
           }
@@ -69,14 +79,23 @@ class RabbitMQService private constructor() {
   }
 
   @Synchronized
-  fun listenToQueue(queueName: String) {
+  fun listenToQueue(
+    queueName: String,
+    onMessageReceived: (
+      consumerTag: String?,
+      envelope: Envelope,
+      properties: AMQP.BasicProperties?,
+      body: ByteArray,
+      channel: Channel?
+    ) -> Unit
+  ) {
     if (isListening) {
-      Log.d("RabbitMq", "Already listening to queue.")
+      Log.d(tag, "Already listening to queue.")
       return
     }
 
     if (channel == null || !channel!!.isOpen) {
-      Log.d("RabbitMq", "Channel is not open. Call connect() first.")
+      Log.d(tag, "Channel is not open. Call connect() first.")
       return
     }
 
@@ -90,41 +109,15 @@ class RabbitMQService private constructor() {
           properties: AMQP.BasicProperties?,
           body: ByteArray
         ) {
-          Log.d("RabbitMq", "Message: ${String(body)}")
-          ackMessage = envelope
-          messageBody = String(body)
+          onMessageReceived(consumerTag, envelope, properties, body, channel)
         }
       }
 
       channel!!.basicConsume(queueName, false, consumer)
       isListening = true
-      Log.d("RabbitMq", "Started listening to $queueName")
+      Log.d(tag, "Started listening to $queueName")
     } catch (e: Exception) {
-      Log.e("RabbitMq", "Failed to listening: ${e.message}", e)
-    }
-  }
-
-  fun ack() {
-    try {
-      val envelope = ackMessage
-      if (envelope != null) {
-        channel?.basicAck(envelope.deliveryTag, false)
-        Log.d("RabbitMq", "Acked message: $messageBody")
-        ackMessage = null
-        messageBody = ""
-      } else {
-        Log.e("RabbitMq", "Cannot ack: ackMessage is null")
-      }
-    } catch (e: Exception) {
-      Log.e("RabbitMq", "Cannot ack: ${e.message}", e)
-    }
-  }
-
-  fun reject(envelope: Envelope, requeue: Boolean = true) {
-    try {
-      channel?.basicReject(envelope.deliveryTag, requeue)
-    } catch (e: Exception) {
-      Log.e("RabbitMq", "Cannot reject ${e.message.toString()}")
+      Log.e(tag, "Failed to listening: ${e.message}", e)
     }
   }
 
@@ -133,7 +126,7 @@ class RabbitMQService private constructor() {
       channel?.close()
       connection?.close()
     } catch (e: Exception) {
-      Log.d("RabbitMq", "Error while disconnect ${e.message.toString()}")
+      Log.d(tag, "Error while disconnect ${e.message.toString()}")
     } finally {
       channel = null
       connection = null

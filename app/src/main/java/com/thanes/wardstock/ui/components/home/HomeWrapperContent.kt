@@ -18,10 +18,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,24 +39,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.rabbitmq.client.Channel
+import com.rabbitmq.client.Envelope
+import com.thanes.wardstock.App
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.viewModel.OrderViewModel
+import com.thanes.wardstock.services.rabbit.RabbitMQService
 import com.thanes.wardstock.ui.components.BarcodeInputField
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeWrapperContent(context: Context, orderSharedViewModel: OrderViewModel) {
-  var viewModel = orderSharedViewModel
+  val viewModel = orderSharedViewModel
+  var pendingAckChannel by remember { mutableStateOf<Channel?>(null) }
+  var pendingEnvelope by remember { mutableStateOf<Envelope?>(null) }
   var pullState by remember { mutableStateOf(false) }
   val pullRefreshState = rememberPullRefreshState(
     refreshing = viewModel.isLoading,
@@ -58,6 +67,37 @@ fun HomeWrapperContent(context: Context, orderSharedViewModel: OrderViewModel) {
       pullState = true
     }
   )
+
+  val app = context.applicationContext as App
+  val applicationScope = CoroutineScope(Dispatchers.IO)
+
+  LaunchedEffect(Unit) {
+    applicationScope.launch {
+      val rabbitMQ = RabbitMQService.getInstance()
+      if (app.isInitialized) {
+        rabbitMQ.listenToQueue("vdOrder") { consumerTag, envelope, properties, body, channel ->
+          val message = String(body, charset("UTF-8"))
+          Log.d("RabbitMQ", "Received message: $message")
+
+          pendingAckChannel = channel
+          pendingEnvelope = envelope
+
+//          CoroutineScope(Dispatchers.IO).launch {
+//            delay(3000)
+//            Log.d("Delay", "Passed 3 second ready to acknowledge message")
+//            try {
+//              channel?.basicAck(envelope.deliveryTag, false)
+//              Log.d("RabbitMQ", "Acked message: $message")
+//            } catch (e: Exception) {
+//              Log.e("RabbitMQ", "Failed to ack: ${e.message}")
+//            }
+//          }
+        }
+      } else {
+        Log.d("RabbitMQ", "RabbitMQ is not initialized yet.")
+      }
+    }
+  }
 
   LaunchedEffect(viewModel.orderState) {
     if (viewModel.orderState == null) {
@@ -77,6 +117,23 @@ fun HomeWrapperContent(context: Context, orderSharedViewModel: OrderViewModel) {
       viewModel.fetchOrder(scanned)
     } else if (scanned.length > 1 && viewModel.orderState != null) {
       Log.d("Barcode", "Scanned text: $scanned")
+
+      val channel = pendingAckChannel
+      val envelope = pendingEnvelope
+
+      if (channel != null && envelope != null) {
+        CoroutineScope(Dispatchers.IO).launch {
+          try {
+            pendingAckChannel?.basicAck(pendingEnvelope?.deliveryTag ?: 0L, false)
+            Log.d("RabbitMQ", "Acked from BarcodeInputField")
+
+            pendingAckChannel = null
+            pendingEnvelope = null
+          } catch (e: Exception) {
+            Log.e("RabbitMQ", "Failed to ack in BarcodeInputField: ${e.message}")
+          }
+        }
+      }
     }
     Log.d("Barcode", "Scanned: $scanned")
   }

@@ -28,7 +28,6 @@ class App : Application() {
 
   override fun onCreate() {
     super.onCreate()
-
     initializeServices()
   }
 
@@ -63,19 +62,25 @@ class App : Application() {
 
         if (isConnected) {
           _dispenseService = Dispense.getInstance(serialPortManager)
-
-          RabbitMQService.getInstance().connect()
-          RabbitMQService.getInstance().listenToQueue("vdOrder")
-
-          isInitialized = true
-          Log.d("App", "Dispense service initialized successfully")
+          Log.d("App", "Serial port connected and dispense service initialized")
         } else {
           Log.e("App", "Failed to connect serial ports")
         }
       } catch (e: Exception) {
-        Log.e("App", "Error initializing dispense service: ${e.message}")
+        Log.e("App", "Error initializing serial ports: ${e.message}")
       }
     }
+
+    applicationScope.launch {
+      try {
+        val rabbitMQ = RabbitMQService.getInstance()
+        rabbitMQ.connect()
+      } catch (e: Exception) {
+        Log.e("App", "Error initializing RabbitMQ: ${e.message}")
+      }
+    }
+
+    isInitialized = true
   }
 
   override fun onTerminate() {
