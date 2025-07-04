@@ -14,13 +14,13 @@ latestAppCompatVersion = "1.7.1"
 lifecycleRuntimeKtx = "2.9.1"
 activityCompose = "1.10.1"
 composeBom = "2025.06.01"
-material = "1.9.0-beta01"
+material = "1.9.0-beta02"
 retrofit = "3.0.0"
 amqpClient = "5.25.0"
 coilCompose = "3.2.0"
 converterGson = "3.0.0"
 foundation = "1.8.3"
-navigationCompose = "2.9.0"
+navigationCompose = "2.9.1"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }

@@ -18,27 +18,71 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 
-  buildTypes {
-    release {
-      isMinifyEnabled = false
-      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+  signingConfigs {
+    create("release") {
+      storeFile = file("sign.jks")
+      storePassword = project.findProperty("RELEASE_STORE_PASSWORD") as String? ?: "default"
+      keyAlias = "key0"
+      keyPassword = project.findProperty("RELEASE_KEY_PASSWORD") as String? ?: "default"
     }
   }
+
+  buildTypes {
+    getByName("release") {
+      isMinifyEnabled = false
+      proguardFiles(
+        getDefaultProguardFile("proguard-android-optimize.txt"),
+        "proguard-rules.pro"
+      )
+      signingConfig = signingConfigs.getByName("release")
+    }
+  }
+
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
   }
+
   kotlinOptions {
     jvmTarget = "11"
     freeCompilerArgs = listOf("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
   }
+
   buildFeatures {
     compose = true
+  }
+
+  sourceSets {
+    getByName("main") {
+      jniLibs.srcDirs("src/main/jniLibs")
+    }
+  }
+
+  packaging {
+    jniLibs {
+      keepDebugSymbols += listOf(
+        "*/armeabi/*.so",
+        "*/armeabi-v7a/*.so",
+        "*/arm64-v8a/*.so",
+        "*/x86_64/*.so"
+      )
+    }
+    resources {
+      excludes += listOf(
+        "META-INF/AL2.0",
+        "META-INF/LGPL2.1"
+      )
+    }
+
+    pickFirsts += listOf(
+      "**/libjnidispatch.so",
+      "**/libjnidispatch.dll",
+      "**/libjnidispatch.jnilib"
+    )
   }
 }
 
 dependencies {
-
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.lifecycle.runtime.ktx)
   implementation(libs.androidx.activity.compose)
@@ -55,12 +99,16 @@ dependencies {
   implementation(libs.coil.network.okhttp)
   implementation(libs.androidx.foundation)
   implementation(libs.androidx.appcompat)
-  implementation (libs.androidx.appcompat.resources)
+  implementation(libs.androidx.appcompat.resources)
   implementation(libs.androidx.material)
   implementation(libs.androidx.core.splashscreen)
   implementation(libs.glide)
   implementation(libs.compose)
   implementation(libs.androidx.datastore.preferences)
+
+  implementation(files("libs/jna-min.jar"))
+  implementation(files("libs/jna-platform.jar"))
+  implementation(files("libs/json-20220924.jar"))
 
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)

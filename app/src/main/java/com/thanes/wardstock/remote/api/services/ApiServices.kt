@@ -90,7 +90,7 @@ interface ApiService {
   ): Response<ApiResponse<UserModel>>
 
   @DELETE("users/{userId}")
-  suspend fun removeUser(@Path("userId") userId: String,): Response<ApiResponse<String>>
+  suspend fun removeUser(@Path("userId") userId: String): Response<ApiResponse<String>>
 
   @GET("drugs")
   suspend fun getDrug(): Response<ApiResponse<List<DrugModel>>>

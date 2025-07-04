@@ -6,6 +6,7 @@
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
   <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.USB_PERMISSION" />
 
   <uses-feature android:name="android.hardware.usb.host" />
 
@@ -36,6 +37,11 @@
 
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
+
+      <!-- for fringer print scan -->
+      <meta-data
+          android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+          android:resource="@xml/device_filter" />
     </activity>
 
     <!-- BootReceiver -->
