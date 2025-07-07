@@ -27,8 +27,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
@@ -229,20 +227,25 @@ fun UserFormScreen(
 
       Box(
         modifier = Modifier
-          .size(64.dp)
-          .clip(RoundedCornerShape((RoundRadius.Large)))
-          .background(Colors.BlueSecondary)
+          .padding(12.dp)
           .align(Alignment.BottomEnd)
-          .clickable {
-            pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
-          }, contentAlignment = Alignment.Center
       ) {
-        Icon(
-          painter = painterResource(R.drawable.add_24px),
-          contentDescription = "add_24px",
-          tint = Colors.BlueGrey100,
-          modifier = Modifier.size(32.dp)
-        )
+        Box(
+          modifier = Modifier
+            .size(64.dp)
+            .clip(RoundedCornerShape((RoundRadius.Large)))
+            .background(Colors.BlueSecondary)
+            .clickable {
+              pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+            }, contentAlignment = Alignment.Center
+        ) {
+          Icon(
+            painter = painterResource(R.drawable.add_24px),
+            contentDescription = "add_24px",
+            tint = Colors.BlueGrey100,
+            modifier = Modifier.size(32.dp)
+          )
+        }
       }
     }
 

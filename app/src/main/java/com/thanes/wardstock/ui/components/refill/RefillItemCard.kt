@@ -1,4 +1,4 @@
-package com.thanes.wardstock.ui.components.Refill
+package com.thanes.wardstock.ui.components.refill
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -8,6 +8,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -50,6 +51,7 @@ import com.thanes.wardstock.data.viewModel.RefillViewModel
 import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
+import com.thanes.wardstock.utils.ExpireText
 import com.thanes.wardstock.utils.ImageUrl
 import kotlinx.coroutines.delay
 
@@ -171,11 +173,21 @@ fun RefillItemCard(index: Int, item: RefillModel, filteredList: List<RefillModel
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        Text(
-          text = "Min ${item.inventoryMin} Max ${item.inventoryMAX}",
-          fontSize = 16.sp,
-          color = Colors.BlueGrey40
-        )
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+          Text(
+            text = "Min ${item.inventoryMin} Max ${item.inventoryMAX}",
+            fontSize = 16.sp,
+            color = Colors.BlueGrey40
+          )
+          Text(
+            "|", fontSize = 16.sp,
+            color = Colors.BlueGrey40
+          )
+          ExpireText(item.drugExpire)
+        }
       }
 
       Icon(

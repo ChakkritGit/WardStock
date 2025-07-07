@@ -11,7 +11,8 @@ data class RefillModel(
   val drugName: String?,
   val drugUnit: String?,
   val drugImage: String?,
-  val drugPriority: Int?
+  val drugPriority: Int?,
+  val drugExpire: String
 )
 
 data class RefillDrugModel(

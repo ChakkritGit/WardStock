@@ -98,4 +98,8 @@
   <string name="add_group">Add Group</string>
   <string name="re_launch">Try again</string>
   <string name="no_item">No item</string>
+
+  <string name="expired_in">Expired in</string>
+  <string name="days">Days</string>
+  <string name="expire_date">Expired</string>
 </resources>

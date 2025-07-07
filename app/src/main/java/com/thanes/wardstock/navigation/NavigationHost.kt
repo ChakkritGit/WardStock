@@ -41,7 +41,7 @@ import com.thanes.wardstock.screens.manage.machine.ManageMachineScreen
 import com.thanes.wardstock.screens.manage.user.AddUser
 import com.thanes.wardstock.screens.manage.user.EditUser
 import com.thanes.wardstock.screens.manage.user.ManageUserScreen
-import com.thanes.wardstock.ui.components.Refill.RefillDrug
+import com.thanes.wardstock.ui.components.refill.RefillDrug
 import com.thanes.wardstock.screens.refill.RefillScreen
 import com.thanes.wardstock.screens.setting.SettingScreen
 import com.thanes.wardstock.screens.setting.dispense.DispenseTestTool

@@ -1,4 +1,4 @@
-package com.thanes.wardstock.ui.components.Refill
+package com.thanes.wardstock.ui.components.refill
 
 import android.content.Context
 import android.util.Log
