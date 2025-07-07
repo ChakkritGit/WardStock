@@ -1,7 +1,10 @@
 package com.thanes.wardstock.screens.report
 
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.RectF
+import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import android.os.Environment
 import android.widget.Toast
@@ -28,6 +31,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.toColorInt
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.models.InventoryMinMax
@@ -39,6 +44,9 @@ import com.thanes.wardstock.utils.parseExceptionMessage
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun ReportMinMax(navController: NavHostController) {
@@ -55,22 +63,140 @@ fun ReportMinMax(navController: NavHostController) {
     val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create()
     val page = pdfDocument.startPage(pageInfo)
     val canvas = page.canvas
-    val paint = Paint()
-    var y = 50f
+    val paint = Paint().apply {
+      isAntiAlias = true
+    }
 
-    paint.textSize = 14f
-    canvas.drawText("Inventory Report", 200f, y, paint)
-    y += 30f
+    val margin = 40f
+    val tableWidth = 515f
+    val rowHeight = 35f
+    val headerHeight = 40f
 
-    data?.forEach {
+    val colWidths = floatArrayOf(100f, 250f, 80f, 85f)
+    var y = 60f
+
+    val ibmBold = ResourcesCompat.getFont(context, R.font.ibmpiexsansthailooped_bold)
+    val ibmNormal = ResourcesCompat.getFont(context, R.font.ibmpiexsansthailooped_regular)
+
+    paint.textSize = 18f
+    paint.typeface = Typeface.create(ibmBold, Typeface.BOLD)
+    paint.color = Color.BLACK
+    canvas.drawText("📊 รายงานช่องยา (Inventory Report)", margin + 100f, y, paint)
+    y += 50f
+
+    paint.style = Paint.Style.FILL
+    paint.color = "#E3F2FD".toColorInt()
+    val headerRect = RectF(margin, y, margin + tableWidth, y + headerHeight)
+    canvas.drawRect(headerRect, paint)
+
+    paint.style = Paint.Style.STROKE
+    paint.strokeWidth = 1f
+    paint.color = Color.BLACK
+    canvas.drawRect(headerRect, paint)
+
+    var x = margin
+    for (i in 0 until colWidths.size - 1) {
+      x += colWidths[i]
+      canvas.drawLine(x, y, x, y + headerHeight, paint)
+    }
+
+    paint.style = Paint.Style.FILL
+    paint.color = "#1976D2".toColorInt()
+    paint.textSize = 12f
+    paint.typeface = Typeface.create(ibmBold, Typeface.BOLD)
+
+    val headers = arrayOf(
+      context.getString(R.string.position),
+      context.getString(R.string.drug_name),
+      context.getString(R.string.quantity),
+      context.getString(R.string.pdf_min_max)
+    )
+    x = margin
+    for (i in headers.indices) {
+      val textX = x + (colWidths[i] - paint.measureText(headers[i])) / 2
+      canvas.drawText(headers[i], textX, y + headerHeight / 2 + 4f, paint)
+      x += colWidths[i]
+    }
+
+    y += headerHeight
+
+    paint.textSize = 10f
+    paint.typeface = Typeface.create(ibmNormal, Typeface.NORMAL)
+
+    data?.forEachIndexed { index, item ->
+      if (index % 2 == 0) {
+        paint.style = Paint.Style.FILL
+        paint.color = "#F8F9FA".toColorInt()
+        val rowRect = RectF(margin, y, margin + tableWidth, y + rowHeight)
+        canvas.drawRect(rowRect, paint)
+      }
+
+      paint.style = Paint.Style.STROKE
+      paint.strokeWidth = 1f
+      paint.color = Color.BLACK
+      val rowRect = RectF(margin, y, margin + tableWidth, y + rowHeight)
+      canvas.drawRect(rowRect, paint)
+
+      x = margin
+      for (i in 0 until colWidths.size - 1) {
+        x += colWidths[i]
+        canvas.drawLine(x, y, x, y + rowHeight, paint)
+      }
+
+      paint.style = Paint.Style.FILL
+      paint.color = Color.BLACK
+      x = margin
+
+      val centerY = y + rowHeight / 2 + 4f
+
+      val posText = item.inventoryPosition.toString()
+      canvas.drawText(posText, x + (colWidths[0] - paint.measureText(posText)) / 2, centerY, paint)
+      x += colWidths[0]
+
+      val drugName = item.drugName.let { if (it.length > 30) it.take(27) + "..." else it }
+      canvas.drawText(drugName, x + 5f, centerY, paint)
+      x += colWidths[1]
+
+      val qtyText = item.inventoryQty.toString()
+      canvas.drawText(qtyText, x + (colWidths[2] - paint.measureText(qtyText)) / 2, centerY, paint)
+      x += colWidths[2]
+
+      val minMaxText = "${item.inventoryMin}/${item.inventoryMAX}"
       canvas.drawText(
-        "Pos: ${it.inventoryPosition} | Drug: ${it.drugName} | Qty: ${it.inventoryQty}",
-        20f,
-        y,
+        minMaxText,
+        x + (colWidths[3] - paint.measureText(minMaxText)) / 2,
+        centerY,
         paint
       )
-      y += 20f
+
+      y += rowHeight
     }
+
+    y += 30f
+    paint.textSize = 12f
+    paint.typeface = Typeface.create(ibmBold, Typeface.BOLD)
+    paint.color = "#1976D2".toColorInt()
+    canvas.drawText("📋 ${context.getString(R.string.summary)}:", margin, y, paint)
+    y += 20f
+
+    paint.textSize = 10f
+    paint.typeface = Typeface.create(ibmNormal, Typeface.NORMAL)
+    paint.color = Color.BLACK
+    canvas.drawText("${context.getString(R.string.total)}: ${data?.size ?: 0}", margin + 20f, y, paint)
+    y += 15f
+
+    val totalQty = data?.sumOf { it.inventoryQty } ?: 0
+    canvas.drawText("${context.getString(R.string.total_quantity)}: $totalQty", margin + 20f, y, paint)
+    y += 15f
+
+    val currentDate = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
+    canvas.drawText("${context.getString(R.string.generated)}: $currentDate", margin + 20f, y, paint)
+
+    paint.style = Paint.Style.STROKE
+    paint.strokeWidth = 2f
+    paint.color = "#1976D2".toColorInt()
+    val reportRect = RectF(20f, 20f, 575f, y + 30f)
+    canvas.drawRect(reportRect, paint)
 
     pdfDocument.finishPage(page)
 
@@ -91,7 +217,7 @@ fun ReportMinMax(navController: NavHostController) {
         val response = ApiRepository.getReportAlertMinMax()
         if (response.isSuccessful) {
           inventoryListState = response.body()?.data ?: emptyList()
-          pdfFile = generatePdf(response.body()?.data)
+          pdfFile = generatePdf(response.body()?.data ?: emptyList())
         } else {
           val errorJson = response.errorBody()?.string()
           val message = parseErrorMessage(response.code(), errorJson)

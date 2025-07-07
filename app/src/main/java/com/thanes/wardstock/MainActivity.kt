@@ -7,13 +7,11 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
@@ -37,17 +35,13 @@ class MainActivity : ComponentActivity() {
     val splashScreen = installSplashScreen()
 
     setContent {
-      CompositionLocalProvider(
-        LocalActivityResultRegistryOwner provides this
-      ) {
-        LocalizedAppWrapper(this) {
+      LocalizedAppWrapper(this, this) {
           WardStockTheme {
             val navController = rememberNavController()
 
             Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
               AppNavigation(navController, innerPadding, splashScreen, this)
             }
-          }
         }
       }
     }

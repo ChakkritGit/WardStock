@@ -105,4 +105,10 @@
 
   <string name="manage_report">รายงาน</string>
   <string name="min_max">ยาที่ต่ำกว่าค่ากำหนด</string>
+  <string name="position">ตำแหน่ง</string>
+  <string name="pdf_min_max">Min/Max</string>
+  <string name="summary">สรุป</string>
+  <string name="total">รายการทั้งหมด</string>
+  <string name="total_quantity">จำนวนทั้งหมด</string>
+  <string name="generated">สร้างเมื่อ</string>
 </resources>
