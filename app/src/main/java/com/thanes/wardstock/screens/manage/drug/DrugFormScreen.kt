@@ -425,12 +425,14 @@ fun DrugFormScreen(
       )
 
       DatePickerField(
+        context,
         selectedDate = drugLot,
         label = R.string.drug_lot,
         onDateSelected = { newDate -> drugLot = newDate }
       )
 
       DatePickerField(
+        context,
         selectedDate = drugExpire,
         label = R.string.drug_expire,
         onDateSelected = { newDate -> drugExpire = newDate }

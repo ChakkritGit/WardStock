@@ -1,5 +1,6 @@
 package com.thanes.wardstock.screens.manage.drug
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -8,7 +9,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.net.toUri
 import androidx.navigation.NavHostController
@@ -26,8 +26,11 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun EditDrug(navController: NavHostController, drugSharedViewModel: DrugViewModel) {
-  val context = LocalContext.current
+fun EditDrug(
+  navController: NavHostController,
+  drugSharedViewModel: DrugViewModel,
+  context: Context
+) {
   var canClick by remember { mutableStateOf(true) }
   var isLoading by remember { mutableStateOf(false) }
   var errorMessage by remember { mutableStateOf("") }

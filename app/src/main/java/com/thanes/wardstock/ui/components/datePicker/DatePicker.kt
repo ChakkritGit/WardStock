@@ -1,8 +1,7 @@
 package com.thanes.wardstock.ui.components.datePicker
 
-import android.R.id
 import android.app.DatePickerDialog
-import androidx.annotation.StringRes
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,20 +20,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.thanes.wardstock.R
+import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import com.thanes.wardstock.R
-import com.thanes.wardstock.ui.theme.Colors
 
 @Composable
 fun DatePickerField(
+  context: Context,
   selectedDate: LocalDate,
   onDateSelected: (LocalDate) -> Unit,
   label: Int,
   modifier: Modifier = Modifier
 ) {
-  val context = LocalContext.current
   val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
   val dateString = selectedDate.format(formatter)
 

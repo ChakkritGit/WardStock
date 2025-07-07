@@ -153,11 +153,11 @@ fun AppNavigation(
     }
 
     composable(route = Routes.EditDrug.route) {
-      EditDrug(navController, drugSharedViewModel)
+      EditDrug(navController, drugSharedViewModel, context)
     }
 
     composable(route = Routes.AddDrug.route) {
-      AddDrug(navController, drugSharedViewModel)
+      AddDrug(navController, drugSharedViewModel, context)
     }
 
     composable(route = Routes.EditMachine.route) {
