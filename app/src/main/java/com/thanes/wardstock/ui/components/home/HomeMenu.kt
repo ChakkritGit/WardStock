@@ -93,11 +93,11 @@ fun HomeMenu(
     Spacer(modifier = Modifier.width(20.dp))
     Button(
       onClick = {
-//        if (!isOrderActive) {
-//          navController.navigate(Routes.Refill.route)
-//        }else {
-//          alertMessage = waitForDispenseMessage
-//        }
+        if (!isOrderActive) {
+          navController.navigate(Routes.ManageReport.route)
+        } else {
+          alertMessage = waitForDispenseMessage
+        }
       },
     ) {
       Column(

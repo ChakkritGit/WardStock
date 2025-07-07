@@ -102,4 +102,7 @@
   <string name="expired_in">หมดอายุในอีก</string>
   <string name="days">วัน</string>
   <string name="expire_date">หมดอายุ</string>
+
+  <string name="manage_report">รายงาน</string>
+  <string name="min_max">ยาที่ต่ำกว่าค่ากำหนด</string>
 </resources>

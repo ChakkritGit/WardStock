@@ -7,15 +7,15 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
-import androidx.core.splashscreen.SplashScreen
 import com.thanes.wardstock.data.viewModel.AuthViewModel
 import com.thanes.wardstock.data.viewModel.DrugViewModel
 import com.thanes.wardstock.data.viewModel.GroupViewModel
@@ -26,27 +26,29 @@ import com.thanes.wardstock.data.viewModel.RefillViewModel
 import com.thanes.wardstock.data.viewModel.UserViewModel
 import com.thanes.wardstock.screens.home.HomeScreen
 import com.thanes.wardstock.screens.login.LoginScreen
-import com.thanes.wardstock.screens.manage.drug.ManageDrugScreen
-import com.thanes.wardstock.screens.manage.manage.ManageScreen
-import com.thanes.wardstock.screens.manage.manage.ManageStockScreen
 import com.thanes.wardstock.screens.manage.drug.AddDrug
 import com.thanes.wardstock.screens.manage.drug.EditDrug
+import com.thanes.wardstock.screens.manage.drug.ManageDrugScreen
 import com.thanes.wardstock.screens.manage.group.AddGroup
-import com.thanes.wardstock.screens.manage.inventory.AddInventory
 import com.thanes.wardstock.screens.manage.group.EditGroup
+import com.thanes.wardstock.screens.manage.inventory.AddInventory
 import com.thanes.wardstock.screens.manage.inventory.EditInventory
 import com.thanes.wardstock.screens.manage.machine.AddMachine
 import com.thanes.wardstock.screens.manage.machine.EditMachine
 import com.thanes.wardstock.screens.manage.machine.ManageMachineScreen
+import com.thanes.wardstock.screens.manage.manage.ManageScreen
+import com.thanes.wardstock.screens.manage.manage.ManageStockScreen
 import com.thanes.wardstock.screens.manage.user.AddUser
 import com.thanes.wardstock.screens.manage.user.EditUser
 import com.thanes.wardstock.screens.manage.user.ManageUserScreen
-import com.thanes.wardstock.ui.components.refill.RefillDrug
 import com.thanes.wardstock.screens.refill.RefillScreen
+import com.thanes.wardstock.screens.report.ReportMinMax
+import com.thanes.wardstock.screens.report.ReportScreen
 import com.thanes.wardstock.screens.setting.SettingScreen
 import com.thanes.wardstock.screens.setting.dispense.DispenseTestTool
 import com.thanes.wardstock.services.internet.rememberConnectivityState
 import com.thanes.wardstock.ui.components.internet.NoInternetComposable
+import com.thanes.wardstock.ui.components.refill.RefillDrug
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -196,6 +198,14 @@ fun AppNavigation(
         refillSharedViewModel,
         drugSharedViewModel
       )
+    }
+
+    composable(route = Routes.ManageReport.route) {
+      ReportScreen(navController)
+    }
+
+    composable(route = Routes.ReportDrugMinMax.route) {
+      ReportMinMax(navController)
     }
   }
 }

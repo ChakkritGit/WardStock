@@ -102,4 +102,7 @@
   <string name="expired_in">Expired in</string>
   <string name="days">Days</string>
   <string name="expire_date">Expired</string>
+
+  <string name="manage_report">Reports</string>
+  <string name="min_max">Report Min Max</string>
 </resources>

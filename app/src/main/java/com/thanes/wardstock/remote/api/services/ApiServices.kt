@@ -6,6 +6,7 @@ import com.thanes.wardstock.data.models.DrugModel
 import com.thanes.wardstock.data.models.GroupInventoryModel
 import com.thanes.wardstock.data.models.InventoryExitsModel
 import com.thanes.wardstock.data.models.InventoryItem
+import com.thanes.wardstock.data.models.InventoryMinMax
 import com.thanes.wardstock.data.models.InventoryModel
 import com.thanes.wardstock.data.models.MachineModel
 import com.thanes.wardstock.data.models.OrderModel
@@ -197,4 +198,7 @@ interface ApiService {
     @Path("orderId") orderId: String,
     @Path("prescriptionId") prescriptionId: String
   ): Response<ApiResponse<String>>
+
+  @GET("reports/below-min-max")
+  suspend fun getReportAlertMinMax(): Response<ApiResponse<List<InventoryMinMax>>>
 }
