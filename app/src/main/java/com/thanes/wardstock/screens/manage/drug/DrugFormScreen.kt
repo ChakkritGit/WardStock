@@ -174,14 +174,16 @@ fun DrugFormScreen(
       .padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally
   ) {
     Box(
-      modifier = Modifier.size(164.dp)
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(300.dp)
     ) {
       Box(
         modifier = Modifier
           .fillMaxSize()
-          .clip(CircleShape)
+          .clip(RoundedCornerShape((RoundRadius.Large)))
           .background(Colors.BlueGrey100)
-          .border(2.dp, Colors.BlueGrey80, CircleShape)
+          .border(2.dp, Colors.BlueGrey80, RoundedCornerShape((RoundRadius.Large)))
           .clickable {
             pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
           }, contentAlignment = Alignment.Center
@@ -191,9 +193,9 @@ fun DrugFormScreen(
         Box(
           modifier = Modifier
             .fillMaxSize()
-            .clip(CircleShape)
+            .clip(RoundedCornerShape((RoundRadius.Large)))
             .background(Colors.BlueGrey100)
-            .border(2.dp, Colors.BlueGrey80, CircleShape)
+            .border(2.dp, Colors.BlueGrey80, RoundedCornerShape((RoundRadius.Large)))
             .clickable {
               pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
             }, contentAlignment = Alignment.Center
@@ -204,7 +206,7 @@ fun DrugFormScreen(
               contentDescription = null,
               modifier = Modifier
                 .fillMaxSize()
-                .clip(CircleShape),
+                .clip(RoundedCornerShape((RoundRadius.Large))),
               contentScale = ContentScale.Crop
             )
           } else {
@@ -213,16 +215,17 @@ fun DrugFormScreen(
               verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
               Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = null,
+                painter = painterResource(R.drawable.medication_24px),
+                contentDescription = "medication_24px",
                 tint = Colors.BlueGrey40,
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(48.dp)
               )
               Text(
                 text = stringResource(R.string.add_image),
-                fontSize = 16.sp,
+                fontSize = 18.sp,
                 color = Colors.BlueGrey40,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Medium
               )
             }
           }
@@ -231,8 +234,8 @@ fun DrugFormScreen(
 
       Box(
         modifier = Modifier
-          .size(42.dp)
-          .clip(CircleShape)
+          .size(64.dp)
+          .clip(RoundedCornerShape((RoundRadius.Large)))
           .background(Colors.BlueSecondary)
           .align(Alignment.BottomEnd)
           .clickable {
@@ -241,9 +244,9 @@ fun DrugFormScreen(
       ) {
         Icon(
           painter = painterResource(R.drawable.add_24px),
-          contentDescription = null,
+          contentDescription = "add_24px",
           tint = Colors.BlueGrey100,
-          modifier = Modifier.size(24.dp)
+          modifier = Modifier.size(32.dp)
         )
       }
     }

@@ -1,8 +1,6 @@
 package com.thanes.wardstock.ui.components.home
 
-import android.app.Activity
 import android.content.Context
-import android.content.ContextWrapper
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -20,8 +18,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -38,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -54,9 +49,7 @@ import com.thanes.wardstock.data.viewModel.OrderViewModel
 import com.thanes.wardstock.services.rabbit.RabbitMQPendingAck
 import com.thanes.wardstock.services.rabbit.RabbitMQService
 import com.thanes.wardstock.ui.components.BarcodeInputField
-import com.thanes.wardstock.ui.components.dialog.AlertDialog
 import com.thanes.wardstock.ui.components.dispense.showAuthDialogUntilVerified
-import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
@@ -65,7 +58,6 @@ import com.thanes.wardstock.utils.parseErrorMessage
 import com.thanes.wardstock.utils.parseExceptionMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -76,9 +68,10 @@ fun HomeWrapperContent(
   orderSharedViewModel: OrderViewModel,
   authState: AuthState
 ) {
+  val app = context.applicationContext as App
+  val applicationScope = CoroutineScope(Dispatchers.IO)
   val viewModel = orderSharedViewModel
   var pullState by remember { mutableStateOf(false) }
-  var openAlertDialog by remember { mutableStateOf(false) }
   var errorMessage by remember { mutableStateOf("") }
   val pullRefreshState = rememberPullRefreshState(
     refreshing = viewModel.isLoading,
@@ -87,19 +80,6 @@ fun HomeWrapperContent(
       pullState = true
     }
   )
-
-  val app = context.applicationContext as App
-  val currentActivity = LocalContext.current
-  val applicationScope = CoroutineScope(Dispatchers.IO)
-
-  fun Context.findActivity(): Activity? {
-    var context = this
-    while (context is ContextWrapper) {
-      if (context is Activity) return context
-      context = context.baseContext
-    }
-    return null
-  }
 
   LaunchedEffect(Unit) {
     applicationScope.launch {
@@ -116,15 +96,6 @@ fun HomeWrapperContent(
           RabbitMQPendingAck.envelope = envelope
 
           parsedMessage?.let {
-            Log.d("RabbitMQ", "OrderID ID: ${it.id}")
-            Log.d("RabbitMQ", "Prescription ID: ${it.presId}")
-            Log.d("RabbitMQ", "Qty: ${it.qty}")
-            Log.d("RabbitMQ", "Position: ${it.position}")
-            Log.d(
-              "RabbitMQ",
-              "Priority: ${if (it.priority == 1) "ยาทั่วไป" else if (it.priority == 2) "ยา Had" else "ยา Narcotic"}"
-            )
-
             if ((it.priority == 2 || it.priority == 3) && userData?.role == UserRole.NURSE) {
               CoroutineScope(Dispatchers.Main).launch {
                 val verified = showAuthDialogUntilVerified(context)
@@ -149,8 +120,6 @@ fun HomeWrapperContent(
                 viewModel.fetchOrderInitial()
 
                 app.dispenseService?.let { dispenseService ->
-                  openAlertDialog = true
-
                   val continueReturn = withContext(Dispatchers.IO) {
                     try {
                       dispenseService.sendToMachine(
@@ -169,7 +138,6 @@ fun HomeWrapperContent(
                     ApiRepository.updateOrderToError(it.id, it.presId)
                   }
                   viewModel.fetchOrderInitial()
-                  openAlertDialog = false
                 } ?: run {
                   Log.e("Dispense", "Dispense service is not available")
                 }
@@ -341,25 +309,6 @@ fun HomeWrapperContent(
           }
         }
       }
-    }
-
-    if (openAlertDialog) {
-      currentActivity.let { activity ->
-        LaunchedEffect(openAlertDialog) {
-          if (openAlertDialog) {
-            delay(20)
-            context.findActivity()?.let { activity ->
-              HideSystemControll.manageSystemBars(activity, true)
-            }
-          }
-        }
-      }
-
-      AlertDialog(
-        dialogTitle = "กำลังหยิบ",
-        dialogText = "โปรดรอจนกว่าจะหยิบเสร็จ",
-        icon = Icons.Default.Info
-      )
     }
   }
 }
