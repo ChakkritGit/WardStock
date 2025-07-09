@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -130,10 +131,13 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, 
     modifier = Modifier
       .fillMaxSize()
       .background(
-        brush = Brush.verticalGradient(
+        brush = Brush.linearGradient(
           colors = listOf(
-            Colors.BlueSecondary, Colors.BluePrimary
-          )
+            Colors.BlueSky.copy(alpha = 0.9f),
+            Colors.BluePrimary,
+          ),
+          start = Offset(0.5f, 0f),
+          end = Offset.Infinite
         )
       )
   ) {

@@ -1,15 +1,20 @@
 package com.thanes.wardstock.screens.home
 
 import android.content.Context
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.data.viewModel.AuthViewModel
 import com.thanes.wardstock.data.viewModel.OrderViewModel
@@ -27,21 +32,38 @@ fun HomeScreen(
 ) {
   val authState by authViewModel.authState.collectAsState()
 
-  Scaffold(
-    containerColor = Colors.BluePrimary,
-    topBar = { HomeAppBar(navController, context, authState, authViewModel, orderSharedViewModel) }
-  ) { innerPadding ->
-    Box(
-      modifier = Modifier
-        .padding(innerPadding)
-        .fillMaxHeight()
-    ) {
-      Column(
+  Box(
+    modifier = Modifier
+      .fillMaxSize()
+      .background(
+        brush = Brush.linearGradient(
+          colors = listOf(
+            Colors.BluePrimary,
+            Colors.BlueSky,
+          ),
+          start = Offset(0f, 0f),
+          end = Offset.Infinite
+        )
+      )
+  ) {
+    Scaffold(
+      topBar = {
+        HomeAppBar(navController, context, authState, authViewModel, orderSharedViewModel)
+      },
+      containerColor = Color.Transparent
+    ) { innerPadding ->
+      Box(
         modifier = Modifier
+          .padding(innerPadding)
           .fillMaxHeight()
       ) {
-        HomeMenu(navController, context, authState, orderSharedViewModel)
-        HomeWrapperContent(context, orderSharedViewModel, authState)
+        Column(
+          modifier = Modifier
+            .fillMaxHeight()
+        ) {
+          HomeMenu(navController, context, authState, orderSharedViewModel)
+          HomeWrapperContent(context, orderSharedViewModel, authState)
+        }
       }
     }
   }

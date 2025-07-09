@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -35,7 +36,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -86,6 +89,7 @@ fun HomeAppBar(
   var alertMessage by remember { mutableStateOf("") }
   val waitForDispenseMessage = stringResource(R.string.wait_for_dispensing)
   val userData = authState.userData
+  val contextTwo = LocalContext.current
 
   fun Context.findActivity(): Activity? {
     var context = this
@@ -150,6 +154,7 @@ fun HomeAppBar(
             fontWeight = FontWeight.Medium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
+            color = Colors.white
           )
         }
       }
@@ -161,7 +166,8 @@ fun HomeAppBar(
             alertMessage = waitForDispenseMessage
           }
         },
-        modifier = Modifier.alpha(if (isOrderActive) 0.5f else 1f)
+        modifier = Modifier.alpha(if (isOrderActive) 0.5f else 1f),
+        colors = ButtonDefaults.buttonColors(Color.Transparent)
       ) {
         Icon(
           painter = painterResource(R.drawable.logout_24px),
@@ -174,18 +180,16 @@ fun HomeAppBar(
     }
   }
 
-  if (openAlertDialog) {
-    context.let { activity ->
-      LaunchedEffect(openAlertDialog) {
-        if (openAlertDialog) {
-          delay(20)
-          context.findActivity()?.let { activity ->
-            HideSystemControll.manageSystemBars(activity, true)
-          }
-        }
+  LaunchedEffect(openAlertDialog) {
+    if (openAlertDialog) {
+      delay(20)
+      context.findActivity()?.let { activity ->
+        HideSystemControll.manageSystemBars(activity, true)
       }
     }
+  }
 
+  if (openAlertDialog) {
     AlertDialog(
       properties = DialogProperties(
         dismissOnBackPress = true,
@@ -214,13 +218,13 @@ fun HomeAppBar(
           modifier = Modifier.fillMaxWidth(0.7f)
         ) {
           Text(
-            stringResource(R.string.logout),
+            contextTwo.getString(R.string.logout),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = ibmpiexsansthailooped
           )
           Text(
-            stringResource(R.string.logout_description),
+            contextTwo.getString(R.string.logout_description),
             fontSize = 20.sp,
             fontFamily = ibmpiexsansthailooped
           )
@@ -243,7 +247,7 @@ fun HomeAppBar(
               }
               openAlertDialog = false
             },
-            text = stringResource(R.string.logout),
+            text = contextTwo.getString(R.string.logout),
             fontWeight = FontWeight.Medium,
             shape = RoundedCornerShape(RoundRadius.Medium),
             textSize = 20.sp,
@@ -268,7 +272,7 @@ fun HomeAppBar(
               .height(56.dp)
           ) {
             Text(
-              stringResource(R.string.cancel),
+              contextTwo.getString(R.string.cancel),
               fontFamily = ibmpiexsansthailooped,
               color = Colors.BlueSecondary,
               fontSize = 20.sp,
