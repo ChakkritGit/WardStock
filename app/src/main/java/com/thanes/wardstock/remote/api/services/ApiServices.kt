@@ -201,4 +201,7 @@ interface ApiService {
 
   @GET("reports/below-min-max")
   suspend fun getReportAlertMinMax(): Response<ApiResponse<List<InventoryMinMax>>>
+
+  @GET("config/user")
+  suspend fun getUserConfig(): Response<ApiResponse<String>>
 }

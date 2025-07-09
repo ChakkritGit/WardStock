@@ -112,4 +112,5 @@
   <string name="total_quantity">Total Quantity</string>
   <string name="generated">Generated</string>
   <string name="pages">Page</string>
+  <string name="finger_print">Finger Print Scanner</string>
 </resources>

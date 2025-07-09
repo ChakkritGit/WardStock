@@ -23,6 +23,7 @@ sealed class Routes(val route: String) {
   object AddGroup: Routes(route = "add_group_route")
   object ManageReport: Routes(route = "manage_report")
   object ReportDrugMinMax: Routes(route = "report_drug_min_max")
+  object FingerPrintVein: Routes(route = "finger_print_vein")
 
   object DispenseTestTool: Routes(route = "dispensetesttool_route")
 }

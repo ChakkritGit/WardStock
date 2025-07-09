@@ -358,4 +358,8 @@ object ApiRepository {
   suspend fun getReportAlertMinMax(): Response<ApiResponse<List<InventoryMinMax>>> {
     return createApiWithAuth().getReportAlertMinMax()
   }
+
+  suspend fun getUserConfig(): Response<ApiResponse<String>> {
+    return createApiWithAuth().getUserConfig()
+  }
 }

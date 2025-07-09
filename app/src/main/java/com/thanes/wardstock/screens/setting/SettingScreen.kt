@@ -28,6 +28,7 @@ import com.thanes.wardstock.data.models.UserRole
 import com.thanes.wardstock.data.store.DataManager
 import com.thanes.wardstock.screens.setting.dispense.DispenseTestToolList
 import com.thanes.wardstock.screens.setting.language.LanguageSwitcher
+import com.thanes.wardstock.ui.components.jna.JnaSetting
 import kotlinx.coroutines.flow.first
 
 @Composable
@@ -60,10 +61,12 @@ fun SettingScreen(navController: NavHostController, context: Context) {
           .verticalScroll(rememberScrollState())
       ) {
         LanguageSwitcher(context)
-        Spacer(modifier = Modifier.height(4.dp))
         if (userData != null && userData?.role == UserRole.SUPER) {
+          Spacer(modifier = Modifier.height(4.dp))
           DispenseTestToolList(navController)
         }
+        Spacer(modifier = Modifier.height(4.dp))
+        JnaSetting(navController)
       }
     }
   }

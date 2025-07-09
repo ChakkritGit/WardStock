@@ -106,13 +106,13 @@ dependencies {
   implementation(libs.compose)
   implementation(libs.androidx.datastore.preferences)
 
-//  implementation(files("libs/jna-min.jar"))
+  implementation(files("libs/jna-min.jar"))
 //  implementation(files("libs/jna-platform.jar"))
 //  implementation(files("libs/json-20220924.jar"))
 //
 //  implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
-  implementation(libs.jna.platform)
+//  implementation(libs.jna.platform)
 
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)
