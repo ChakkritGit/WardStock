@@ -37,6 +37,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -167,13 +168,15 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, 
       Card(
         modifier = Modifier
           .fillMaxWidth()
-          .padding(16.dp),
+          .padding(16.dp)
+          .clip(RoundedCornerShape(RoundRadius.Large))
+          .background(
+            color = Colors.BlueGrey100.copy(alpha = 0.25f),
+            shape = RoundedCornerShape(RoundRadius.Large)
+          ),
         shape = RoundedCornerShape(RoundRadius.Large),
         colors = CardDefaults.cardColors(
-          containerColor = Colors.BlueGrey100
-        ),
-        elevation = CardDefaults.cardElevation(
-          defaultElevation = 8.dp
+          containerColor = Color.Transparent
         )
       ) {
         Column(
@@ -194,7 +197,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, 
               text = stringResource(R.string.app_title_login),
               fontSize = 32.sp,
               fontWeight = FontWeight.ExtraBold,
-              color = Colors.BlueSecondary,
+              color = Colors.BlueGrey120,
               textAlign = TextAlign.Center,
               maxLines = 1,
               overflow = TextOverflow.Ellipsis
@@ -203,7 +206,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, 
               text = stringResource(R.string.app_description_login),
               fontSize = 22.sp,
               fontWeight = FontWeight.Medium,
-              color = Colors.BlueGrey40,
+              color = Colors.BlueGrey100,
               textAlign = TextAlign.Center,
               maxLines = 1,
               overflow = TextOverflow.Ellipsis
@@ -225,7 +228,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, 
               Icon(
                 painter = painterResource(R.drawable.person_24px),
                 contentDescription = "User Icon",
-                tint = Colors.BlueGrey40,
+                tint = Colors.BlueGrey100,
                 modifier = Modifier.size(32.dp)
               )
             },
@@ -239,17 +242,18 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, 
                 focusRequesterPassword.requestFocus()
               }),
             colors = TextFieldDefaults.colors(
-              focusedTextColor = Colors.BlueSecondary,
-              focusedIndicatorColor = Colors.BlueSecondary,
-              unfocusedIndicatorColor = Colors.BlueSecondary.copy(alpha = 0.3f),
-              focusedLabelColor = Colors.BlueSecondary,
-              unfocusedLabelColor = Colors.BlueGrey40,
-              cursorColor = Colors.BlueSecondary,
+              focusedTextColor = Colors.BlueGrey100,
+              unfocusedTextColor = Colors.BlueGrey100,
+              focusedIndicatorColor = Colors.BlueGrey100,
+              unfocusedIndicatorColor = Colors.BlueGrey100.copy(alpha = 0.5f),
+              focusedLabelColor = Colors.BlueGrey100,
+              unfocusedLabelColor = Colors.BlueGrey100,
+              cursorColor = Colors.BlueGrey100,
               focusedContainerColor = Color.Transparent,
               unfocusedContainerColor = Color.Transparent,
               disabledContainerColor = Color.Transparent,
               errorContainerColor = Color.Transparent,
-              focusedLeadingIconColor = Colors.BlueSecondary
+              focusedLeadingIconColor = Colors.BlueGrey100
             )
           )
 
@@ -270,7 +274,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, 
               Icon(
                 painter = painterResource(R.drawable.lock_24px),
                 contentDescription = "Password Icon",
-                tint = Colors.BlueGrey40,
+                tint = Colors.BlueGrey100,
                 modifier = Modifier.size(32.dp)
               )
             },
@@ -284,7 +288,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, 
                     if (!showPass) R.drawable.visibility_24px else R.drawable.visibility_off_24px
                   ),
                   contentDescription = if (showPass) "Hide password" else "Show password",
-                  tint = Colors.BlueGrey40,
+                  tint = Colors.BlueGrey100,
                   modifier = Modifier
                     .size(32.dp)
                 )
@@ -299,17 +303,18 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, 
                 handleLogin()
               }),
             colors = TextFieldDefaults.colors(
-              focusedTextColor = Colors.BlueSecondary,
-              focusedIndicatorColor = Colors.BlueSecondary,
-              unfocusedIndicatorColor = Colors.BlueSecondary.copy(alpha = 0.3f),
-              focusedLabelColor = Colors.BlueSecondary,
-              unfocusedLabelColor = Colors.BlueGrey40,
-              cursorColor = Colors.BlueSecondary,
+              focusedTextColor = Colors.BlueGrey100,
+              unfocusedTextColor = Colors.BlueGrey100,
+              focusedIndicatorColor = Colors.BlueGrey100,
+              unfocusedIndicatorColor = Colors.BlueGrey100.copy(alpha = 0.5f),
+              focusedLabelColor = Colors.BlueGrey100,
+              unfocusedLabelColor = Colors.BlueGrey100,
+              cursorColor = Colors.BlueGrey100,
               focusedContainerColor = Color.Transparent,
               unfocusedContainerColor = Color.Transparent,
               disabledContainerColor = Color.Transparent,
               errorContainerColor = Color.Transparent,
-              focusedLeadingIconColor = Colors.BlueSecondary
+              focusedLeadingIconColor = Colors.BlueGrey100
             )
           )
 
@@ -350,7 +355,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, 
             TextButton(onClick = { /* TODO: Forgot password */ }) {
               Text(
                 stringResource(R.string.forget_password),
-                color = Colors.BlueSecondary,
+                color = Colors.BlueGrey100,
                 fontSize = 18.sp
               )
             }
