@@ -111,4 +111,5 @@
   <string name="total">รายการทั้งหมด</string>
   <string name="total_quantity">จำนวนทั้งหมด</string>
   <string name="generated">สร้างเมื่อ</string>
+  <string name="pages">หน้า</string>
 </resources>

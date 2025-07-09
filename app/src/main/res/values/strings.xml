@@ -111,4 +111,5 @@
   <string name="total">Total Items</string>
   <string name="total_quantity">Total Quantity</string>
   <string name="generated">Generated</string>
+  <string name="pages">Page</string>
 </resources>
