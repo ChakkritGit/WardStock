@@ -1,11 +1,10 @@
 package com.thanes.wardstock.screens.setting
 
 import android.content.Context
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -20,15 +19,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.thanes.wardstock.ui.components.appbar.AppBar
-import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.models.UserData
 import com.thanes.wardstock.data.models.UserRole
 import com.thanes.wardstock.data.store.DataManager
 import com.thanes.wardstock.screens.setting.dispense.DispenseTestToolList
 import com.thanes.wardstock.screens.setting.language.LanguageSwitcher
+import com.thanes.wardstock.ui.components.appbar.AppBar
 import com.thanes.wardstock.ui.components.jna.JnaSetting
+import com.thanes.wardstock.ui.theme.Colors
 import kotlinx.coroutines.flow.first
 
 @Composable
@@ -58,14 +57,13 @@ fun SettingScreen(navController: NavHostController, context: Context) {
       Column(
         modifier = Modifier
           .fillMaxSize()
-          .verticalScroll(rememberScrollState())
+          .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
       ) {
         LanguageSwitcher(context)
         if (userData != null && userData?.role == UserRole.SUPER) {
-          Spacer(modifier = Modifier.height(4.dp))
           DispenseTestToolList(navController)
         }
-        Spacer(modifier = Modifier.height(4.dp))
         JnaSetting(navController)
       }
     }

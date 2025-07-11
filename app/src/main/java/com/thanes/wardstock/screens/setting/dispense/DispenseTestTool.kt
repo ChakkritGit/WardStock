@@ -69,7 +69,9 @@ import kotlinx.coroutines.withContext
 
 @Composable
 fun DispenseTestToolList(navController: NavHostController) {
-  Box(modifier = Modifier.clickable(onClick = {
+  Box(
+    modifier = Modifier
+      .clickable(onClick = {
     navController.navigate(Routes.DispenseTestTool.route)
   })) {
     Row(

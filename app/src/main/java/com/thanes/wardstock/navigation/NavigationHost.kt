@@ -16,16 +16,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.thanes.wardstock.screens.fvverify.FvVerifyScreen
 import com.thanes.wardstock.data.viewModel.AuthViewModel
 import com.thanes.wardstock.data.viewModel.DrugViewModel
-import com.thanes.wardstock.data.viewModel.FingerVeinViewModel
 import com.thanes.wardstock.data.viewModel.GroupViewModel
 import com.thanes.wardstock.data.viewModel.InventoryViewModel
 import com.thanes.wardstock.data.viewModel.MachineViewModel
 import com.thanes.wardstock.data.viewModel.OrderViewModel
 import com.thanes.wardstock.data.viewModel.RefillViewModel
 import com.thanes.wardstock.data.viewModel.UserViewModel
-import com.thanes.wardstock.screens.fvverify.FvVerifyScreen
 import com.thanes.wardstock.screens.home.HomeScreen
 import com.thanes.wardstock.screens.login.LoginScreen
 import com.thanes.wardstock.screens.manage.drug.AddDrug
@@ -68,7 +67,6 @@ fun AppNavigation(
   val machineSharedViewModel: MachineViewModel = viewModel()
   val inventorySharedViewModel: InventoryViewModel = viewModel()
   val groupSharedViewModel: GroupViewModel = viewModel()
-  val fingerVeinSharedViewModel: FingerVeinViewModel = viewModel()
 
   val authState by authViewModel.authState.collectAsState()
 
@@ -212,7 +210,7 @@ fun AppNavigation(
     }
 
     composable(route = Routes.FingerPrintVein.route) {
-      FvVerifyScreen(navController, fingerVeinSharedViewModel)
+      FvVerifyScreen(navController)
     }
   }
 }
