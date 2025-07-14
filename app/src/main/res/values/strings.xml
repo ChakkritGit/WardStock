@@ -113,4 +113,10 @@
   <string name="generated">Generated</string>
   <string name="pages">Page</string>
   <string name="finger_print">Finger Print Scanner</string>
+  <string name="please_wait">Please wait</string>
+  <string name="connecting_system_dispense">Connecting System Dispense</string>
+  <string name="selected_position">Selected Position</string>
+  <string name="dispense">Order</string>
+  <string name="dispensing">Dispensing</string>
+  <string name="dispensing_please_wait">Please wait for dispensing</string>
 </resources>

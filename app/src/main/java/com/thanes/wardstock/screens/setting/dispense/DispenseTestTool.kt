@@ -21,8 +21,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -44,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -159,15 +158,6 @@ fun DispenseTestTool(navController: NavHostController, context: Context) {
   }
 }
 
-fun Context.findActivity(): Activity? {
-  var ctx = this
-  while (ctx is android.content.ContextWrapper) {
-    if (ctx is Activity) return ctx
-    ctx = ctx.baseContext
-  }
-  return null
-}
-
 @SuppressLint("ContextCastToActivity")
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -181,7 +171,7 @@ fun SlotGridWithBottomSheet(app: App, context: Context) {
   val qty = remember { mutableIntStateOf(1) }
   var openAlertDialog by remember { mutableStateOf(false) }
   var isDispenseServiceReady by remember { mutableStateOf(false) }
-  val activity = context.findActivity()
+  val contextLang = LocalContext.current
 
   LaunchedEffect(Unit) {
     while (!app.isInitialized) {
@@ -241,9 +231,9 @@ fun SlotGridWithBottomSheet(app: App, context: Context) {
       Column(
         horizontalAlignment = Alignment.CenterHorizontally
       ) {
-        Text("กำลังเชื่อมต่อระบบ...")
+        Text(contextLang.getString(R.string.connecting_system_dispense))
         Spacer(modifier = Modifier.height(10.dp))
-        Text("โปรดรอสักครู่", style = TextStyle(fontSize = 14.sp))
+        Text(contextLang.getString(R.string.please_wait), style = TextStyle(fontSize = 14.sp))
       }
     }
   }
@@ -262,11 +252,11 @@ fun SlotGridWithBottomSheet(app: App, context: Context) {
         modifier = Modifier.padding(10.dp)
       ) {
         Text(
-          "ช่องที่เลือก: $selectedNumber",
+          "${contextLang.getString(R.string.selected_position)}: $selectedNumber",
           style = TextStyle(fontSize = 32.sp)
         )
         Spacer(modifier = Modifier.height(15.dp))
-        Text("จำนวน", style = TextStyle(fontSize = 32.sp))
+        Text(contextLang.getString(R.string.quantity), style = TextStyle(fontSize = 32.sp))
         Spacer(modifier = Modifier.height(15.dp))
         Row(
           verticalAlignment = Alignment.CenterVertically,
@@ -347,7 +337,9 @@ fun SlotGridWithBottomSheet(app: App, context: Context) {
             .height(56.dp)
         ) {
           Text(
-            if (isDispenseServiceReady) "สั่ง" else "กำลังเชื่อมต่อ...",
+            if (isDispenseServiceReady) contextLang.getString(R.string.dispense) else contextLang.getString(
+              R.string.connecting_system_dispense
+            ),
             color = Colors.BlueGrey100,
             fontWeight = FontWeight.Medium,
             fontFamily = ibmpiexsansthailooped,
@@ -361,8 +353,8 @@ fun SlotGridWithBottomSheet(app: App, context: Context) {
   LaunchedEffect(openAlertDialog) {
     if (openAlertDialog) {
       delay(20)
-      activity?.let {
-        HideSystemControll.manageSystemBars(it, true)
+      context.let {
+        HideSystemControll.manageSystemBars(it as Activity, true)
       }
     }
   }
@@ -370,16 +362,16 @@ fun SlotGridWithBottomSheet(app: App, context: Context) {
   LaunchedEffect(showBottomSheet) {
     if (showBottomSheet) {
       delay(20)
-      activity?.let {
-        HideSystemControll.manageSystemBars(it, true)
+      context.let {
+        HideSystemControll.manageSystemBars(it as Activity, true)
       }
     }
   }
   if (openAlertDialog) {
     AlertDialog(
-      dialogTitle = "กำลังหยิบ",
-      dialogText = "โปรดรอจนกว่าจะหยิบเสร็จ",
-      icon = Icons.Default.Info
+      dialogTitle = context.getString(R.string.dispensing),
+      dialogText = context.getString(R.string.dispensing_please_wait),
+      icon = R.drawable.schedule_24px
     )
   }
 }
