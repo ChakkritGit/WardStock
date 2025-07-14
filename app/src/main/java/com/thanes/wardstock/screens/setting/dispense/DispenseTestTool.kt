@@ -270,13 +270,13 @@ fun SlotGridWithBottomSheet(app: App, context: Context) {
               }
             },
             shape = RoundedCornerShape(RoundRadius.Large),
+            modifier = Modifier.height(58.dp)
           ) {
-            Text(
-              "-",
-              color = Colors.BlueGrey100,
-              fontWeight = FontWeight.Medium,
-              fontFamily = ibmpiexsansthailooped,
-              fontSize = 32.sp
+            Icon(
+              painter = painterResource(R.drawable.remove_24px),
+              contentDescription = "remove_24px",
+              tint = Colors.BlueGrey100,
+              modifier = Modifier.size(32.dp)
             )
           }
           Spacer(modifier = Modifier.width(32.dp))
@@ -289,13 +289,13 @@ fun SlotGridWithBottomSheet(app: App, context: Context) {
               }
             },
             shape = RoundedCornerShape(RoundRadius.Large),
+            modifier = Modifier.height(58.dp)
           ) {
-            Text(
-              "+",
-              color = Colors.BlueGrey100,
-              fontWeight = FontWeight.Medium,
-              fontFamily = ibmpiexsansthailooped,
-              fontSize = 32.sp
+            Icon(
+              painter = painterResource(R.drawable.add_24px),
+              contentDescription = "add_24px",
+              tint = Colors.BlueGrey100,
+              modifier = Modifier.size(32.dp)
             )
           }
         }
