@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,7 +44,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -59,6 +57,7 @@ import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.components.appbar.AppBar
 import com.thanes.wardstock.ui.components.dialog.AlertDialog
 import com.thanes.wardstock.ui.components.system.HideSystemControll
+import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
@@ -154,17 +153,26 @@ fun DispenseTestTool(navController: NavHostController, context: Context) {
         modifier = Modifier
           .padding(10.dp)
       ) {
-        SlotGridWithBottomSheet(app)
+        SlotGridWithBottomSheet(app, context)
       }
     }
   }
+}
+
+fun Context.findActivity(): Activity? {
+  var ctx = this
+  while (ctx is android.content.ContextWrapper) {
+    if (ctx is Activity) return ctx
+    ctx = ctx.baseContext
+  }
+  return null
 }
 
 @SuppressLint("ContextCastToActivity")
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SlotGridWithBottomSheet(app: App) {
+fun SlotGridWithBottomSheet(app: App, context: Context) {
   val scope = rememberCoroutineScope()
   val numbers = (1..60).toList()
   val sheetState = rememberModalBottomSheetState()
@@ -173,7 +181,7 @@ fun SlotGridWithBottomSheet(app: App) {
   val qty = remember { mutableIntStateOf(1) }
   var openAlertDialog by remember { mutableStateOf(false) }
   var isDispenseServiceReady by remember { mutableStateOf(false) }
-  val currentActivity = LocalContext.current as? Activity
+  val activity = context.findActivity()
 
   LaunchedEffect(Unit) {
     while (!app.isInitialized) {
@@ -245,7 +253,8 @@ fun SlotGridWithBottomSheet(app: App) {
       onDismissRequest = {
         showBottomSheet = false
       },
-      sheetState = sheetState
+      sheetState = sheetState,
+      containerColor = Colors.BlueGrey100
     ) {
       Column(
         verticalArrangement = Arrangement.Center,
@@ -264,28 +273,44 @@ fun SlotGridWithBottomSheet(app: App) {
           horizontalArrangement = Arrangement.Center,
           modifier = Modifier.fillMaxWidth()
         ) {
-          Button(onClick = {
-            if (qty.intValue > 1) {
-              qty.intValue = qty.intValue - 1
-            }
-          }) {
-            Text("-", style = TextStyle(fontSize = 32.sp))
+          GradientButton(
+            onClick = {
+              if (qty.intValue > 1) {
+                qty.intValue = qty.intValue - 1
+              }
+            },
+            shape = RoundedCornerShape(RoundRadius.Large),
+          ) {
+            Text(
+              "-",
+              color = Colors.BlueGrey100,
+              fontWeight = FontWeight.Medium,
+              fontFamily = ibmpiexsansthailooped,
+              fontSize = 32.sp
+            )
           }
-          Spacer(modifier = Modifier.width(24.dp))
+          Spacer(modifier = Modifier.width(32.dp))
           Text(qty.intValue.toString(), style = TextStyle(fontSize = 42.sp))
-          Spacer(modifier = Modifier.width(24.dp))
-          Button(onClick = {
-            if (qty.intValue < 10) {
-              qty.intValue = qty.intValue + 1
-            }
-          }) {
-            Text("+", style = TextStyle(fontSize = 32.sp))
+          Spacer(modifier = Modifier.width(32.dp))
+          GradientButton(
+            onClick = {
+              if (qty.intValue < 10) {
+                qty.intValue = qty.intValue + 1
+              }
+            },
+            shape = RoundedCornerShape(RoundRadius.Large),
+          ) {
+            Text(
+              "+",
+              color = Colors.BlueGrey100,
+              fontWeight = FontWeight.Medium,
+              fontFamily = ibmpiexsansthailooped,
+              fontSize = 32.sp
+            )
           }
         }
         Spacer(modifier = Modifier.height(30.dp))
-        Button(
-          modifier = Modifier.fillMaxWidth(fraction = 0.75f),
-          enabled = isDispenseServiceReady,
+        GradientButton(
           onClick = {
             scope.launch {
               app.dispenseService?.let { dispenseService ->
@@ -315,22 +340,41 @@ fun SlotGridWithBottomSheet(app: App) {
                 showBottomSheet = false
               }
             }
-          }) {
-          Text(if (isDispenseServiceReady) "สั่ง" else "กำลังเชื่อมต่อ...")
+          },
+          shape = RoundedCornerShape(RoundRadius.Large),
+          modifier = Modifier
+            .fillMaxWidth(fraction = 0.75f)
+            .height(56.dp)
+        ) {
+          Text(
+            if (isDispenseServiceReady) "สั่ง" else "กำลังเชื่อมต่อ...",
+            color = Colors.BlueGrey100,
+            fontWeight = FontWeight.Medium,
+            fontFamily = ibmpiexsansthailooped,
+            fontSize = 24.sp
+          )
         }
       }
     }
   }
 
-  currentActivity.let { activity ->
-    LaunchedEffect(openAlertDialog) {
-      if (openAlertDialog) {
-        delay(20)
-        HideSystemControll.manageSystemBars(activity as Activity, true)
+  LaunchedEffect(openAlertDialog) {
+    if (openAlertDialog) {
+      delay(20)
+      activity?.let {
+        HideSystemControll.manageSystemBars(it, true)
       }
     }
   }
 
+  LaunchedEffect(showBottomSheet) {
+    if (showBottomSheet) {
+      delay(20)
+      activity?.let {
+        HideSystemControll.manageSystemBars(it, true)
+      }
+    }
+  }
   if (openAlertDialog) {
     AlertDialog(
       dialogTitle = "กำลังหยิบ",

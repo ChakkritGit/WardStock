@@ -18,23 +18,10 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 
-  signingConfigs {
-    create("release") {
-      storeFile = file("sign.jks")
-      storePassword = project.findProperty("RELEASE_STORE_PASSWORD") as String? ?: "default"
-      keyAlias = "key0"
-      keyPassword = project.findProperty("RELEASE_KEY_PASSWORD") as String? ?: "default"
-    }
-  }
-
   buildTypes {
-    getByName("release") {
+    release {
       isMinifyEnabled = false
-      proguardFiles(
-        getDefaultProguardFile("proguard-android-optimize.txt"),
-        "proguard-rules.pro"
-      )
-      signingConfig = signingConfigs.getByName("release")
+      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
     }
   }
 
@@ -50,35 +37,6 @@ android {
 
   buildFeatures {
     compose = true
-  }
-
-  sourceSets {
-    getByName("main") {
-      jniLibs.srcDirs("src/main/jniLibs")
-    }
-  }
-
-  packaging {
-    jniLibs {
-      keepDebugSymbols += listOf(
-        "*/armeabi/*.so",
-        "*/armeabi-v7a/*.so",
-        "*/arm64-v8a/*.so",
-        "*/x86_64/*.so"
-      )
-    }
-    resources {
-      excludes += listOf(
-        "META-INF/AL2.0",
-        "META-INF/LGPL2.1"
-      )
-    }
-
-    pickFirsts += listOf(
-      "**/libjnidispatch.so",
-      "**/libjnidispatch.dll",
-      "**/libjnidispatch.jnilib"
-    )
   }
 }
 
@@ -105,14 +63,8 @@ dependencies {
   implementation(libs.glide)
   implementation(libs.compose)
   implementation(libs.androidx.datastore.preferences)
-
-  implementation(files("libs/jna-min.jar"))
-//  implementation(files("libs/jna-platform.jar"))
-//  implementation(files("libs/json-20220924.jar"))
-//
-//  implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-
-//  implementation(libs.jna.platform)
+  implementation(libs.jna)
+  implementation(libs.json)
 
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)
