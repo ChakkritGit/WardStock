@@ -54,6 +54,7 @@ dependencies {
   implementation(libs.converter.gson)
   implementation(libs.amqp.client)
   implementation(libs.coil.compose)
+  implementation(libs.coil.gif)
   implementation(libs.coil.network.okhttp)
   implementation(libs.androidx.foundation)
   implementation(libs.androidx.appcompat)

@@ -369,9 +369,9 @@ fun SlotGridWithBottomSheet(app: App, context: Context) {
   }
   if (openAlertDialog) {
     AlertDialog(
-      dialogTitle = context.getString(R.string.dispensing),
-      dialogText = context.getString(R.string.dispensing_please_wait),
-      icon = R.drawable.schedule_24px
+      dialogTitle = contextLang.getString(R.string.dispensing),
+      dialogText = contextLang.getString(R.string.dispensing_please_wait),
+      icon = R.drawable.reading
     )
   }
 }

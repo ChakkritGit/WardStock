@@ -7,17 +7,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.ImageLoader
+import coil3.compose.AsyncImage
+import coil3.gif.GifDecoder
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 
@@ -27,19 +29,26 @@ fun AlertDialog(
   dialogText: String,
   icon: Int,
 ) {
+  val imageLoader = ImageLoader.Builder(LocalContext.current)
+    .components {
+      add(GifDecoder.Factory())
+    }
+    .build()
+
   AlertDialog(
     containerColor = Colors.BlueGrey100,
     icon = {
       Surface(
         modifier = Modifier
           .clip(shape = CircleShape),
-        color = Colors.BlueGrey80.copy(alpha = 0.5f)
+        color = Colors.BlueGrey100
       ) {
-        Icon(
-          painter = painterResource(icon),
-          contentDescription = "schedule_24px",
+        AsyncImage(
+          model = icon,
+          contentDescription = "Reading_gif",
+          imageLoader = imageLoader,
           modifier = Modifier
-            .size(56.dp)
+            .size(256.dp)
             .padding(6.dp)
         )
       }
@@ -52,13 +61,13 @@ fun AlertDialog(
       ) {
         Text(
           dialogTitle,
-          fontSize = 24.sp,
+          fontSize = 26.sp,
           fontWeight = FontWeight.Bold,
           fontFamily = ibmpiexsansthailooped
         )
         Text(
           dialogText,
-          fontSize = 20.sp,
+          fontSize = 22.sp,
           fontFamily = ibmpiexsansthailooped
         )
       }

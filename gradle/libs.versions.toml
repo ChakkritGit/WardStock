@@ -19,6 +19,7 @@ material = "1.9.0-beta02"
 retrofit = "3.0.0"
 amqpClient = "5.25.0"
 coilCompose = "3.2.0"
+coilGif = "3.2.0"
 converterGson = "3.0.0"
 foundation = "1.8.3"
 navigationCompose = "2.9.1"
@@ -51,6 +52,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
+coil-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coilGif" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilCompose" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 amqp-client = { module = "com.rabbitmq:amqp-client", version.ref = "amqpClient" }
