@@ -252,7 +252,7 @@ fun SlotGridWithBottomSheet(app: App, context: Context) {
         modifier = Modifier.padding(10.dp)
       ) {
         Text(
-          "${contextLang.getString(R.string.selected_position)}: $selectedNumber",
+          "${contextLang.getString(R.string.selected_position)} $selectedNumber",
           style = TextStyle(fontSize = 32.sp)
         )
         Spacer(modifier = Modifier.height(15.dp))
@@ -333,18 +333,27 @@ fun SlotGridWithBottomSheet(app: App, context: Context) {
           },
           shape = RoundedCornerShape(RoundRadius.Large),
           modifier = Modifier
-            .fillMaxWidth(fraction = 0.75f)
-            .height(56.dp)
+            .fillMaxWidth(fraction = 0.65f)
+            .height(58.dp)
         ) {
-          Text(
-            if (isDispenseServiceReady) contextLang.getString(R.string.dispense) else contextLang.getString(
-              R.string.connecting_system_dispense
-            ),
-            color = Colors.BlueGrey100,
-            fontWeight = FontWeight.Medium,
-            fontFamily = ibmpiexsansthailooped,
-            fontSize = 24.sp
-          )
+          if (isDispenseServiceReady) {
+            Icon(
+              painter = painterResource(R.drawable.send_24px),
+              contentDescription = "send_24px",
+              tint = Colors.BlueGrey100,
+              modifier = Modifier.size(52.dp)
+            )
+          } else {
+            Text(
+              contextLang.getString(
+                R.string.connecting_system_dispense
+              ),
+              color = Colors.BlueGrey100,
+              fontWeight = FontWeight.Medium,
+              fontFamily = ibmpiexsansthailooped,
+              fontSize = 24.sp
+            )
+          }
         }
       }
     }
