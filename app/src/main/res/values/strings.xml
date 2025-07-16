@@ -119,4 +119,7 @@
   <string name="dispense">Order</string>
   <string name="dispensing">Dispensing</string>
   <string name="dispensing_please_wait">Please wait for dispensing</string>
+  <string name="or">Or</string>
+  <string name="sign_in_with_finger">Sign in with finger</string>
+  <string name="close">Close</string>
 </resources>

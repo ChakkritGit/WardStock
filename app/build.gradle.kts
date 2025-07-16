@@ -16,6 +16,10 @@ android {
     versionName = "1.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+    ndk {
+      abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
+    }
   }
 
   buildTypes {
@@ -37,6 +41,23 @@ android {
 
   buildFeatures {
     compose = true
+  }
+
+  sourceSets {
+    getByName("main") {
+      jniLibs.srcDirs("src/main/jniLibs")
+    }
+  }
+
+  packagingOptions {
+    pickFirsts += "**/libjnidispatch.so"
+
+    jniLibs {
+      useLegacyPackaging = true
+    }
+
+    resources.excludes += "META-INF/AL2.0"
+    resources.excludes += "META-INF/LGPL2.1"
   }
 }
 
@@ -64,8 +85,10 @@ dependencies {
   implementation(libs.glide)
   implementation(libs.compose)
   implementation(libs.androidx.datastore.preferences)
-  implementation(libs.jna)
-  implementation(libs.json)
+
+  implementation(files("libs/jna.jar"))
+  implementation(files("libs/jna-platform.jar"))
+  implementation(files("libs/json-20220924.jar"))
 
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)

@@ -1,12 +1,16 @@
 package com.thanes.wardstock.screens.login
 
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,9 +23,12 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -37,7 +44,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -45,6 +51,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -57,28 +64,41 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.repositories.ApiRepository
 import com.thanes.wardstock.data.viewModel.AuthViewModel
+import com.thanes.wardstock.data.viewModel.FingerVeinViewModel
 import com.thanes.wardstock.data.viewModel.TokenHolder
 import com.thanes.wardstock.navigation.Routes
+import com.thanes.wardstock.screens.fvverify.MainDisplay
 import com.thanes.wardstock.ui.components.keyboard.Keyboard
+import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
+import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 import com.thanes.wardstock.utils.parseErrorMessage
 import com.thanes.wardstock.utils.parseExceptionMessage
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, context: Context) {
+fun LoginScreen(
+  navController: NavHostController,
+  authViewModel: AuthViewModel,
+  fingerVienViewModel: FingerVeinViewModel,
+  context: Context
+) {
   val scope = rememberCoroutineScope()
   var userName by remember { mutableStateOf("") }
   var userPassword by remember { mutableStateOf("") }
   var isLoading by remember { mutableStateOf(false) }
   var showPass by remember { mutableStateOf(false) }
+  var showDialog by remember { mutableStateOf(false) }
   var errorMessage by remember { mutableStateOf("") }
+  val contextLang = LocalContext.current
 
   val focusRequesterPassword = remember { FocusRequester() }
   val keyboardController = LocalSoftwareKeyboardController.current
@@ -128,6 +148,15 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, 
     }
   }
 
+  fun Context.findActivity(): Activity? {
+    var context = this
+    while (context is ContextWrapper) {
+      if (context is Activity) return context
+      context = context.baseContext
+    }
+    return null
+  }
+
   Box(
     modifier = Modifier
       .fillMaxSize()
@@ -136,9 +165,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, 
           colors = listOf(
             Colors.BlueSky.copy(alpha = 0.9f),
             Colors.BluePrimary,
-          ),
-          start = Offset(0.5f, 0f),
-          end = Offset.Infinite
+          ), start = Offset(0.5f, 0f), end = Offset.Infinite
         )
       )
   ) {
@@ -360,8 +387,136 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel, 
               )
             }
           }
+
+          Spacer(modifier = Modifier.height(14.dp))
+
+          Row(
+            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+          ) {
+            HorizontalDivider(
+              modifier = Modifier
+                .weight(0.5f)
+                .height(1.dp),
+              thickness = DividerDefaults.Thickness, color = Colors.BlueGrey80
+            )
+            Text(
+              text = stringResource(R.string.or),
+              modifier = Modifier.padding(horizontal = 8.dp),
+              color = Colors.BlueGrey80,
+              fontWeight = FontWeight.Medium
+            )
+            HorizontalDivider(
+              modifier = Modifier
+                .weight(0.5f)
+                .height(1.dp),
+              thickness = DividerDefaults.Thickness, color = Colors.BlueGrey80
+            )
+          }
+
+          Spacer(modifier = Modifier.height(16.dp))
+
+          GradientButton(
+            onClick = {
+              showDialog = true
+            },
+            shape = RoundedCornerShape(RoundRadius.Large),
+            modifier = Modifier
+              .fillMaxWidth()
+              .height(56.dp)
+              .border(0.5.dp, Colors.BlueGrey100, RoundedCornerShape(RoundRadius.Large)),
+            enabled = !isLoading,
+            gradient = Brush.verticalGradient(
+              colors = listOf(
+                Color.Transparent,
+                Color.Transparent
+              ),
+            )
+          ) {
+            Row(
+              horizontalArrangement = Arrangement.Center,
+              verticalAlignment = Alignment.CenterVertically,
+              modifier = Modifier.fillMaxWidth()
+            ) {
+              Icon(
+                painter = painterResource(R.drawable.fingerprint_24px),
+                contentDescription = "fingerprint_24px",
+                tint = Colors.BlueGrey100,
+                modifier = Modifier.size(24.dp)
+              )
+              Spacer(modifier = Modifier.width(6.dp))
+              Text(
+                stringResource(R.string.sign_in_with_finger),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                color = Colors.BlueGrey100
+              )
+            }
+          }
         }
       }
+    }
+
+    LaunchedEffect(showDialog) {
+      if (showDialog) {
+        delay(20)
+        context.findActivity()?.let { activity ->
+          HideSystemControll.manageSystemBars(activity, true)
+        }
+      }
+    }
+
+    if (showDialog) {
+      AlertDialog(
+        properties = DialogProperties(
+          dismissOnBackPress = false,
+          dismissOnClickOutside = false,
+          usePlatformDefaultWidth = false
+        ),
+        icon = {},
+        text = {
+          Column(
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth(0.9f)
+          ) {
+            MainDisplay(
+              bitmap = fingerVienViewModel.imageBitmap.value,
+              isEnrolling = fingerVienViewModel.isEnrolling.value,
+              isVerifying = fingerVienViewModel.isVerifying.value,
+              lastLogMessage = ""
+            )
+          }
+        },
+        onDismissRequest = {
+          showDialog = false
+        },
+        confirmButton = {},
+        dismissButton = {
+          GradientButton(
+            onClick = {
+              showDialog = false
+            },
+            shape = RoundedCornerShape(RoundRadius.Medium),
+            gradient = Brush.verticalGradient(
+              colors = listOf(
+                Colors.BlueGrey80,
+                Colors.BlueGrey80
+              ),
+            ),
+            modifier = Modifier
+              .fillMaxWidth(0.9f)
+              .height(56.dp)
+          ) {
+            Text(
+              contextLang.getString(R.string.close),
+              fontFamily = ibmpiexsansthailooped,
+              color = Colors.BlueSecondary,
+              fontSize = 20.sp,
+            )
+          }
+        },
+        containerColor = Colors.BlueGrey100
+      )
     }
   }
 

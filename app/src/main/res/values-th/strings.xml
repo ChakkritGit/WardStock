@@ -119,4 +119,7 @@
   <string name="dispense">สั่ง</string>
   <string name="dispensing">กำลังหยิบ</string>
   <string name="dispensing_please_wait">โปรดรอจนกว่าจะหยิบเสร็จ</string>
+  <string name="or">หรือ</string>
+  <string name="sign_in_with_finger">เข้าสู่ระบบด้วยลายนิ้วมือ</string>
+  <string name="close">ปิด</string>
 </resources>

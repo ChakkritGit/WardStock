@@ -16,15 +16,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.thanes.wardstock.screens.fvverify.FvVerifyScreen
 import com.thanes.wardstock.data.viewModel.AuthViewModel
 import com.thanes.wardstock.data.viewModel.DrugViewModel
+import com.thanes.wardstock.data.viewModel.FingerVeinViewModel
 import com.thanes.wardstock.data.viewModel.GroupViewModel
 import com.thanes.wardstock.data.viewModel.InventoryViewModel
 import com.thanes.wardstock.data.viewModel.MachineViewModel
 import com.thanes.wardstock.data.viewModel.OrderViewModel
 import com.thanes.wardstock.data.viewModel.RefillViewModel
 import com.thanes.wardstock.data.viewModel.UserViewModel
+import com.thanes.wardstock.screens.fvverify.FvVerifyScreen
 import com.thanes.wardstock.screens.home.HomeScreen
 import com.thanes.wardstock.screens.login.LoginScreen
 import com.thanes.wardstock.screens.manage.drug.AddDrug
@@ -51,12 +52,13 @@ import com.thanes.wardstock.services.internet.rememberConnectivityState
 import com.thanes.wardstock.ui.components.internet.NoInternetComposable
 import com.thanes.wardstock.ui.components.refill.RefillDrug
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Composable
 fun AppNavigation(
   navController: NavHostController,
   innerPadding: PaddingValues,
   splashScreen: SplashScreen,
+  fingerVienViewModel: FingerVeinViewModel,
   context: Context
 ) {
   val authViewModel: AuthViewModel = viewModel()
@@ -102,7 +104,7 @@ fun AppNavigation(
   ) {
 
     composable(route = Routes.Login.route) {
-      LoginScreen(navController, authViewModel, context)
+      LoginScreen(navController, authViewModel, fingerVienViewModel, context)
     }
 
     composable(route = Routes.Home.route) {
@@ -210,7 +212,7 @@ fun AppNavigation(
     }
 
     composable(route = Routes.FingerPrintVein.route) {
-      FvVerifyScreen(navController)
+      FvVerifyScreen(navController, fingerVienViewModel)
     }
   }
 }

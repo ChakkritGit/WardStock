@@ -9,6 +9,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
@@ -16,13 +17,16 @@ import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
 import com.thanes.wardstock.data.language.LocalizedAppWrapper
+import com.thanes.wardstock.data.viewModel.FingerVeinViewModel
 import com.thanes.wardstock.navigation.AppNavigation
 import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.theme.WardStockTheme
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
-  @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+  private val fingerVienViewModel: FingerVeinViewModel by viewModels()
+
+  @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
@@ -33,6 +37,7 @@ class MainActivity : ComponentActivity() {
     enableEdgeToEdge()
 
     val splashScreen = installSplashScreen()
+    fingerVienViewModel.initialize()
 
     setContent {
       LocalizedAppWrapper(this, this) {
@@ -40,7 +45,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-              AppNavigation(navController, innerPadding, splashScreen, this)
+              AppNavigation(navController, innerPadding, splashScreen, fingerVienViewModel, this)
             }
         }
       }
