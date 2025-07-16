@@ -16,6 +16,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.models.UserRole
 import com.thanes.wardstock.data.repositories.ApiRepository
+import com.thanes.wardstock.data.viewModel.FingerVeinViewModel
 import com.thanes.wardstock.data.viewModel.UserViewModel
 import com.thanes.wardstock.services.upload.uriToMultipartBodyPart
 import com.thanes.wardstock.ui.components.appbar.AppBar
@@ -25,7 +26,11 @@ import com.thanes.wardstock.utils.parseExceptionMessage
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun AddUser(navController: NavHostController, userSharedViewModel: UserViewModel) {
+fun AddUser(
+  navController: NavHostController,
+  userSharedViewModel: UserViewModel,
+  fingerVeinViewModel: FingerVeinViewModel
+) {
   val context = LocalContext.current
   var canClick by remember { mutableStateOf(true) }
   var isLoading by remember { mutableStateOf(false) }
@@ -58,6 +63,7 @@ fun AddUser(navController: NavHostController, userSharedViewModel: UserViewModel
       context = context,
       navController = null,
       userSharedViewModel = null,
+      fingerVeinViewModel = fingerVeinViewModel,
       innerPadding = innerPadding,
       isLoading = isLoading,
       showPasswordField = true,

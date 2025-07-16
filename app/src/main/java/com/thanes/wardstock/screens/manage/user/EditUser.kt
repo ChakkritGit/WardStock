@@ -15,6 +15,7 @@ import androidx.navigation.NavHostController
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.models.UserRole
 import com.thanes.wardstock.data.repositories.ApiRepository
+import com.thanes.wardstock.data.viewModel.FingerVeinViewModel
 import com.thanes.wardstock.data.viewModel.UserViewModel
 import com.thanes.wardstock.services.upload.uriToMultipartBodyPart
 import com.thanes.wardstock.ui.components.appbar.AppBar
@@ -24,7 +25,11 @@ import com.thanes.wardstock.utils.parseErrorMessage
 import com.thanes.wardstock.utils.parseExceptionMessage
 
 @Composable
-fun EditUser(navController: NavHostController, userSharedViewModel: UserViewModel) {
+fun EditUser(
+  navController: NavHostController,
+  userSharedViewModel: UserViewModel,
+  fingerVeinViewModel: FingerVeinViewModel
+) {
   var canClick by remember { mutableStateOf(true) }
   val context = LocalContext.current
   var isLoading by remember { mutableStateOf(false) }
@@ -59,6 +64,7 @@ fun EditUser(navController: NavHostController, userSharedViewModel: UserViewMode
         context = context,
         navController = navController,
         userSharedViewModel = userSharedViewModel,
+        fingerVeinViewModel = fingerVeinViewModel,
         innerPadding = innerPadding,
         isLoading = isLoading,
         initialData = UserFormState(

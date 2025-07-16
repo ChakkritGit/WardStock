@@ -11,6 +11,7 @@ import android.hardware.usb.UsbManager
 import android.os.Build
 import android.util.Base64
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.sun.jna.Callback
 import com.sun.jna.Library
@@ -41,6 +42,7 @@ open class FingerVeinLib {
   }
 
   private val mUsbReceiver = object : BroadcastReceiver() {
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     override fun onReceive(c: Context, intent: Intent) {
       val action = intent.action
       val device: UsbDevice? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -71,6 +73,7 @@ open class FingerVeinLib {
     }
   }
 
+  @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
   private fun handlePermissionGranted(device: UsbDevice?) {
     device?.let { grantedDevice ->
       val it = attachedDevice.iterator()
@@ -85,6 +88,7 @@ open class FingerVeinLib {
     fv_init()
   }
 
+  @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
   private fun handleDeviceAttached(device: UsbDevice?) {
     device?.let {
       if (VID == it.vendorId && PID == it.productId) {
@@ -96,6 +100,7 @@ open class FingerVeinLib {
     }
   }
 
+  @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
   private fun handleDeviceDetached(device: UsbDevice?) {
     device?.let {
       if (VID == it.vendorId && PID == it.productId) {
@@ -111,6 +116,7 @@ open class FingerVeinLib {
     }
   }
 
+  @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
   private fun requestPermission(device: UsbDevice) {
     try {
       val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -127,6 +133,7 @@ open class FingerVeinLib {
     }
   }
 
+  @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
   fun requestAllPermissions() {
     manager?.deviceList?.values?.forEach { device ->
       if (VID == device.vendorId && PID == device.productId) {
@@ -142,6 +149,7 @@ open class FingerVeinLib {
     fv_init()
   }
 
+  @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
   open fun sys_init(applicationContext: Context) {
     this.appContext = applicationContext
     manager = applicationContext.getSystemService(Context.USB_SERVICE) as UsbManager
@@ -169,6 +177,7 @@ open class FingerVeinLib {
     isInit = false
   }
 
+  @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
   private fun fv_init() {
     if (initDevice.size < attachedDevCnt || attachedDevCnt <= 0) return
 
@@ -223,6 +232,7 @@ open class FingerVeinLib {
     }
   }
 
+  @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
   protected fun checkUser(uid: String): Boolean {
     if (uid.isBlank()) {
       (this as? FingerVien)?.updateMsg("ID ผู้ใช้ว่างเปล่า กรุณากรอก ID ผู้ใช้")
@@ -231,12 +241,14 @@ open class FingerVeinLib {
     return true
   }
 
+  @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
   open fun fv_enroll(uid: String, uname: String): Int {
     if (!checkUser(uid)) return -1
     val myFv = (this as? FingerVien)
     return LibFvHelper.INSTANCE.fv_enroll(uid, uname, myFv?.cbEnrollFeature, myFv?.cbEnrollImg)
   }
 
+  @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
   open fun fv_verify(start: Boolean) {
     (this as? FingerVien)?.updateMsg(if (start) "เริ่มการยืนยันตัวตน" else "หยุดการยืนยันตัวตน")
     LibFvHelper.INSTANCE.fv_verify(if (start) 1 else 0, (this as? FingerVien)?.cbVerify)

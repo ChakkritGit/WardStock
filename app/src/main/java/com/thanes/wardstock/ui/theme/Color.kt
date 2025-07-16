@@ -24,4 +24,6 @@ object Colors {
   val black = Color(0xFF000000)
   val grey = Color(0xFF575757)
   val white = Color(0xFFFFFFFF)
+
+  val success = Color(0xFF4FC086)
 }

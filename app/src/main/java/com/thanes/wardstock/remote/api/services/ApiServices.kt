@@ -1,6 +1,7 @@
 package com.thanes.wardstock.remote.api.services
 
 import com.thanes.wardstock.data.models.ApiResponse
+import com.thanes.wardstock.data.models.BiometricLoadModel
 import com.thanes.wardstock.data.models.DrugExitsModel
 import com.thanes.wardstock.data.models.DrugModel
 import com.thanes.wardstock.data.models.GroupInventoryModel
@@ -207,5 +208,5 @@ interface ApiService {
   suspend fun getReportAlertMinMax(): Response<ApiResponse<List<InventoryMinMax>>>
 
   @GET("config/user")
-  suspend fun getUserConfig(): Response<ApiResponse<String>>
+  suspend fun getUserConfig(): Response<ApiResponse<List<BiometricLoadModel>>>
 }

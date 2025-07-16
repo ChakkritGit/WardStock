@@ -123,4 +123,6 @@
   <string name="sign_in_with_finger">เข้าสู่ระบบด้วยลายเส้นเลือด</string>
   <string name="close">ปิด</string>
   <string name="place_your_finger_on_the_scanner">วางนิ้วบนเครื่องสแกน</string>
+  <string name="add_finger_vein">เพิ่มลายเส้นเลือด</string>
+  <string name="add_finger_vein_success">ลงทะเบียนลายนิ้วมือแล้ว 1 รายการ</string>
 </resources>

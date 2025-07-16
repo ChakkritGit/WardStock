@@ -4,6 +4,7 @@ import android.app.Application
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.State
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.thanes.wardstock.utils.FingerVien
@@ -18,6 +19,7 @@ class FingerVeinViewModel(application: Application) : AndroidViewModel(applicati
   val isEnrolling = fvController.isEnrolling
   val isVerifying = fvController.isVerifying
   val verifiedUid = fvController.verifiedUid
+  val lastEnrolledTemplate: State<String?> = fvController.lastEnrolledTemplate
 
   @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
   fun initialize() {
@@ -73,5 +75,9 @@ class FingerVeinViewModel(application: Application) : AndroidViewModel(applicati
       isInitialized = false
       Log.d("FingerVeinViewModel", "ViewModel cleared and fv_exit called.")
     }
+  }
+
+  fun clearLastEnrolledTemplate() {
+    fvController.clearLastEnrolledTemplate()
   }
 }

@@ -123,4 +123,6 @@
   <string name="sign_in_with_finger">Sign in with finger vein</string>
   <string name="close">Close</string>
   <string name="place_your_finger_on_the_scanner">Place your finger on the scanner</string>
+  <string name="add_finger_vein">Add finger vein</string>
+  <string name="add_finger_vein_success">1 fingerprint has been registered</string>
 </resources>

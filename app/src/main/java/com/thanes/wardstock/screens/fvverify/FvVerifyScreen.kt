@@ -216,12 +216,12 @@ fun MainDisplay(
               modifier = Modifier
                 .size(48.dp)
                 .padding(6.dp),
-              tint = Colors.black.copy(alpha = 0.8f)
+              tint = Colors.BluePrimary.copy(alpha = 0.8f)
             )
           }
           Text(
             stringResource(R.string.place_your_finger_on_the_scanner),
-            color = Colors.black.copy(alpha = 0.8f),
+            color = Colors.BluePrimary.copy(alpha = 0.8f),
             fontSize = 18.sp,
             fontFamily = ibmpiexsansthailooped
           )

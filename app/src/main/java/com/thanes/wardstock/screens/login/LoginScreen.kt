@@ -470,7 +470,7 @@ fun LoginScreen(
             modifier = Modifier
               .fillMaxWidth()
               .height(56.dp)
-              .border(0.5.dp, Colors.BlueGrey100, RoundedCornerShape(RoundRadius.Large)),
+              .border(1.dp, Colors.BlueGrey100, RoundedCornerShape(RoundRadius.Large)),
             enabled = !isLoadingFinger,
             gradient = Brush.verticalGradient(
               colors = listOf(
