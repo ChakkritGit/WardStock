@@ -27,6 +27,7 @@ import retrofit2.http.Part
 import retrofit2.http.Path
 
 data class LoginRequest(val username: String, val password: String)
+data class LoginVeinRequest(val uid: String)
 data class AddDrugRequest(val inventoryQty: Int)
 data class MachineRequest(
   val machineName: String,
@@ -54,6 +55,9 @@ data class GroupInventoryRequest(
 interface ApiService {
   @POST("auth/login")
   suspend fun login(@Body request: LoginRequest): Response<ApiResponse<UserData>>
+
+  @POST("auth/login/vein")
+  suspend fun loginWithVein(@Body request: LoginVeinRequest): Response<ApiResponse<UserData>>
 
   @POST("auth/verify-drug")
   suspend fun verifyUser(@Body request: LoginRequest): Response<ApiResponse<String?>>

@@ -19,6 +19,7 @@ import com.thanes.wardstock.remote.api.services.AddDrugRequest
 import com.thanes.wardstock.remote.api.services.GroupInventoryRequest
 import com.thanes.wardstock.remote.api.services.InventoryRequest
 import com.thanes.wardstock.remote.api.services.LoginRequest
+import com.thanes.wardstock.remote.api.services.LoginVeinRequest
 import com.thanes.wardstock.remote.api.services.MachineRequest
 import com.thanes.wardstock.remote.configs.RetrofitInstance
 import com.thanes.wardstock.remote.configs.RetrofitInstance.createApiWithAuth
@@ -31,6 +32,11 @@ object ApiRepository {
   suspend fun login(userName: String, userPassword: String): Response<ApiResponse<UserData>> {
     val request = LoginRequest(userName, userPassword)
     return RetrofitInstance.api.login(request)
+  }
+
+  suspend fun loginWithVein(uid: String): Response<ApiResponse<UserData>> {
+    val request = LoginVeinRequest(uid)
+    return RetrofitInstance.api.loginWithVein(request)
   }
 
   suspend fun veryUser(userName: String, userPassword: String): Response<ApiResponse<String?>> {

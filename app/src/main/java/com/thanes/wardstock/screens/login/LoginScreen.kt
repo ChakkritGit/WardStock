@@ -98,6 +98,7 @@ fun LoginScreen(
   var userName by remember { mutableStateOf("") }
   var userPassword by remember { mutableStateOf("") }
   var isLoading by remember { mutableStateOf(false) }
+  var isLoadingFinger by remember { mutableStateOf(false) }
   var showPass by remember { mutableStateOf(false) }
   var showDialog by remember { mutableStateOf(false) }
   var errorMessage by remember { mutableStateOf("") }
@@ -152,6 +153,41 @@ fun LoginScreen(
     }
   }
 
+  fun handleLoginWithFinger(uid: String) {
+    errorMessage = ""
+    showDialog = false
+    isLoadingFinger = true
+
+    scope.launch {
+      try {
+        val response = ApiRepository.loginWithVein(uid)
+
+        if (response.isSuccessful) {
+          val userData = response.body()?.data
+
+          if (userData != null) {
+            val token = userData.token
+            authViewModel.login(context, token, userData)
+            TokenHolder.token = token
+            navController.navigate(Routes.Home.route) {
+              popUpTo(Routes.Login.route) { inclusive = true }
+            }
+          } else {
+            errorMessage = userDataInCompleteMessage
+          }
+        } else {
+          val errorJson = response.errorBody()?.string()
+          val message = parseErrorMessage(response.code(), errorJson)
+          errorMessage = message
+        }
+      } catch (e: Exception) {
+        errorMessage = parseExceptionMessage(e)
+      } finally {
+        isLoadingFinger = false
+      }
+    }
+  }
+
   fun Context.findActivity(): Activity? {
     var context = this
     while (context is ContextWrapper) {
@@ -159,6 +195,12 @@ fun LoginScreen(
       context = context.baseContext
     }
     return null
+  }
+
+  LaunchedEffect(fingerVienViewModel.verifiedUid) {
+    if (fingerVienViewModel.verifiedUid.value.isNotEmpty()) {
+      handleLoginWithFinger(fingerVienViewModel.verifiedUid.value)
+    }
   }
 
   Box(
@@ -429,7 +471,7 @@ fun LoginScreen(
               .fillMaxWidth()
               .height(56.dp)
               .border(0.5.dp, Colors.BlueGrey100, RoundedCornerShape(RoundRadius.Large)),
-            enabled = !isLoading,
+            enabled = !isLoadingFinger,
             gradient = Brush.verticalGradient(
               colors = listOf(
                 Color.Transparent,
@@ -437,24 +479,30 @@ fun LoginScreen(
               ),
             )
           ) {
-            Row(
-              horizontalArrangement = Arrangement.Center,
-              verticalAlignment = Alignment.CenterVertically,
-              modifier = Modifier.fillMaxWidth()
-            ) {
-              Icon(
-                painter = painterResource(R.drawable.fingerprint_24px),
-                contentDescription = "fingerprint_24px",
-                tint = Colors.BlueGrey100,
-                modifier = Modifier.size(24.dp)
+            if (isLoadingFinger) {
+              CircularProgressIndicator(
+                color = Colors.BlueGrey100, strokeWidth = 2.dp, modifier = Modifier.size(24.dp)
               )
-              Spacer(modifier = Modifier.width(6.dp))
-              Text(
-                stringResource(R.string.sign_in_with_finger),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium,
-                color = Colors.BlueGrey100
-              )
+            } else {
+              Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+              ) {
+                Icon(
+                  painter = painterResource(R.drawable.fingerprint_24px),
+                  contentDescription = "fingerprint_24px",
+                  tint = Colors.BlueGrey100,
+                  modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                  stringResource(R.string.sign_in_with_finger),
+                  fontSize = 18.sp,
+                  fontWeight = FontWeight.Medium,
+                  color = Colors.BlueGrey100
+                )
+              }
             }
           }
         }
