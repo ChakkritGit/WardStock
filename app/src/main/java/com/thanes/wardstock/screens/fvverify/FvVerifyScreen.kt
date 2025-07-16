@@ -60,6 +60,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.viewModel.FingerVeinViewModel
@@ -202,7 +203,7 @@ fun MainDisplay(
       } else {
         Column(
           horizontalAlignment = Alignment.CenterHorizontally,
-          verticalArrangement = Arrangement.spacedBy(12.dp)
+          verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
           Surface(
             modifier = Modifier
@@ -218,7 +219,12 @@ fun MainDisplay(
               tint = Colors.black.copy(alpha = 0.8f)
             )
           }
-          Text("วางนิ้วบนเครื่องสแกน", color = Colors.black.copy(alpha = 0.8f))
+          Text(
+            stringResource(R.string.place_your_finger_on_the_scanner),
+            color = Colors.black.copy(alpha = 0.8f),
+            fontSize = 18.sp,
+            fontFamily = ibmpiexsansthailooped
+          )
         }
       }
     }

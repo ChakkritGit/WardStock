@@ -10,7 +10,6 @@ import com.thanes.wardstock.utils.FingerVien
 import kotlinx.coroutines.launch
 
 class FingerVeinViewModel(application: Application) : AndroidViewModel(application) {
-
   private val fvController = FingerVien()
   private var isInitialized = false
 

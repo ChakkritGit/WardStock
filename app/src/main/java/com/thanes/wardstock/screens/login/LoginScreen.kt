@@ -3,7 +3,9 @@ package com.thanes.wardstock.screens.login
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -84,6 +86,7 @@ import com.thanes.wardstock.utils.parseExceptionMessage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Composable
 fun LoginScreen(
   navController: NavHostController,
@@ -99,6 +102,7 @@ fun LoginScreen(
   var showDialog by remember { mutableStateOf(false) }
   var errorMessage by remember { mutableStateOf("") }
   val contextLang = LocalContext.current
+  val isEnrolling by fingerVienViewModel.isEnrolling
 
   val focusRequesterPassword = remember { FocusRequester() }
   val keyboardController = LocalSoftwareKeyboardController.current
@@ -417,6 +421,7 @@ fun LoginScreen(
 
           GradientButton(
             onClick = {
+//              fingerVienViewModel.toggleVerify()
               showDialog = true
             },
             shape = RoundedCornerShape(RoundRadius.Large),
@@ -483,7 +488,7 @@ fun LoginScreen(
               bitmap = fingerVienViewModel.imageBitmap.value,
               isEnrolling = fingerVienViewModel.isEnrolling.value,
               isVerifying = fingerVienViewModel.isVerifying.value,
-              lastLogMessage = ""
+              lastLogMessage = fingerVienViewModel.logMessages.firstOrNull() ?: ""
             )
           }
         },
@@ -494,6 +499,7 @@ fun LoginScreen(
         dismissButton = {
           GradientButton(
             onClick = {
+//              fingerVienViewModel.toggleVerify()
               showDialog = false
             },
             shape = RoundedCornerShape(RoundRadius.Medium),
@@ -515,7 +521,7 @@ fun LoginScreen(
             )
           }
         },
-        containerColor = Colors.BlueGrey100
+        containerColor = Colors.BlueGrey100,
       )
     }
   }

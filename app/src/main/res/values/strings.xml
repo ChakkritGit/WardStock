@@ -120,6 +120,7 @@
   <string name="dispensing">Dispensing</string>
   <string name="dispensing_please_wait">Please wait for dispensing</string>
   <string name="or">Or</string>
-  <string name="sign_in_with_finger">Sign in with finger</string>
+  <string name="sign_in_with_finger">Sign in with finger vein</string>
   <string name="close">Close</string>
+  <string name="place_your_finger_on_the_scanner">Place your finger on the scanner</string>
 </resources>

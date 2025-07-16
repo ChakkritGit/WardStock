@@ -120,6 +120,7 @@
   <string name="dispensing">กำลังหยิบ</string>
   <string name="dispensing_please_wait">โปรดรอจนกว่าจะหยิบเสร็จ</string>
   <string name="or">หรือ</string>
-  <string name="sign_in_with_finger">เข้าสู่ระบบด้วยลายนิ้วมือ</string>
+  <string name="sign_in_with_finger">เข้าสู่ระบบด้วยลายเส้นเลือด</string>
   <string name="close">ปิด</string>
+  <string name="place_your_finger_on_the_scanner">วางนิ้วบนเครื่องสแกน</string>
 </resources>

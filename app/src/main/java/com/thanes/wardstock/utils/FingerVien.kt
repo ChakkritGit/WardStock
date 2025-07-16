@@ -33,7 +33,7 @@ class FingerVien : FingerVeinLib() {
   @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
   override fun sys_init(applicationContext: Context) {
     super.sys_init(applicationContext)
-    updateMsg("ระบบเริ่มต้น, รอการเชื่อมต่ออุปกรณ์...")
+//    updateMsg("ระบบเริ่มต้น, รอการเชื่อมต่ออุปกรณ์...")
   }
 
   @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
@@ -224,6 +224,7 @@ class FingerVien : FingerVeinLib() {
       }
     }
 
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     override fun delUser(uid: String) {
       try {
         userInfo?.let {
@@ -241,12 +242,14 @@ class FingerVien : FingerVeinLib() {
       }
     }
 
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     override fun clearUser() {
       userInfo = JSONArray()
       writeFile(userInfo.toString())
       updateMsg("ล้างข้อมูลผู้ใช้ทั้งหมดเรียบร้อยแล้ว")
     }
 
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     private fun findUser(uid: String): JSONObject? {
       try {
         userInfo?.let {
@@ -263,12 +266,13 @@ class FingerVien : FingerVeinLib() {
       return null
     }
 
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     private fun readFile(): String? {
       return try {
         context.openFileInput(userFileName).use { fin ->
           fin.bufferedReader().use { it.readText() }
         }
-      } catch (e: java.io.FileNotFoundException) {
+      } catch (_: java.io.FileNotFoundException) {
         null
       } catch (e: Exception) {
         updateMsg("เกิดข้อผิดพลาดในการอ่านไฟล์: ${e.message}")
@@ -276,6 +280,7 @@ class FingerVien : FingerVeinLib() {
       }
     }
 
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     private fun writeFile(json: String) {
       try {
         context.openFileOutput(userFileName, Context.MODE_PRIVATE).use {
