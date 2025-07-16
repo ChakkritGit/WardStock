@@ -41,6 +41,15 @@ class FingerVeinViewModel(application: Application) : AndroidViewModel(applicati
   }
 
   @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
+  fun reloadAllBiometrics() {
+    if (!isInitialized) {
+      fvController.updateMsg("ระบบยังไม่ได้เริ่มต้น ไม่สามารถโหลดข้อมูลได้")
+      return
+    }
+    fvController.userHandler.loadUser()
+  }
+
+  @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
   fun enroll(uid: String, uname: String = "") {
     if (!isInitialized) {
       fvController.updateMsg("ระบบยังไม่พร้อมใช้งาน")

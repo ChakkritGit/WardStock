@@ -1,6 +1,8 @@
 package com.thanes.wardstock.screens.manage.user
 
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -24,6 +26,7 @@ import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.utils.parseErrorMessage
 import com.thanes.wardstock.utils.parseExceptionMessage
 
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun AddUser(
@@ -98,6 +101,7 @@ fun AddUser(
           return@UserFormScreen if (response.isSuccessful) {
             errorMessage = successMessage
             userSharedViewModel.fetchUser()
+            fingerVeinViewModel.reloadAllBiometrics()
             navController.popBackStack()
             true
           } else {

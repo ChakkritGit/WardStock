@@ -1,6 +1,8 @@
 package com.thanes.wardstock.screens.manage.user
 
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,6 +26,7 @@ import com.thanes.wardstock.utils.ImageUrl
 import com.thanes.wardstock.utils.parseErrorMessage
 import com.thanes.wardstock.utils.parseExceptionMessage
 
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Composable
 fun EditUser(
   navController: NavHostController,
@@ -104,6 +107,7 @@ fun EditUser(
             return@UserFormScreen if (response.isSuccessful) {
               errorMessage = successMessage
               userSharedViewModel.fetchUser()
+              fingerVeinViewModel.reloadAllBiometrics()
               navController.popBackStack()
               true
             } else {

@@ -22,6 +22,7 @@ class FingerVien : FingerVeinLib() {
   val isEnrolling = mutableStateOf(false)
   val isVerifying = mutableStateOf(false)
   val verifiedUid = mutableStateOf("")
+  val verifiedUsername = mutableStateOf("")
   val lastEnrolledTemplate: MutableState<String?> = mutableStateOf(null)
 
   private var isLastVerify = false
@@ -145,16 +146,18 @@ class FingerVien : FingerVeinLib() {
   val cbEnrollImg = LibFvHelper.CbEnrollImgImpl { _, _, _, _ -> }
 
   @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
-  val cbVerify = LibFvHelper.CbVerifyImpl { uid, _, _, _, _, _ ->
+  val cbVerify = LibFvHelper.CbVerifyImpl { uid, uname, _, _, _, _ ->
     CoroutineScope(Dispatchers.Main).launch {
       val success = uid.isNotEmpty()
       val message = if (success) {
-        translateMessage("认证成功") + ", ID ผู้ใช้: $uid"
+        val displayName = uname.ifEmpty { "ผู้ใช้ไม่ระบุชื่อ" }
+        "${translateMessage("认证成功")}: $displayName (ID: $uid)"
       } else {
         translateMessage("认证失败")
       }
       updateMsg(message)
       verifiedUid.value = if (success) uid else ""
+      verifiedUsername.value = if (success) uname else ""
     }
   }
 
@@ -165,7 +168,6 @@ class FingerVien : FingerVeinLib() {
     override fun loadUser() {
       apiScope.launch {
         try {
-          Log.d("FingerVeinViewModel", "Initialized")
           val response = ApiRepository.getUserConfig()
           if (response.isSuccessful) {
             val allBiometrics = response.body()?.data ?: emptyList()
