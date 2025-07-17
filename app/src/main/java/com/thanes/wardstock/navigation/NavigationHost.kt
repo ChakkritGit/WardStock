@@ -76,7 +76,7 @@ fun AppNavigation(
   val isInitialConnected = remember { isConnected }
 
   if (!isInitialConnected) {
-    NoInternetComposable()
+    NoInternetComposable(navController, context)
     return
   }
 
