@@ -20,6 +20,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -180,46 +183,36 @@ fun SlotGridWithBottomSheet(app: App, context: Context) {
     isDispenseServiceReady = true
   }
 
-  Column {
-    for (row in 0 until 6) {
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-      ) {
-        for (col in 0 until 10) {
-          val index = row * 10 + col
-          if (index < numbers.size) {
-            val number = numbers[index]
-            Card(
-              modifier = Modifier
-                .weight(1f)
-                .aspectRatio(1f)
-                .clickable {
-                  if (isDispenseServiceReady) {
-                    qty.intValue = 1
-                    selectedNumber = number
-                    showBottomSheet = true
-                  }
-                }
-                .clip(shape = RoundedCornerShape(RoundRadius.Large)),
-              colors = CardDefaults.cardColors(
-                containerColor = Colors.BlueGrey80
-              ),
-              elevation = CardDefaults.cardElevation(8.dp)
-            ) {
-              Box(
-                modifier = Modifier
-                  .fillMaxSize()
-                  .clip(shape = RoundedCornerShape(RoundRadius.Large)),
-                contentAlignment = Alignment.Center
-              ) {
-                Text(text = number.toString(), fontFamily = ibmpiexsansthailooped)
-              }
+  LazyVerticalGrid(
+    columns = GridCells.Fixed(10),
+    modifier = Modifier.fillMaxSize(),
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+    horizontalArrangement = Arrangement.spacedBy(8.dp)
+  ) {
+    items(numbers) { number ->
+      Card(
+        modifier = Modifier
+          .aspectRatio(1f)
+          .clickable {
+            if (isDispenseServiceReady) {
+              qty.intValue = 1
+              selectedNumber = number
+              showBottomSheet = true
             }
-          }
+          },
+        shape = RoundedCornerShape(RoundRadius.Large),
+        colors = CardDefaults.cardColors(
+          containerColor = Colors.BlueGrey80
+        ),
+        elevation = CardDefaults.cardElevation(1.5.dp)
+      ) {
+        Box(
+          modifier = Modifier.fillMaxSize(),
+          contentAlignment = Alignment.Center
+        ) {
+          Text(text = number.toString(), fontFamily = ibmpiexsansthailooped)
         }
       }
-      Spacer(modifier = Modifier.height(8.dp))
     }
   }
 

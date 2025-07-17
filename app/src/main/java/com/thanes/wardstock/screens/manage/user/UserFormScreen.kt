@@ -159,6 +159,7 @@ fun UserFormScreen(
         if (response.isSuccessful) {
           if (userId.isNotBlank()) {
             fingerVeinViewModel.deleteUser(userId)
+            fingerVeinViewModel.reloadAllBiometrics()
           }
           errorMessage = deleteMessage + successMessage
           userSharedViewModel?.fetchUser()

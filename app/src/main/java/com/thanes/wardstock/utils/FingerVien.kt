@@ -78,6 +78,10 @@ class FingerVien : FingerVeinLib() {
 
   private fun translateMessage(originalMsg: String): String {
     val translations = mapOf(
+      "初始化..." to "กำลังเริ่มต้น...",
+      "打开设备..." to "กำลังเปิดอุปกรณ์...",
+      "发现1个设备" to "พบ 1 อุปกรณ์",
+      "设备1打开成功" to "เปิดอุปกรณ์ 1 สำเร็จ",
       "初始化成功" to "เริ่มต้นระบบสำเร็จ",
       "认证成功" to "ยืนยันตัวตนสำเร็จ",
       "认证失败" to "ยืนยันตัวตนล้มเหลว",

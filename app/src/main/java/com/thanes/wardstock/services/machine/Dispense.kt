@@ -303,8 +303,14 @@ class Dispense private constructor(
 
         try {
           serialPortManager.writeSerialttyS2("# 1 1 3 1 6")
-          isDispenseActive = true
           progress = "openingDoor"
+        } catch (e: Exception) {
+          Log.e(TAG, "Error in ttyS2 reading coroutine: ${e.message}")
+          if (!isProcessCompleted.get()) cleanupAndComplete(false)
+        }
+
+        try {
+          isDispenseActive = true
 
           serialPortManager.startReadingSerialttyS1 { data ->
             CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
