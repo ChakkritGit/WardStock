@@ -569,6 +569,23 @@ class Dispense private constructor(
     }
   }
 
+  private fun resetInternalState() {
+    if (stateMutex.tryLock()) {
+      try {
+        ttyS1WriteData.clear()
+        currentTtyS1CommNo = 0
+        commandRetryCount = 0
+        expectedTtyS1Response = ""
+        Log.d(TAG, "Internal state has been reset.")
+      } finally {
+        stateMutex.unlock()
+        Log.d(TAG, "Mutex unlocked after state reset.")
+      }
+    } else {
+      Log.w(TAG, "Could not acquire lock to reset state. Another process might be holding it.")
+    }
+  }
+
   private fun prepareTtyS1Command(slot: Int) {
     currentTtyS1CommNo = serialPortManager.getRunning()
     currentTtyS1CommNo = if (currentTtyS1CommNo >= 255) 1 else currentTtyS1CommNo + 1
@@ -587,6 +604,8 @@ class Dispense private constructor(
   }
 
   suspend fun sendToMachine(dispenseQty: Int, position: Int): Boolean {
+    resetInternalState()
+
     return try {
       val success = withTimeoutOrNull(OVERALL_TIMEOUT_MS) {
         suspendCoroutine<Boolean> { continuation ->
@@ -635,8 +654,8 @@ class Dispense private constructor(
           try {
             val initialCmd = "# 1 1 3 1 6"
             serialPortManager.writeSerialttyS2(initialCmd)
-            startCommandTimeout(initialCmd, "ttyS2", DOOR_MOVEMENT_TIMEOUT_MS)
-            progress = "openingDoor"
+            startCommandTimeout(initialCmd, "ttyS2", COMMUNICATION_TIMEOUT_MS)
+            progress = "lockingRack"
 
             serialPortManager.startReadingSerialttyS1 { data ->
               CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
@@ -702,12 +721,12 @@ class Dispense private constructor(
                   var nextTimeout = COMMUNICATION_TIMEOUT_MS
 
                   when (response) {
-                    "26,31,0d,0a,32,0d,0a,33,0d,0a,31,0d,0a,37,0d,0a" -> if (progress == "openingDoor") {
-                      nextCommand = "# 1 1 5 10 17"; progress = "doorOpened"; nextTimeout =
-                        COMMUNICATION_TIMEOUT_MS
+                    "26,31,0d,0a,32,0d,0a,33,0d,0a,31,0d,0a,37,0d,0a" -> if (progress == "lockingRack") {
+                      nextCommand = "# 1 1 5 10 17"; progress = "openingDoor"; nextTimeout =
+                        DOOR_MOVEMENT_TIMEOUT_MS
                     }
 
-                    "26,31,0d,0a,32,0d,0a,35,0d,0a,31,0d,0a,39,0d,0a" -> if (progress == "doorOpened") {
+                    "26,31,0d,0a,32,0d,0a,35,0d,0a,31,0d,0a,39,0d,0a" -> if (progress == "openingDoor") {
                       val floor = when {
                         position <= 10 -> 1400; position <= 20 -> 1210; position <= 30 -> 1010; position <= 40 -> 790; position <= 50 -> 580; position <= 60 -> 360; else -> 20
                       }
