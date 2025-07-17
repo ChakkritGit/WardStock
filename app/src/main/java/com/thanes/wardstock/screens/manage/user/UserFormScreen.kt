@@ -491,7 +491,7 @@ fun UserFormScreen(
           onClick = {
             fingerVeinViewModel.clearLastEnrolledTemplate()
             showEnrollDialog = true
-            fingerVeinViewModel.enroll(uid = enrollId, uname = username)
+//            fingerVeinViewModel.enroll(uid = enrollId, uname = username)
           },
           shape = RoundedCornerShape(RoundRadius.Medium),
           gradient = Brush.verticalGradient(

@@ -183,7 +183,7 @@ fun HomeAppBar(
   LaunchedEffect(openAlertDialog) {
     if (openAlertDialog) {
       delay(20)
-      context.findActivity()?.let { activity ->
+      (context as? Activity)?.let { activity ->
         HideSystemControll.manageSystemBars(activity, true)
       }
     }

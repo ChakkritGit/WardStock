@@ -355,8 +355,8 @@ fun SlotGridWithBottomSheet(app: App, context: Context) {
   LaunchedEffect(openAlertDialog) {
     if (openAlertDialog) {
       delay(20)
-      context.let {
-        HideSystemControll.manageSystemBars(it as Activity, true)
+      (context as? Activity)?.let { activity ->
+        HideSystemControll.manageSystemBars(activity, true)
       }
     }
   }
@@ -364,8 +364,8 @@ fun SlotGridWithBottomSheet(app: App, context: Context) {
   LaunchedEffect(showBottomSheet) {
     if (showBottomSheet) {
       delay(20)
-      context.let {
-        HideSystemControll.manageSystemBars(it as Activity, true)
+      (context as? Activity)?.let { activity ->
+        HideSystemControll.manageSystemBars(activity, true)
       }
     }
   }
