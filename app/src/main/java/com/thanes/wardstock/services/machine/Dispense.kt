@@ -551,9 +551,11 @@ class Dispense private constructor(
     private const val TAG = "Dispense"
 
     private const val OVERALL_TIMEOUT_MS = 120_000L
+    private const val LIFT_MOVEMENT_TIMEOUT_MS = 20_000L
+    private const val DOOR_MOVEMENT_TIMEOUT_MS = 7_000L
+    private const val DISPENSE_STATUS_TIMEOUT_MS = 15_000L
+    private const val COMMUNICATION_TIMEOUT_MS = 3_000L
     private const val MAX_TTY_RETRY = 3
-    private const val COMMAND_TIMEOUT_MS = 3000L
-    private const val DISPENSE_STATUS_TIMEOUT_MS = 15000L
     private const val VMC_ACK_RESPONSE = "fa,fb,42,00,43"
     private const val VMC_POLL_REQUEST = "fa,fb,41,00,40"
     private const val VMC_DISPENSE_STATUS_PREFIX = "fa,fb,04,04"
@@ -606,7 +608,7 @@ class Dispense private constructor(
           fun startCommandTimeout(
             commandToRetry: String,
             stream: String,
-            timeout: Long = COMMAND_TIMEOUT_MS
+            timeout: Long = COMMUNICATION_TIMEOUT_MS
           ) {
             commandTimeoutJob?.cancel()
             commandTimeoutJob = CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
@@ -631,7 +633,7 @@ class Dispense private constructor(
           try {
             val initialCmd = "# 1 1 3 1 6"
             serialPortManager.writeSerialttyS2(initialCmd)
-            startCommandTimeout(initialCmd, "ttyS2")
+            startCommandTimeout(initialCmd, "ttyS2", DOOR_MOVEMENT_TIMEOUT_MS)
             progress = "openingDoor"
 
             serialPortManager.startReadingSerialttyS1 { data ->
@@ -695,9 +697,12 @@ class Dispense private constructor(
                   commandTimeoutJob?.cancel()
                   commandRetryCount = 0
                   var nextCommand = ""
+                  var nextTimeout = COMMUNICATION_TIMEOUT_MS
+
                   when (response) {
                     "26,31,0d,0a,32,0d,0a,33,0d,0a,31,0d,0a,37,0d,0a" -> if (progress == "openingDoor") {
-                      nextCommand = "# 1 1 5 10 17"; progress = "doorOpened"
+                      nextCommand = "# 1 1 5 10 17"; progress = "doorOpened"; nextTimeout =
+                        COMMUNICATION_TIMEOUT_MS
                     }
 
                     "26,31,0d,0a,32,0d,0a,35,0d,0a,31,0d,0a,39,0d,0a" -> if (progress == "doorOpened") {
@@ -706,6 +711,7 @@ class Dispense private constructor(
                       }
                       nextCommand = "# 1 1 1 $floor ${floor + 3}"
                       progress = "liftingUp"
+                      nextTimeout = LIFT_MOVEMENT_TIMEOUT_MS
                     }
 
                     "26,31,0d,0a,32,0d,0a,31,0d,0a,31,0d,0a,35,0d,0a" -> when (progress) {
@@ -715,12 +721,14 @@ class Dispense private constructor(
                       }
 
                       "liftingDown" -> {
-                        nextCommand = "# 1 1 6 10 18"; progress = "closingDoor"
+                        nextCommand = "# 1 1 6 10 18"; progress = "closingDoor"; nextTimeout =
+                          DOOR_MOVEMENT_TIMEOUT_MS
                       }
                     }
 
                     "26,31,0d,0a,32,0d,0a,36,0d,0a,31,0d,0a,31,30,0d,0a" -> if (progress == "closingDoor") {
-                      nextCommand = "# 1 1 3 0 5"; progress = "finalizing"
+                      nextCommand = "# 1 1 3 0 5"; progress = "finalizing"; nextTimeout =
+                        COMMUNICATION_TIMEOUT_MS
                     }
 
                     "26,31,0d,0a,32,0d,0a,33,0d,0a,30,0d,0a,36,0d,0a" -> if (progress == "finalizing") {
@@ -730,7 +738,7 @@ class Dispense private constructor(
                   }
                   if (nextCommand.isNotEmpty()) {
                     serialPortManager.writeSerialttyS2(nextCommand)
-                    startCommandTimeout(nextCommand, "ttyS2")
+                    startCommandTimeout(nextCommand, "ttyS2", nextTimeout)
                   }
                 }
               }
