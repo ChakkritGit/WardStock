@@ -85,7 +85,8 @@ interface ApiService {
     @Part("username") username: RequestBody,
     @Part("password") password: RequestBody,
     @Part("display") display: RequestBody,
-    @Part("role") role: RequestBody
+    @Part("role") role: RequestBody,
+    @Part("biometrics") biometrics: RequestBody?
   ): Response<ApiResponse<UserModel>>
 
   @Multipart

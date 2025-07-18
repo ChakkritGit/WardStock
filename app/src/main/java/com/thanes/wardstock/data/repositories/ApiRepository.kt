@@ -1,5 +1,6 @@
 package com.thanes.wardstock.data.repositories
 
+import com.google.gson.Gson
 import com.thanes.wardstock.data.models.ApiResponse
 import com.thanes.wardstock.data.models.BiometricLoadModel
 import com.thanes.wardstock.data.models.DrugExitsModel
@@ -24,8 +25,10 @@ import com.thanes.wardstock.remote.api.services.LoginVeinRequest
 import com.thanes.wardstock.remote.api.services.MachineRequest
 import com.thanes.wardstock.remote.configs.RetrofitInstance
 import com.thanes.wardstock.remote.configs.RetrofitInstance.createApiWithAuth
+import com.thanes.wardstock.screens.manage.user.BiometricInfo
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Response
 
@@ -76,19 +79,30 @@ object ApiRepository {
     username: String,
     password: String,
     display: String,
-    role: UserRole
+    role: UserRole,
+    biometrics: List<BiometricInfo>? = emptyList()
   ): Response<ApiResponse<UserModel>> {
     val usernamePart = username.toRequestBody("text/plain".toMediaTypeOrNull())
     val passwordPart = password.toRequestBody("text/plain".toMediaTypeOrNull())
     val displayPart = display.toRequestBody("text/plain".toMediaTypeOrNull())
     val rolePart = role.name.toRequestBody("text/plain".toMediaTypeOrNull())
 
+    var biometricsPart: RequestBody? = null
+
+    if (biometrics != null) {
+      val gson = Gson()
+      val biometricsJson = gson.toJson(biometrics)
+
+      biometricsPart = biometricsJson.toRequestBody("application/json".toMediaTypeOrNull())
+    }
+
     return createApiWithAuth().createUser(
       image = imagePart,
       username = usernamePart,
       password = passwordPart,
       display = displayPart,
-      role = rolePart
+      role = rolePart,
+      biometrics = biometricsPart
     )
   }
 

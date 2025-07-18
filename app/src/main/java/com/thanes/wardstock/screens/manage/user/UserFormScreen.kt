@@ -1,5 +1,6 @@
 package com.thanes.wardstock.screens.manage.user
 
+import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import android.os.Build
@@ -77,15 +78,17 @@ import com.thanes.wardstock.R
 import com.thanes.wardstock.data.repositories.ApiRepository
 import com.thanes.wardstock.data.viewModel.FingerVeinViewModel
 import com.thanes.wardstock.data.viewModel.UserViewModel
+import com.thanes.wardstock.screens.fvverify.MainDisplay
 import com.thanes.wardstock.ui.components.loading.LoadingDialog
+import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 import com.thanes.wardstock.utils.parseErrorMessage
 import com.thanes.wardstock.utils.parseExceptionMessage
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 data class BiometricInfo(
   val featureData: String,
@@ -100,7 +103,7 @@ data class UserFormState(
   val display: String = "",
   val role: String = "",
 
-  val biometrics: List<BiometricInfo> = emptyList()
+  val biometrics: List<BiometricInfo>? = emptyList()
 )
 
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
@@ -133,7 +136,6 @@ fun UserFormScreen(
   var showEnrollDialog by remember { mutableStateOf(false) }
   val deleteMessage = stringResource(R.string.delete)
   val successMessage = stringResource(R.string.successfully)
-  val enrollId by remember { mutableStateOf(UUID.randomUUID().toString()) }
   val scope = rememberCoroutineScope()
 
   val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
@@ -482,65 +484,74 @@ fun UserFormScreen(
         }
       }
 
-      Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-      ) {
-        GradientButton(
-          onClick = {
-            fingerVeinViewModel.clearLastEnrolledTemplate()
-            showEnrollDialog = true
-//            fingerVeinViewModel.enroll(uid = enrollId, uname = username)
-          },
-          shape = RoundedCornerShape(RoundRadius.Medium),
-          gradient = Brush.verticalGradient(
-            colors = listOf(
-              Color.Transparent,
-              Color.Transparent
-            ),
-          ),
+      if (initialData == null) {
+        Column(
           modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp)
-            .border(1.dp, Colors.BlueSecondary, RoundedCornerShape(RoundRadius.Large)),
+            .fillMaxWidth(),
+          horizontalAlignment = Alignment.CenterHorizontally,
+          verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-          Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-              painter = painterResource(id = R.drawable.fingerprint_24px),
-              contentDescription = "fingerprint_24px",
-              tint = Colors.BlueSecondary
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-              stringResource(R.string.add_finger_vein),
-              fontFamily = ibmpiexsansthailooped,
-              fontWeight = FontWeight.Medium,
-              color = Colors.BlueSecondary,
-              fontSize = 20.sp,
-            )
-          }
-        }
-
-        if (enrolledBiometrics.isNotEmpty()) {
-          Row(
-            verticalAlignment = Alignment.CenterVertically,
+          GradientButton(
+            onClick = {
+              if (username.isNotBlank()) {
+                fingerVeinViewModel.clearLastEnrolledTemplate()
+                showEnrollDialog = true
+//            fingerVeinViewModel.enroll(uid = enrollId, uname = username)
+              }
+            },
+            shape = RoundedCornerShape(RoundRadius.Medium),
+            gradient = Brush.verticalGradient(
+              colors = listOf(
+                Color.Transparent,
+                Color.Transparent
+              ),
+            ),
+            enabled = username.isNotBlank(),
             modifier = Modifier
               .fillMaxWidth()
               .height(56.dp)
-              .background(Colors.success.copy(0.3f), RoundedCornerShape(RoundRadius.Large))
-              .border(1.dp, Colors.success, RoundedCornerShape(RoundRadius.Large)),
+              .border(
+                1.dp,
+                Colors.BlueSecondary.copy(if (username.isNotBlank()) 1f else 0.5f),
+                RoundedCornerShape(RoundRadius.Medium)
+              ),
           ) {
-            Icon(
-              painter = painterResource(id = R.drawable.check_24px),
-              contentDescription = "check_24px",
-              tint = Colors.success,
+            Row(verticalAlignment = Alignment.CenterVertically) {
+              Icon(
+                painter = painterResource(id = R.drawable.fingerprint_24px),
+                contentDescription = "fingerprint_24px",
+                tint = Colors.BlueSecondary
+              )
+              Spacer(modifier = Modifier.width(4.dp))
+              Text(
+                stringResource(R.string.add_finger_vein),
+                fontFamily = ibmpiexsansthailooped,
+                fontWeight = FontWeight.Medium,
+                color = Colors.BlueSecondary,
+                fontSize = 20.sp,
+              )
+            }
+          }
+
+          if (enrolledBiometrics.isNotEmpty()) {
+            Row(
+              verticalAlignment = Alignment.CenterVertically,
               modifier = Modifier
-                .padding(start = 12.dp)
-                .size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(stringResource(R.string.add_finger_vein_success), color = Colors.success)
+                .fillMaxWidth()
+                .height(56.dp)
+                .background(Colors.success.copy(0.3f), RoundedCornerShape(RoundRadius.Large)),
+            ) {
+              Icon(
+                painter = painterResource(id = R.drawable.check_24px),
+                contentDescription = "check_24px",
+                tint = Colors.success,
+                modifier = Modifier
+                  .padding(start = 12.dp)
+                  .size(24.dp)
+              )
+              Spacer(modifier = Modifier.width(12.dp))
+              Text(stringResource(R.string.add_finger_vein_success), color = Colors.success)
+            }
           }
         }
       }
@@ -582,10 +593,76 @@ fun UserFormScreen(
       }
     }
 
+    LaunchedEffect(showEnrollDialog) {
+      if (showEnrollDialog) {
+        delay(20)
+        (context as? Activity)?.let { activity ->
+          HideSystemControll.manageSystemBars(activity, true)
+        }
+      }
+    }
+
+    LaunchedEffect(showDeleteDialog) {
+      if (showDeleteDialog) {
+        delay(20)
+        (context as? Activity)?.let { activity ->
+          HideSystemControll.manageSystemBars(activity, true)
+        }
+      }
+    }
+
     if (showEnrollDialog) {
-      EnrollFingerprintDialog(
-        viewModel = fingerVeinViewModel,
-        onDismiss = { showEnrollDialog = false }
+      AlertDialog(
+        properties = DialogProperties(
+          dismissOnBackPress = false,
+          dismissOnClickOutside = false,
+          usePlatformDefaultWidth = false
+        ),
+        icon = {},
+        text = {
+          Column(
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth(0.9f)
+          ) {
+            MainDisplay(
+              bitmap = fingerVeinViewModel.imageBitmap.value,
+              isEnrolling = fingerVeinViewModel.isEnrolling.value,
+              isVerifying = fingerVeinViewModel.isVerifying.value,
+              lastLogMessage = fingerVeinViewModel.logMessages.firstOrNull() ?: ""
+            )
+          }
+        },
+        onDismissRequest = {
+          showEnrollDialog = false
+        },
+        confirmButton = {},
+        dismissButton = {
+          GradientButton(
+            onClick = {
+//              fingerVienViewModel.toggleVerify()
+              showEnrollDialog = false
+            },
+            shape = RoundedCornerShape(RoundRadius.Medium),
+            gradient = Brush.verticalGradient(
+              colors = listOf(
+                Colors.BlueGrey80,
+                Colors.BlueGrey80
+              ),
+            ),
+            modifier = Modifier
+              .fillMaxWidth(0.9f)
+              .height(56.dp)
+          ) {
+            Text(
+              stringResource(R.string.close),
+              fontFamily = ibmpiexsansthailooped,
+              color = Colors.BlueSecondary,
+              fontSize = 20.sp,
+            )
+          }
+        },
+        containerColor = Colors.BlueGrey100,
       )
     }
 

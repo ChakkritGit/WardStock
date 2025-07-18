@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.thanes.wardstock.ui.theme.Colors
+import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 
 @Composable
@@ -55,7 +56,7 @@ fun GradientButton(
     )
   ),
   contentPadding: PaddingValues = PaddingValues(horizontal = 24.dp, vertical = 8.dp),
-  shape: Shape = RoundedCornerShape(8.dp),
+  shape: Shape = RoundedCornerShape(RoundRadius.Medium),
   content: (@Composable () -> Unit)? = null
 ) {
   val interactionSource = remember { MutableInteractionSource() }
@@ -68,7 +69,7 @@ fun GradientButton(
   )
 
   val alpha by animateFloatAsState(
-    targetValue = if (enabled) 1f else 0.6f, animationSpec = tween(150), label = "button_alpha"
+    targetValue = if (enabled) 1f else 0.5f, animationSpec = tween(150), label = "button_alpha"
   )
 
   Box(
