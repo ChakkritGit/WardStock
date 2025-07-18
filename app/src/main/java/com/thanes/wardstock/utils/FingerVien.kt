@@ -28,9 +28,14 @@ class FingerVien : FingerVeinLib() {
   private var isLastVerify = false
 
   val userHandler: User
+
   init {
     userHandler = UserApiHandler()
   }
+
+  var onVerificationResult: ((isSuccess: Boolean) -> Unit)? = null
+  var onFingerStatusChanged: ((isFingerDown: Boolean) -> Unit)? = null
+  var onVerificationScoreUpdated: ((score: Double) -> Unit)? = null
 
   override fun sys_init(applicationContext: Context) {
     super.sys_init(applicationContext)
@@ -112,8 +117,26 @@ class FingerVien : FingerVeinLib() {
 
   @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
   val cbLog = LibFvHelper.CbLogImpl { _, logStr, _ ->
-    CoroutineScope(Dispatchers.Main).launch {
-      updateMsg(translateMessage(logStr))
+    val trimmedLog = logStr.trim()
+    val scorePrefix = "认证:"
+
+    if (trimmedLog.startsWith(scorePrefix)) {
+      try {
+        val scoreString = trimmedLog.substring(scorePrefix.length)
+        val score = scoreString.toDouble()
+        onVerificationScoreUpdated?.invoke(score)
+
+      } catch (e: NumberFormatException) {
+        Log.e("FingerVein", e.message.toString())
+        CoroutineScope(Dispatchers.Main).launch {
+          updateMsg(translateMessage(trimmedLog))
+        }
+      }
+    } else {
+      CoroutineScope(Dispatchers.Main).launch {
+        val translated = translateMessage(trimmedLog)
+        updateMsg(translated)
+      }
     }
   }
 

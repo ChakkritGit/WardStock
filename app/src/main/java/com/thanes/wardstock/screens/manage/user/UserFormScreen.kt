@@ -136,6 +136,8 @@ fun UserFormScreen(
   var showEnrollDialog by remember { mutableStateOf(false) }
   val deleteMessage = stringResource(R.string.delete)
   val successMessage = stringResource(R.string.successfully)
+  val isLockedOut by fingerVeinViewModel.isLockedOut
+  val lockoutCountdown by fingerVeinViewModel.lockoutCountdown
   val scope = rememberCoroutineScope()
 
   val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
@@ -629,7 +631,9 @@ fun UserFormScreen(
               bitmap = fingerVeinViewModel.imageBitmap.value,
               isEnrolling = fingerVeinViewModel.isEnrolling.value,
               isVerifying = fingerVeinViewModel.isVerifying.value,
-              lastLogMessage = fingerVeinViewModel.logMessages.firstOrNull() ?: ""
+              lastLogMessage = fingerVeinViewModel.logMessages.firstOrNull() ?: "",
+              isLockedOut = isLockedOut,
+              lockoutCountdown = lockoutCountdown
             )
           }
         },

@@ -103,7 +103,8 @@ fun LoginScreen(
   var showDialog by remember { mutableStateOf(false) }
   var errorMessage by remember { mutableStateOf("") }
   val contextLang = LocalContext.current
-  val isEnrolling by fingerVienViewModel.isEnrolling
+  val isLockedOut by fingerVienViewModel.isLockedOut
+  val lockoutCountdown by fingerVienViewModel.lockoutCountdown
 
   val focusRequesterPassword = remember { FocusRequester() }
   val keyboardController = LocalSoftwareKeyboardController.current
@@ -536,7 +537,9 @@ fun LoginScreen(
               bitmap = fingerVienViewModel.imageBitmap.value,
               isEnrolling = fingerVienViewModel.isEnrolling.value,
               isVerifying = fingerVienViewModel.isVerifying.value,
-              lastLogMessage = fingerVienViewModel.logMessages.firstOrNull() ?: ""
+              lastLogMessage = fingerVienViewModel.logMessages.firstOrNull() ?: "",
+              isLockedOut = isLockedOut,
+              lockoutCountdown = lockoutCountdown
             )
           }
         },

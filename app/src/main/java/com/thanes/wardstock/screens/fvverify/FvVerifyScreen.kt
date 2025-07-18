@@ -76,6 +76,8 @@ fun FvVerifyScreen(navController: NavHostController, fingerVienViewModel: Finger
   var canClick by remember { mutableStateOf(true) }
   var userId by remember { mutableStateOf("") }
   val verifiedUid by fingerVienViewModel.verifiedUid
+  val isLockedOut by fingerVienViewModel.isLockedOut
+  val lockoutCountdown by fingerVienViewModel.lockoutCountdown
   var showLogPanel by remember { mutableStateOf(false) }
 
   LaunchedEffect(verifiedUid) {
@@ -147,7 +149,9 @@ fun FvVerifyScreen(navController: NavHostController, fingerVienViewModel: Finger
         bitmap = fingerVienViewModel.imageBitmap.value,
         isEnrolling = fingerVienViewModel.isEnrolling.value,
         isVerifying = fingerVienViewModel.isVerifying.value,
-        lastLogMessage = fingerVienViewModel.logMessages.firstOrNull() ?: "..."
+        lastLogMessage = fingerVienViewModel.logMessages.firstOrNull() ?: "...",
+        isLockedOut = isLockedOut,
+        lockoutCountdown = lockoutCountdown
       )
 
       MinimalControlPanel(
@@ -171,8 +175,8 @@ fun MainDisplay(
   modifier: Modifier = Modifier,
   bitmap: Bitmap?,
   isEnrolling: Boolean,
-  isVerifying: Boolean,
-  lastLogMessage: String
+  isVerifying: Boolean, lastLogMessage: String, isLockedOut: Boolean,
+  lockoutCountdown: Int
 ) {
   Column(
     modifier = modifier.fillMaxWidth(),
@@ -188,43 +192,80 @@ fun MainDisplay(
           width = 2.dp, color = when {
             isEnrolling -> Colors.BluePrimary
             isVerifying -> Colors.BlueTertiary
+            isLockedOut -> Colors.alert
             else -> Colors.BlueSecondary
           }, shape = RoundedCornerShape(RoundRadius.Large)
         )
-        .background(Colors.BlueGrey80.copy(alpha = 0.5f)), contentAlignment = Alignment.Center
+        .background(
+          if (isLockedOut) Colors.alert.copy(alpha = 0.05f) else Colors.BlueGrey80.copy(
+            alpha = 0.5f
+          )
+        ), contentAlignment = Alignment.Center
     ) {
-      if (bitmap != null) {
-        Image(
-          bitmap = bitmap.asImageBitmap(),
-          contentDescription = "ภาพสแกนเส้นเลือด",
-          contentScale = ContentScale.Crop,
-          modifier = Modifier.fillMaxSize()
-        )
-      } else {
-        Column(
-          horizontalAlignment = Alignment.CenterHorizontally,
-          verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
+      if (isLockedOut) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
           Surface(
             modifier = Modifier
               .clip(shape = CircleShape),
-            color = Colors.BlueGrey80.copy(alpha = 0.5f)
+            color = Colors.alert.copy(alpha = 0.5f)
           ) {
             Icon(
-              painter = painterResource(R.drawable.fingerprint_24px),
-              contentDescription = "fingerprint_24px",
+              painter = painterResource(R.drawable.lock_24px),
+              contentDescription = "lock_24px",
               modifier = Modifier
                 .size(48.dp)
                 .padding(6.dp),
-              tint = Colors.BluePrimary.copy(alpha = 0.8f)
+              tint = Colors.alert
             )
           }
+          Spacer(modifier = Modifier.height(12.dp))
           Text(
-            stringResource(R.string.place_your_finger_on_the_scanner),
-            color = Colors.BluePrimary.copy(alpha = 0.8f),
-            fontSize = 18.sp,
-            fontFamily = ibmpiexsansthailooped
+            "ระบบถูกล็อกชั่วคราว",
+            color = Colors.alert,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Medium
           )
+          Spacer(modifier = Modifier.height(6.dp))
+          Text(
+            text = "$lockoutCountdown วินาที",
+            color = Colors.alert.copy(0.7f),
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Normal
+          )
+        }
+      } else {
+        if (bitmap != null) {
+          Image(
+            bitmap = bitmap.asImageBitmap(),
+            contentDescription = "ภาพสแกนเส้นเลือด",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+          )
+        } else {
+          Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+          ) {
+            Surface(
+              modifier = Modifier.clip(shape = CircleShape),
+              color = Colors.BlueGrey80.copy(alpha = 0.5f)
+            ) {
+              Icon(
+                painter = painterResource(R.drawable.fingerprint_24px),
+                contentDescription = "fingerprint_24px",
+                modifier = Modifier
+                  .size(48.dp)
+                  .padding(6.dp),
+                tint = Colors.BluePrimary.copy(alpha = 0.8f)
+              )
+            }
+            Text(
+              stringResource(R.string.place_your_finger_on_the_scanner),
+              color = Colors.BluePrimary.copy(alpha = 0.8f),
+              fontSize = 18.sp,
+              fontFamily = ibmpiexsansthailooped
+            )
+          }
         }
       }
     }
@@ -234,7 +275,7 @@ fun MainDisplay(
     if (lastLogMessage.isNotEmpty()) {
       Text(
         text = lastLogMessage,
-        style = MaterialTheme.typography.bodyLarge,
+        color = Colors.BlueGrey40,
         textAlign = TextAlign.Center,
         modifier = Modifier.padding(horizontal = 16.dp)
       )
