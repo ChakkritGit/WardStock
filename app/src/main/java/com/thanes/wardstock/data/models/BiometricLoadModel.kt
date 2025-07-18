@@ -1,7 +1,7 @@
 package com.thanes.wardstock.data.models
 
 data class BiometricLoadModel(
-  val userId: String,
+  val id: String,
   val userName: String,
   val featureData: String
 )

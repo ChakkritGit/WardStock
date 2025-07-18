@@ -45,12 +45,8 @@ open class FingerVeinLib {
     @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     override fun onReceive(c: Context, intent: Intent) {
       val action = intent.action
-      val device: UsbDevice? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      val device: UsbDevice? =
         intent.getParcelableExtra(UsbManager.EXTRA_DEVICE, UsbDevice::class.java)
-      } else {
-        @Suppress("DEPRECATION")
-        intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
-      }
 
       when (action) {
         ACTION_USB_PERMISSION -> {
@@ -119,11 +115,8 @@ open class FingerVeinLib {
   @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
   private fun requestPermission(device: UsbDevice) {
     try {
-      val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      val flags =
         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-      } else {
-        PendingIntent.FLAG_ONE_SHOT
-      }
       val intent = Intent(ACTION_USB_PERMISSION).apply { putExtra(UsbManager.EXTRA_DEVICE, device) }
       val permissionIntent = PendingIntent.getBroadcast(context, 0, intent, flags)
       manager?.requestPermission(device, permissionIntent)
@@ -344,6 +337,7 @@ open class FingerVeinLib {
     }
   }
 
+  @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
   private val cbReboot = LibFvHelper.CbRebootImpl {
     closeConnection()
     requestAllPermissions()

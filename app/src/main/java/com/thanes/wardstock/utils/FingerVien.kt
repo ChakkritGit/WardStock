@@ -203,11 +203,11 @@ class FingerVien : FingerVeinLib() {
               try {
                 val featureSize = 1024
                 val featurePointer = base64Decode(bioData.featureData, featureSize)
-                fv_load(bioData.userId, bioData.userName, featurePointer, featureSize)
+                fv_load(bioData.id, bioData.userName, featurePointer, featureSize)
                 loadCount++
               } catch (_: Exception) {
                 CoroutineScope(Dispatchers.Main).launch {
-                  updateMsg("ประมวลผลข้อมูลของ ${bioData.userId} ล้มเหลว")
+                  updateMsg("ประมวลผลข้อมูลของ ${bioData.id} ล้มเหลว")
                 }
               }
             }

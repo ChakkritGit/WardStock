@@ -121,7 +121,7 @@ class FingerVeinViewModel(application: Application) : AndroidViewModel(applicati
   private fun startLockoutCountdown() {
     lockoutJob?.cancel()
     lockoutJob = viewModelScope.launch {
-      lockoutCountdown.value = LOCKOUT_DURATION_SECONDS
+      lockoutCountdown.intValue = LOCKOUT_DURATION_SECONDS
 
       tickerFlow(LOCKOUT_DURATION_SECONDS)
         .onCompletion {
@@ -130,7 +130,7 @@ class FingerVeinViewModel(application: Application) : AndroidViewModel(applicati
           }
         }
         .collect { remainingSeconds ->
-          lockoutCountdown.value = remainingSeconds
+          lockoutCountdown.intValue = remainingSeconds
         }
     }
   }
@@ -195,7 +195,7 @@ class FingerVeinViewModel(application: Application) : AndroidViewModel(applicati
   }
 
   private fun resetVerificationState() {
-    lockoutCountdown.value = 0
+    lockoutCountdown.intValue = 0
     failedAttempts = 0
     maxScoreInAttempt = 0.0
     isFingerCurrentlyDown = false
