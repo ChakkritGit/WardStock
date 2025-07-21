@@ -3,6 +3,14 @@ package com.thanes.wardstock.navigation
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -13,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -52,6 +61,7 @@ import com.thanes.wardstock.services.internet.rememberConnectivityState
 import com.thanes.wardstock.ui.components.internet.NoInternetComposable
 import com.thanes.wardstock.ui.components.refill.RefillDrug
 
+@OptIn(ExperimentalAnimationApi::class)
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Composable
 fun AppNavigation(
@@ -97,9 +107,41 @@ fun AppNavigation(
     Routes.Login.route
   }
 
+  val transitionSpec: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
+    slideInHorizontally(
+      initialOffsetX = { fullWidth -> fullWidth },
+      animationSpec = tween(300, easing = FastOutSlowInEasing)
+    )
+  }
+
+  val popEnterSpec: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
+    slideInHorizontally(
+      initialOffsetX = { fullWidth -> -fullWidth },
+      animationSpec = tween(300, easing = FastOutSlowInEasing)
+    )
+  }
+
+  val exitSpec: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
+    slideOutHorizontally(
+      targetOffsetX = { fullWidth -> -fullWidth },
+      animationSpec = tween(300, easing = FastOutSlowInEasing)
+    )
+  }
+
+  val popExitSpec: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
+    slideOutHorizontally(
+      targetOffsetX = { fullWidth -> fullWidth },
+      animationSpec = tween(300, easing = FastOutSlowInEasing)
+    )
+  }
+
   NavHost(
     navController = navController,
     startDestination = startDestination,
+    enterTransition = transitionSpec,
+    exitTransition = exitSpec,
+    popEnterTransition = popEnterSpec,
+    popExitTransition = popExitSpec,
     modifier = Modifier.padding(innerPadding)
   ) {
 

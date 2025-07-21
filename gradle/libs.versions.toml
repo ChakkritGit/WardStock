@@ -1,4 +1,5 @@
 [versions]
+accompanistNavigationAnimation = "0.36.0"
 agp = "8.11.1"
 appcompat = "1.7.1"
 compose = "1.0.0-beta01"
@@ -24,6 +25,7 @@ foundation = "1.8.3"
 navigationCompose = "2.9.1"
 
 [libraries]
+accompanist-navigation-animation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanistNavigationAnimation" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-appcompat-resources = { module = "androidx.appcompat:appcompat-resources", version.ref = "latestAppCompatVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

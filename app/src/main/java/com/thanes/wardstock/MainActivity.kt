@@ -11,8 +11,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
@@ -20,6 +23,8 @@ import com.thanes.wardstock.data.language.LocalizedAppWrapper
 import com.thanes.wardstock.data.viewModel.FingerVeinViewModel
 import com.thanes.wardstock.navigation.AppNavigation
 import com.thanes.wardstock.ui.components.system.HideSystemControll
+import com.thanes.wardstock.ui.theme.Colors
+import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.WardStockTheme
 import java.util.Locale
 
@@ -41,15 +46,31 @@ class MainActivity : ComponentActivity() {
 
     setContent {
       LocalizedAppWrapper(this, this) {
-          WardStockTheme {
-            val navController = rememberNavController()
+        WardStockTheme {
+          val navController = rememberNavController()
 
-            Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-              AppNavigation(navController, innerPadding, splashScreen, fingerVienViewModel, this)
+          Surface(
+            modifier = Modifier
+              .fillMaxSize()
+              .background(Colors.blackGrey),
+            shape = RoundedCornerShape(RoundRadius.Large)
+          ) {
+            Scaffold(
+              modifier = Modifier.fillMaxSize()
+            ) { innerPadding ->
+              AppNavigation(
+                navController = navController,
+                innerPadding = innerPadding,
+                splashScreen = splashScreen,
+                fingerVienViewModel = fingerVienViewModel,
+                context = this
+              )
             }
+          }
         }
       }
     }
+
   }
 
   override fun onWindowFocusChanged(hasFocus: Boolean) {

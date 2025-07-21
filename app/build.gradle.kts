@@ -86,6 +86,7 @@ dependencies {
   implementation(libs.glide)
   implementation(libs.compose)
   implementation(libs.androidx.datastore.preferences)
+  implementation(libs.accompanist.navigation.animation)
 
   implementation(files("libs/jna.jar"))
   implementation(files("libs/jna-platform.jar"))

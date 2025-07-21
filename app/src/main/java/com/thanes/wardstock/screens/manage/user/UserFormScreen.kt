@@ -486,7 +486,7 @@ fun UserFormScreen(
         }
       }
 
-      if (initialData == null) {
+      if (initialData != null) {
         Column(
           modifier = Modifier
             .fillMaxWidth(),

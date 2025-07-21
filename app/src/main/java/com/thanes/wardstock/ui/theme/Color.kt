@@ -22,6 +22,7 @@ object Colors {
   val alertBackground = Color(0xFFFFBFB9)
 
   val black = Color(0xFF000000)
+  val blackGrey = Color(0xFF2B2D30)
   val grey = Color(0xFF575757)
   val white = Color(0xFFFFFFFF)
 
