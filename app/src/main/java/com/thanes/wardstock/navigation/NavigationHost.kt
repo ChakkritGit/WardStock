@@ -51,6 +51,7 @@ import com.thanes.wardstock.screens.manage.manage.ManageScreen
 import com.thanes.wardstock.screens.manage.manage.ManageStockScreen
 import com.thanes.wardstock.screens.manage.user.AddUser
 import com.thanes.wardstock.screens.manage.user.EditUser
+import com.thanes.wardstock.screens.manage.user.ManageFinger
 import com.thanes.wardstock.screens.manage.user.ManageUserScreen
 import com.thanes.wardstock.screens.refill.RefillScreen
 import com.thanes.wardstock.screens.report.ReportMinMax
@@ -255,6 +256,10 @@ fun AppNavigation(
 
     composable(route = Routes.FingerPrintVein.route) {
       FvVerifyScreen(navController, fingerVienViewModel)
+    }
+
+    composable(route = Routes.ManageFingerprint.route) {
+      ManageFinger(navController)
     }
   }
 }
