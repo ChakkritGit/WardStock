@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
@@ -115,16 +116,17 @@ fun ManageFinger(
         verticalArrangement = Arrangement.spacedBy(12.dp)
       ) {
         Text(
-          stringResource(R.string.add_finger),
-          fontSize = 24.sp,
+          stringResource(R.string.add_finger_vein),
+          fontSize = 22.sp,
           fontWeight = FontWeight.Medium,
-          color = Colors.BlueGrey40
+          color = Colors.BlueGrey40,
+          modifier = Modifier.padding(start = 4.dp, top = 12.dp)
         )
         LazyColumn(
           verticalArrangement = Arrangement.spacedBy(12.dp),
           modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 8.dp)
+            .padding(top = 4.dp)
         ) {
           items(userSharedViewModel?.fingerprintList ?: emptyList()) { fingerprint ->
             Card(
@@ -169,10 +171,11 @@ fun ManageFinger(
           modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(RoundRadius.Large))
-            .clickable(onClick = {}),
+            .clickable(onClick = {}, enabled = userSharedViewModel?.fingerprintList?.size!! < 5)
+            .alpha(if (userSharedViewModel.fingerprintList?.size!! < 5) 1f else 0.5f),
           colors = CardDefaults.cardColors(Colors.BlueGrey120),
           shape = RoundedCornerShape(RoundRadius.Large),
-          border = BorderStroke(1.dp, color = Colors.BlueGrey80)
+          border = BorderStroke(1.dp, color = Colors.BlueGrey80),
         ) {
           Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -183,7 +186,7 @@ fun ManageFinger(
               .fillMaxWidth()
           ) {
             Text(
-              "Add Fingerprint Vein...",
+              stringResource(R.string.add_finger_vein_button),
               fontSize = 20.sp,
               color = Colors.BlueSky,
               modifier = Modifier.padding(start = 16.dp)
@@ -191,9 +194,10 @@ fun ManageFinger(
           }
         }
         Text(
-          "You can register up to 5 different fingerprint vein templates, each from a different finger, for added flexibility and convenience during authentication.",
+          stringResource(R.string.add_finger_vein_description),
           fontSize = 16.sp,
-          color = Colors.BlueGrey40
+          color = Colors.BlueGrey40,
+          modifier = Modifier.padding(start = 4.dp)
         )
       }
     }

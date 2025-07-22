@@ -120,11 +120,13 @@
   <string name="dispensing">กำลังหยิบ</string>
   <string name="dispensing_please_wait">โปรดรอจนกว่าจะหยิบเสร็จ</string>
   <string name="or">หรือ</string>
-  <string name="sign_in_with_finger">เข้าสู่ระบบด้วยลายเส้นเลือด</string>
+  <string name="sign_in_with_finger">เข้าสู่ระบบด้วยลายนิ้วมือ</string>
   <string name="close">ปิด</string>
   <string name="place_your_finger_on_the_scanner">วางนิ้วบนเครื่องสแกน</string>
-  <string name="add_finger_vein">ลายเส้นเลือดนิ้วมือ</string>
+  <string name="add_finger_vein">ลายนิ้วมือ</string>
   <string name="add_finger">ลายนิ้วมือ</string>
+  <string name="add_finger_vein_button">เพิ่มลายนิ้วมือ…</string>
+  <string name="add_finger_vein_description">คุณสามารถลงทะเบียนลายนิ้วมือแบบเส้นเลือดได้สูงสุด 5 ลายนิ้ว โดยแต่ละลายต้องมาจากนิ้วที่แตกต่างกัน เพื่อเพิ่มความยืดหยุ่นและความสะดวกในการยืนยันตัวตน</string>
   <string name="add_finger_vein_success">ลงทะเบียนลายนิ้วมือแล้ว 1 รายการ</string>
   <string name="back_button">กลับ</string>
 </resources>
