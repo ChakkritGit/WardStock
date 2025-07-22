@@ -1,5 +1,6 @@
 package com.thanes.wardstock.screens.manage.user
 
+import android.app.Activity
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -9,11 +10,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -36,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -44,6 +48,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.repositories.ApiRepository
@@ -51,6 +56,8 @@ import com.thanes.wardstock.data.viewModel.FingerVeinViewModel
 import com.thanes.wardstock.data.viewModel.UserViewModel
 import com.thanes.wardstock.ui.components.keyboard.Keyboard
 import com.thanes.wardstock.ui.components.loading.LoadingDialog
+import com.thanes.wardstock.ui.components.system.HideSystemControll
+import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
@@ -68,6 +75,7 @@ fun EditFingerprint(
   fingerVeinViewModel: FingerVeinViewModel
 ) {
   var canClick by remember { mutableStateOf(true) }
+  var showDeleteDialog by remember { mutableStateOf(false) }
   var isLoading by remember { mutableStateOf(false) }
   var errorMessage by remember { mutableStateOf("") }
   val isFocus = remember { FocusRequester() }
@@ -128,6 +136,15 @@ fun EditFingerprint(
     if (errorMessage.isNotEmpty()) {
       Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
       errorMessage = ""
+    }
+  }
+
+  LaunchedEffect(showDeleteDialog) {
+    if (showDeleteDialog) {
+      delay(20)
+      (context as? Activity)?.let { activity ->
+        HideSystemControll.manageSystemBars(activity, true)
+      }
     }
   }
 
@@ -204,7 +221,7 @@ fun EditFingerprint(
       Column(
         modifier = Modifier
           .fillMaxSize()
-          .padding(horizontal = 30.dp, vertical = 12.dp)
+          .padding(horizontal = 30.dp)
       ) {
         userSharedViewModel.fingerprintObject?.let {
           Box(
@@ -257,8 +274,103 @@ fun EditFingerprint(
               }
             )
           }
+
+          GradientButton(
+            onClick = { showDeleteDialog = true },
+            shape = RoundedCornerShape(RoundRadius.Medium),
+            gradient = Brush.verticalGradient(
+              colors = listOf(Colors.alert.copy(0.35f), Colors.alert.copy(0.35f)),
+            ),
+            modifier = Modifier
+              .fillMaxWidth()
+              .height(56.dp)
+              .padding(top = 30.dp)
+          ) {
+            Text(
+              stringResource(R.string.delete_user),
+              color = Colors.alert,
+              fontWeight = FontWeight.Medium,
+              fontSize = 20.sp
+            )
+          }
         }
       }
     }
+  }
+
+  if (showDeleteDialog) {
+    AlertDialog(
+      properties = DialogProperties(
+        dismissOnBackPress = true, dismissOnClickOutside = true, usePlatformDefaultWidth = true
+      ), icon = {
+        Surface(
+          modifier = Modifier.clip(CircleShape), color = Color(0xFFD32F2F).copy(alpha = 0.3f)
+        ) {
+          Icon(
+            painter = painterResource(R.drawable.delete_24px),
+            contentDescription = "delete_user",
+            modifier = Modifier
+              .size(56.dp)
+              .padding(6.dp),
+            tint = Color(0xFFD32F2F)
+          )
+        }
+      }, text = {
+        Column(
+          verticalArrangement = Arrangement.spacedBy(6.dp),
+          horizontalAlignment = Alignment.CenterHorizontally,
+          modifier = Modifier.fillMaxWidth(0.7f)
+        ) {
+          Text(
+            text = stringResource(R.string.delete_user),
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = ibmpiexsansthailooped
+          )
+          Text(
+            text = stringResource(R.string.confirm_delete_desc),
+            fontSize = 20.sp,
+            fontFamily = ibmpiexsansthailooped
+          )
+        }
+      }, onDismissRequest = {
+        showDeleteDialog = false
+      }, confirmButton = {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+          GradientButton(
+            onClick = {
+              showDeleteDialog = false
+            },
+            text = stringResource(R.string.delete),
+            fontWeight = FontWeight.Medium,
+            shape = RoundedCornerShape(RoundRadius.Medium),
+            textSize = 20.sp,
+            modifier = Modifier
+              .fillMaxWidth(0.7f)
+              .height(56.dp),
+            gradient = Brush.verticalGradient(
+              colors = listOf(Color(0xFFD32F2F), Color(0xFFB71C1C))
+            )
+          )
+
+          GradientButton(
+            onClick = {
+              showDeleteDialog = false
+            },
+            shape = RoundedCornerShape(RoundRadius.Medium),
+            gradient = Brush.verticalGradient(
+              colors = listOf(Colors.BlueGrey80, Colors.BlueGrey80),
+            ),
+            modifier = Modifier
+              .fillMaxWidth(0.7f)
+              .height(56.dp)
+          ) {
+            Text(
+              stringResource(R.string.cancel), color = Colors.BlueSecondary, fontSize = 20.sp
+            )
+          }
+        }
+      }, dismissButton = {}, containerColor = Colors.BlueGrey100
+    )
   }
 }
