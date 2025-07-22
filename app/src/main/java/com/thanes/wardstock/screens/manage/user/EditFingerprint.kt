@@ -279,11 +279,11 @@ fun EditFingerprint(
             onClick = { showDeleteDialog = true },
             shape = RoundedCornerShape(RoundRadius.Medium),
             gradient = Brush.verticalGradient(
-              colors = listOf(Colors.alert.copy(0.45f), Colors.alert.copy(0.45f)),
+              colors = listOf(Colors.alert.copy(0.25f), Colors.alert.copy(0.25f)),
             ),
             modifier = Modifier
               .fillMaxWidth()
-              .padding(top = 80.dp)
+              .padding(top = 50.dp)
               .height(56.dp)
           ) {
             Text(
