@@ -15,6 +15,7 @@ import com.thanes.wardstock.data.models.OrderModel
 import com.thanes.wardstock.data.models.RefillDrugModel
 import com.thanes.wardstock.data.models.RefillModel
 import com.thanes.wardstock.data.models.UserData
+import com.thanes.wardstock.data.models.UserFingerprint
 import com.thanes.wardstock.data.models.UserModel
 import com.thanes.wardstock.data.models.UserRole
 import com.thanes.wardstock.remote.api.services.AddDrugRequest
@@ -25,7 +26,7 @@ import com.thanes.wardstock.remote.api.services.LoginVeinRequest
 import com.thanes.wardstock.remote.api.services.MachineRequest
 import com.thanes.wardstock.remote.configs.RetrofitInstance
 import com.thanes.wardstock.remote.configs.RetrofitInstance.createApiWithAuth
-import com.thanes.wardstock.screens.manage.user.BiometricInfo
+import com.thanes.wardstock.screens.manage.user.BiometricData
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -80,7 +81,7 @@ object ApiRepository {
     password: String,
     display: String,
     role: UserRole,
-    biometrics: List<BiometricInfo>? = emptyList()
+    biometrics: List<BiometricData>? = emptyList()
   ): Response<ApiResponse<UserModel>> {
     val usernamePart = username.toRequestBody("text/plain".toMediaTypeOrNull())
     val passwordPart = password.toRequestBody("text/plain".toMediaTypeOrNull())
@@ -382,5 +383,9 @@ object ApiRepository {
 
   suspend fun getUserConfig(): Response<ApiResponse<List<BiometricLoadModel>>> {
     return createApiWithAuth().getUserConfig()
+  }
+
+  suspend fun getUserFingerprint(userId: String): Response<ApiResponse<List<UserFingerprint>>> {
+    return createApiWithAuth().getUserFingerprint(userId)
   }
 }

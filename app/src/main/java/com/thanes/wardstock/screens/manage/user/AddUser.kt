@@ -95,8 +95,7 @@ fun AddUser(
             username = formState.username,
             password = formState.password,
             display = formState.display,
-            role = UserRole.valueOf(formState.role),
-            biometrics = formState.biometrics
+            role = UserRole.valueOf(formState.role)
           )
 
           return@UserFormScreen if (response.isSuccessful) {

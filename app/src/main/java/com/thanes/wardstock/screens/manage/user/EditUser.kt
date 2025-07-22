@@ -56,6 +56,7 @@ fun EditUser(
           if (canClick) {
             canClick = false
             navController.popBackStack()
+            userSharedViewModel.clearFingerprint()
           }
         }
       )
@@ -75,7 +76,8 @@ fun EditUser(
           username = user.username,
           display = user.display,
           imageUri = user.picture.let { "${ImageUrl}${it}".toUri() },
-          role = user.role.toString()
+          role = user.role.toString(),
+          biometrics = user.biometrics
         ),
         showPasswordField = false,
         onSubmit = { formState, uri ->

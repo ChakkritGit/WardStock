@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.thanes.wardstock.data.models.UserFingerprint
 import com.thanes.wardstock.data.models.UserModel
 import com.thanes.wardstock.data.repositories.ApiRepository
 import com.thanes.wardstock.utils.parseErrorMessage
@@ -25,8 +26,28 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
   var selectedUser by mutableStateOf<UserModel?>(null)
     private set
 
+  var fingerprintList by mutableStateOf<List<UserFingerprint>?>(emptyList())
+    private set
+
+  var fingerprintObject by mutableStateOf<UserFingerprint?>(null)
+    private set
+
+  fun setUserFingerprintList(fingerprint: List<UserFingerprint>?) {
+    fingerprintList = fingerprint
+  }
+
+  fun setFingerObject(fingerprint: UserFingerprint) {
+    fingerprintObject = fingerprint
+  }
+
   fun setUser(user: UserModel) {
     selectedUser = user
+  }
+
+  fun clearFingerprint() {
+    fingerprintList = emptyList()
+    fingerprintObject = null
+
   }
 
   fun clear() {
@@ -42,6 +63,28 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         val response = ApiRepository.userWithInitial()
         if (response.isSuccessful) {
           userState = response.body()?.data ?: emptyList()
+        } else {
+          val errorJson = response.errorBody()?.string()
+          val message = parseErrorMessage(response.code(), errorJson)
+          errorMessage = message
+        }
+      } catch (e: Exception) {
+        errorMessage = parseExceptionMessage(e)
+      } finally {
+        isLoading = false
+      }
+    }
+  }
+
+  fun fetchUserFingerprint(userId: String) {
+    errorMessage = ""
+    isLoading = true
+
+    viewModelScope.launch {
+      try {
+        val response = ApiRepository.getUserFingerprint(userId)
+        if (response.isSuccessful) {
+          fingerprintList = response.body()?.data ?: emptyList()
         } else {
           val errorJson = response.errorBody()?.string()
           val message = parseErrorMessage(response.code(), errorJson)

@@ -75,10 +75,11 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import coil3.compose.rememberAsyncImagePainter
 import com.thanes.wardstock.R
+import com.thanes.wardstock.data.models.UserFingerprint
 import com.thanes.wardstock.data.repositories.ApiRepository
 import com.thanes.wardstock.data.viewModel.FingerVeinViewModel
 import com.thanes.wardstock.data.viewModel.UserViewModel
-import com.thanes.wardstock.screens.fvverify.MainDisplay
+import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.components.loading.LoadingDialog
 import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.components.utils.GradientButton
@@ -90,11 +91,6 @@ import com.thanes.wardstock.utils.parseExceptionMessage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-data class BiometricInfo(
-  val featureData: String,
-  val description: String? = "นิ้วที่ลงทะเบียน"
-)
-
 data class UserFormState(
   val userId: String = "",
   val imageUri: Uri? = null,
@@ -103,7 +99,7 @@ data class UserFormState(
   val display: String = "",
   val role: String = "",
 
-  val biometrics: List<BiometricInfo>? = emptyList()
+  val biometrics: List<UserFingerprint>? = emptyList()
 )
 
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
@@ -125,7 +121,6 @@ fun UserFormScreen(
   var display by remember { mutableStateOf(initialData?.display ?: "") }
   var role by remember { mutableStateOf(initialData?.role ?: "") }
   var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
-  var enrolledBiometrics by remember { mutableStateOf<List<BiometricInfo>>(emptyList()) }
   val focusRequesterUsername = remember { FocusRequester() }
   val focusRequesterPassword = remember { FocusRequester() }
   val keyboardController = LocalSoftwareKeyboardController.current
@@ -133,11 +128,9 @@ fun UserFormScreen(
   var showDeleteDialog by remember { mutableStateOf(false) }
   var errorMessage by remember { mutableStateOf("") }
   var isRemoving by remember { mutableStateOf(false) }
-  var showEnrollDialog by remember { mutableStateOf(false) }
   val deleteMessage = stringResource(R.string.delete)
   val successMessage = stringResource(R.string.successfully)
-  val isLockedOut by fingerVeinViewModel.isLockedOut
-  val lockoutCountdown by fingerVeinViewModel.lockoutCountdown
+
   val scope = rememberCoroutineScope()
 
   val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
@@ -178,16 +171,6 @@ fun UserFormScreen(
       } finally {
         isRemoving = false
       }
-    }
-  }
-
-  LaunchedEffect(fingerVeinViewModel.lastEnrolledTemplate) {
-    fingerVeinViewModel.lastEnrolledTemplate.value?.let { templateData ->
-      enrolledBiometrics = listOf(BiometricInfo(featureData = templateData))
-
-      showEnrollDialog = false
-
-      fingerVeinViewModel.clearLastEnrolledTemplate()
     }
   }
 
@@ -495,11 +478,8 @@ fun UserFormScreen(
         ) {
           GradientButton(
             onClick = {
-              if (username.isNotBlank()) {
-                fingerVeinViewModel.clearLastEnrolledTemplate()
-                showEnrollDialog = true
-//            fingerVeinViewModel.enroll(uid = enrollId, uname = username)
-              }
+              userSharedViewModel?.setUserFingerprintList(initialData.biometrics)
+              navController?.navigate(Routes.ManageFingerprint.route)
             },
             shape = RoundedCornerShape(RoundRadius.Medium),
             gradient = Brush.verticalGradient(
@@ -532,27 +512,6 @@ fun UserFormScreen(
                 color = Colors.BlueSecondary,
                 fontSize = 20.sp,
               )
-            }
-          }
-
-          if (enrolledBiometrics.isNotEmpty()) {
-            Row(
-              verticalAlignment = Alignment.CenterVertically,
-              modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-                .background(Colors.success.copy(0.3f), RoundedCornerShape(RoundRadius.Large)),
-            ) {
-              Icon(
-                painter = painterResource(id = R.drawable.check_24px),
-                contentDescription = "check_24px",
-                tint = Colors.success,
-                modifier = Modifier
-                  .padding(start = 12.dp)
-                  .size(24.dp)
-              )
-              Spacer(modifier = Modifier.width(12.dp))
-              Text(stringResource(R.string.add_finger_vein_success), color = Colors.success)
             }
           }
         }
@@ -595,15 +554,6 @@ fun UserFormScreen(
       }
     }
 
-    LaunchedEffect(showEnrollDialog) {
-      if (showEnrollDialog) {
-        delay(20)
-        (context as? Activity)?.let { activity ->
-          HideSystemControll.manageSystemBars(activity, true)
-        }
-      }
-    }
-
     LaunchedEffect(showDeleteDialog) {
       if (showDeleteDialog) {
         delay(20)
@@ -611,63 +561,6 @@ fun UserFormScreen(
           HideSystemControll.manageSystemBars(activity, true)
         }
       }
-    }
-
-    if (showEnrollDialog) {
-      AlertDialog(
-        properties = DialogProperties(
-          dismissOnBackPress = false,
-          dismissOnClickOutside = false,
-          usePlatformDefaultWidth = false
-        ),
-        icon = {},
-        text = {
-          Column(
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth(0.9f)
-          ) {
-            MainDisplay(
-              bitmap = fingerVeinViewModel.imageBitmap.value,
-              isEnrolling = fingerVeinViewModel.isEnrolling.value,
-              isVerifying = fingerVeinViewModel.isVerifying.value,
-              lastLogMessage = fingerVeinViewModel.logMessages.firstOrNull() ?: "",
-              isLockedOut = isLockedOut,
-              lockoutCountdown = lockoutCountdown
-            )
-          }
-        },
-        onDismissRequest = {
-          showEnrollDialog = false
-        },
-        confirmButton = {},
-        dismissButton = {
-          GradientButton(
-            onClick = {
-//              fingerVienViewModel.toggleVerify()
-              showEnrollDialog = false
-            },
-            shape = RoundedCornerShape(RoundRadius.Medium),
-            gradient = Brush.verticalGradient(
-              colors = listOf(
-                Colors.BlueGrey80,
-                Colors.BlueGrey80
-              ),
-            ),
-            modifier = Modifier
-              .fillMaxWidth(0.9f)
-              .height(56.dp)
-          ) {
-            Text(
-              stringResource(R.string.close),
-              fontFamily = ibmpiexsansthailooped,
-              color = Colors.BlueSecondary,
-              fontSize = 20.sp,
-            )
-          }
-        },
-        containerColor = Colors.BlueGrey100,
-      )
     }
 
     if (initialData != null) {

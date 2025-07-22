@@ -1,18 +1,29 @@
 package com.thanes.wardstock.ui.components.appbar
 
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.thanes.wardstock.R
 import com.thanes.wardstock.ui.theme.Colors
+import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -23,27 +34,31 @@ fun AppBar(
 ) {
   TopAppBar(
     title = {
-      Text(
-        text = title,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        fontWeight = FontWeight.Bold,
-        fontFamily = ibmpiexsansthailooped,
-        modifier = Modifier.width(500.dp)
-      )
-    },
-    navigationIcon = {
-      IconButton(
-        onClick = onBack,
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier
-          .size(54.dp)
-          .padding(4.dp)
+          .clip(RoundedCornerShape(RoundRadius.Large))
+          .clickable(onClick = onBack)
       ) {
         Icon(
-          painter = painterResource(R.drawable.chevron_left_24px),
-          contentDescription = "chevron_left_24px",
+          painter = painterResource(R.drawable.arrow_back_ios_new_24px),
+          contentDescription = "arrow_back_ios_new_24px",
           tint = Colors.BluePrimary,
-          modifier = Modifier.fillMaxSize()
+          modifier = Modifier
+            .size(44.dp)
+            .padding(6.dp)
+        )
+        Text(
+          text = title,
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis,
+          fontWeight = FontWeight.Medium,
+          fontFamily = ibmpiexsansthailooped,
+          fontSize = 22.sp,
+          modifier = Modifier
+            .widthIn(max = 500.dp)
+            .padding(end = 14.dp)
         )
       }
     },

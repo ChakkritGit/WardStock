@@ -1,7 +1,5 @@
 package com.thanes.wardstock.data.models
 
-import com.thanes.wardstock.screens.manage.user.BiometricInfo
-
 data class UserModel(
   val id: String,
   val username: String,
@@ -12,7 +10,15 @@ data class UserModel(
   val comment: String?,
   val createdAt: String,
   val updatedAt: String,
-  val biometrics: List<BiometricInfo>?
+  val biometrics: List<UserFingerprint>?
+)
+
+data class UserFingerprint(
+  val id: String,
+  val userId: String,
+  val type: String,
+  val description: String,
+  val createdAt: String
 )
 
 enum class UserRole {

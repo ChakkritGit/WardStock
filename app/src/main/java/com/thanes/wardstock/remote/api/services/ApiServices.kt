@@ -14,6 +14,7 @@ import com.thanes.wardstock.data.models.OrderModel
 import com.thanes.wardstock.data.models.RefillDrugModel
 import com.thanes.wardstock.data.models.RefillModel
 import com.thanes.wardstock.data.models.UserData
+import com.thanes.wardstock.data.models.UserFingerprint
 import com.thanes.wardstock.data.models.UserModel
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -210,4 +211,7 @@ interface ApiService {
 
   @GET("config/user")
   suspend fun getUserConfig(): Response<ApiResponse<List<BiometricLoadModel>>>
+
+  @GET("config/fingerprint/{userId}")
+  suspend fun getUserFingerprint(@Path("userId") userId: String): Response<ApiResponse<List<UserFingerprint>>>
 }
