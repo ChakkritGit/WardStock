@@ -56,7 +56,8 @@ fun EditUser(
           if (canClick) {
             canClick = false
             navController.popBackStack()
-            userSharedViewModel.clearFingerprint()
+            userSharedViewModel.clearFingerprintList()
+            userSharedViewModel.clearFingerObject()
           }
         }
       )

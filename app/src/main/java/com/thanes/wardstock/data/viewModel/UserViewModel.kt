@@ -44,10 +44,12 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     selectedUser = user
   }
 
-  fun clearFingerprint() {
-    fingerprintList = emptyList()
+  fun clearFingerObject() {
     fingerprintObject = null
+  }
 
+  fun clearFingerprintList() {
+    fingerprintList = emptyList()
   }
 
   fun clear() {

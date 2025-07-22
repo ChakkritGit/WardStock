@@ -129,4 +129,5 @@
   <string name="add_finger_vein_description">คุณสามารถลงทะเบียนลายนิ้วมือแบบเส้นเลือดได้สูงสุด 5 ลายนิ้ว โดยแต่ละลายต้องมาจากนิ้วที่แตกต่างกัน เพื่อเพิ่มความยืดหยุ่นและความสะดวกในการยืนยันตัวตน</string>
   <string name="add_finger_vein_success">ลงทะเบียนลายนิ้วมือแล้ว 1 รายการ</string>
   <string name="back_button">กลับ</string>
+  <string name="done_button">สำเร็จ</string>
 </resources>

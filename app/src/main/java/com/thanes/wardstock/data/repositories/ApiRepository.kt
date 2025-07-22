@@ -19,6 +19,7 @@ import com.thanes.wardstock.data.models.UserFingerprint
 import com.thanes.wardstock.data.models.UserModel
 import com.thanes.wardstock.data.models.UserRole
 import com.thanes.wardstock.remote.api.services.AddDrugRequest
+import com.thanes.wardstock.remote.api.services.FingerprintRequest
 import com.thanes.wardstock.remote.api.services.GroupInventoryRequest
 import com.thanes.wardstock.remote.api.services.InventoryRequest
 import com.thanes.wardstock.remote.api.services.LoginRequest
@@ -387,5 +388,14 @@ object ApiRepository {
 
   suspend fun getUserFingerprint(userId: String): Response<ApiResponse<List<UserFingerprint>>> {
     return createApiWithAuth().getUserFingerprint(userId)
+  }
+
+  suspend fun updateFingerprint(
+    id: String,
+    description: String
+  ): Response<ApiResponse<String>> {
+    val request = FingerprintRequest(description = description)
+
+    return createApiWithAuth().updateFingerprint(id, request)
   }
 }

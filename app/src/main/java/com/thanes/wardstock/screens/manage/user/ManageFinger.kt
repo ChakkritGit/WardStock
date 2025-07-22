@@ -47,6 +47,7 @@ import androidx.navigation.NavHostController
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.viewModel.FingerVeinViewModel
 import com.thanes.wardstock.data.viewModel.UserViewModel
+import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.screens.fvverify.MainDisplay
 import com.thanes.wardstock.ui.components.appbar.AppBar
 import com.thanes.wardstock.ui.components.system.HideSystemControll
@@ -65,7 +66,7 @@ data class BiometricData(
 fun ManageFinger(
   navController: NavHostController,
   context: Context,
-  userSharedViewModel: UserViewModel?,
+  userSharedViewModel: UserViewModel,
   fingerVeinViewModel: FingerVeinViewModel
 ) {
   val isLockedOut by fingerVeinViewModel.isLockedOut
@@ -128,12 +129,15 @@ fun ManageFinger(
             .fillMaxWidth()
             .padding(top = 4.dp)
         ) {
-          items(userSharedViewModel?.fingerprintList ?: emptyList()) { fingerprint ->
+          items(userSharedViewModel.fingerprintList ?: emptyList()) { fingerprint ->
             Card(
               modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(RoundRadius.Large))
-                .clickable(onClick = {}),
+                .clickable(onClick = {
+                  userSharedViewModel.setFingerObject(fingerprint)
+                  navController.navigate(Routes.EditFingerprint.route)
+                }),
               colors = CardDefaults.cardColors(Colors.BlueGrey120),
               shape = RoundedCornerShape(RoundRadius.Large),
               border = BorderStroke(1.dp, color = Colors.BlueGrey80)
@@ -143,7 +147,7 @@ fun ManageFinger(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                   .padding(horizontal = 18.dp, vertical = 12.dp)
-                  .height(56.dp)
+                  .height(50.dp)
                   .fillMaxWidth()
               ) {
                 Text(
@@ -171,7 +175,7 @@ fun ManageFinger(
           modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(RoundRadius.Large))
-            .clickable(onClick = {}, enabled = userSharedViewModel?.fingerprintList?.size!! < 5)
+            .clickable(onClick = {}, enabled = userSharedViewModel.fingerprintList?.size!! < 5)
             .alpha(if (userSharedViewModel.fingerprintList?.size!! < 5) 1f else 0.5f),
           colors = CardDefaults.cardColors(Colors.BlueGrey120),
           shape = RoundedCornerShape(RoundRadius.Large),
@@ -182,7 +186,7 @@ fun ManageFinger(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
               .padding(horizontal = 18.dp, vertical = 12.dp)
-              .height(56.dp)
+              .height(50.dp)
               .fillMaxWidth()
           ) {
             Text(

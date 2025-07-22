@@ -38,6 +38,9 @@ data class MachineRequest(
   val status: Boolean,
   val comment: String
 )
+data class FingerprintRequest(
+  val description: String
+)
 data class InventoryRequest(
   val position: Int,
   val min: Int,
@@ -214,4 +217,10 @@ interface ApiService {
 
   @GET("config/fingerprint/{userId}")
   suspend fun getUserFingerprint(@Path("userId") userId: String): Response<ApiResponse<List<UserFingerprint>>>
+
+  @PATCH("config/fingerprint/{bioId}")
+  suspend fun updateFingerprint(
+    @Path("bioId") bioId: String,
+    @Body request: FingerprintRequest
+  ): Response<ApiResponse<String>>
 }

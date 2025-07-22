@@ -191,7 +191,7 @@ fun UserFormScreen(
     Box(
       modifier = Modifier
         .fillMaxWidth()
-        .height(300.dp)
+        .height(450.dp)
     ) {
       Box(
         modifier = Modifier

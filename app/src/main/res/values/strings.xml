@@ -129,4 +129,5 @@
   <string name="add_finger_vein_description">You can register up to 5 different fingerprint vein templates, each from a different finger, for added flexibility and convenience during authentication.</string>
   <string name="add_finger_vein_success">1 fingerprint has been registered</string>
   <string name="back_button">Back</string>
+  <string name="done_button">Done</string>
 </resources>

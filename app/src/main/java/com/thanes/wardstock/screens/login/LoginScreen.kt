@@ -98,10 +98,10 @@ fun LoginScreen(
   var userName by remember { mutableStateOf("") }
   var userPassword by remember { mutableStateOf("") }
   var isLoading by remember { mutableStateOf(false) }
+  var errorMessage by remember { mutableStateOf("") }
   var isLoadingFinger by remember { mutableStateOf(false) }
   var showPass by remember { mutableStateOf(false) }
   var showDialog by remember { mutableStateOf(false) }
-  var errorMessage by remember { mutableStateOf("") }
   val contextLang = LocalContext.current
   val isLockedOut by fingerVienViewModel.isLockedOut
   val lockoutCountdown by fingerVienViewModel.lockoutCountdown
@@ -201,6 +201,13 @@ fun LoginScreen(
   LaunchedEffect(fingerVienViewModel.verifiedUid) {
     if (fingerVienViewModel.verifiedUid.value.isNotEmpty()) {
       handleLoginWithFinger(fingerVienViewModel.verifiedUid.value)
+    }
+  }
+
+  LaunchedEffect(errorMessage) {
+    if (errorMessage.isNotEmpty()) {
+      Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+      errorMessage = ""
     }
   }
 
@@ -574,13 +581,6 @@ fun LoginScreen(
         },
         containerColor = Colors.BlueGrey100,
       )
-    }
-  }
-
-  LaunchedEffect(errorMessage) {
-    if (errorMessage.isNotEmpty()) {
-      Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
-      errorMessage = ""
     }
   }
 }
