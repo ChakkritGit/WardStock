@@ -70,7 +70,6 @@ class MainActivity : ComponentActivity() {
         }
       }
     }
-
   }
 
   override fun onWindowFocusChanged(hasFocus: Boolean) {

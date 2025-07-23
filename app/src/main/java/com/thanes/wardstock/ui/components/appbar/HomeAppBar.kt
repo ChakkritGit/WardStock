@@ -194,7 +194,7 @@ fun HomeAppBar(
       properties = DialogProperties(
         dismissOnBackPress = true,
         dismissOnClickOutside = true,
-        usePlatformDefaultWidth = true
+        usePlatformDefaultWidth = false
       ),
       icon = {
         Surface(
