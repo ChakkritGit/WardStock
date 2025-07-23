@@ -262,7 +262,6 @@ fun EditFingerprint(
           .fillMaxSize()
           .padding(horizontal = 30.dp)
       ) {
-        userSharedViewModel.fingerprintObject?.let {
           Box(
             modifier = Modifier
               .fillMaxWidth()
@@ -332,7 +331,6 @@ fun EditFingerprint(
               fontSize = 20.sp
             )
           }
-        }
       }
     }
   }

@@ -132,4 +132,5 @@
   <string name="done_button">สำเร็จ</string>
   <string name="delete_finger_title">คุณต้องการลบลายนิ้วมือนี้หรือไม่?</string>
   <string name="cannot_undo">คุณไม่สามารถเลิกทำการดำเนินการนี้ได้</string>
+  <string name="temporary_lock">ระบบถูกล็อกชั่วคราว</string>
 </resources>

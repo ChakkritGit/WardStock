@@ -208,7 +208,7 @@ fun MainDisplay(
           }
           Spacer(modifier = Modifier.height(12.dp))
           Text(
-            "ระบบถูกล็อกชั่วคราว",
+            stringResource(R.string.temporary_lock),
             color = Colors.alert,
             fontSize = 20.sp,
             fontWeight = FontWeight.Medium
