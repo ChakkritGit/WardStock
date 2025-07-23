@@ -170,7 +170,7 @@ fun AddFingerprint(
                 .clickable(onClick = {
                   if (canClick) {
                     canClick = false
-//            fingerVeinViewModel.toggleVerify()
+                    fingerVeinViewModel.toggleVerify()
                     navController.popBackStack()
                   }
                 })
@@ -293,7 +293,7 @@ fun AddFingerprint(
           onClick = {
             if (canClick) {
               canClick = false
-//              fingerVeinViewModel.toggleVerify()
+              fingerVeinViewModel.toggleVerify()
               navController.popBackStack()
             }
           }, shape = RoundedCornerShape(RoundRadius.Medium), gradient = Brush.verticalGradient(

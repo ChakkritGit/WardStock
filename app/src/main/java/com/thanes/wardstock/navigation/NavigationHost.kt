@@ -261,7 +261,7 @@ fun AppNavigation(
     }
 
     composable(route = Routes.ManageFingerprint.route) {
-      ManageFinger(navController, userSharedViewModel)
+      ManageFinger(navController, userSharedViewModel, fingerVienViewModel)
     }
 
     composable(route = Routes.EditFingerprint.route) {

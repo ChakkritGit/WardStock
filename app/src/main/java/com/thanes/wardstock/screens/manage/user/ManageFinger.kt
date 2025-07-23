@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.R
+import com.thanes.wardstock.data.viewModel.FingerVeinViewModel
 import com.thanes.wardstock.data.viewModel.UserViewModel
 import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.components.appbar.AppBar
@@ -49,7 +50,8 @@ import com.thanes.wardstock.ui.theme.RoundRadius
 @Composable
 fun ManageFinger(
   navController: NavHostController,
-  userSharedViewModel: UserViewModel
+  userSharedViewModel: UserViewModel,
+  fingerVienViewModel: FingerVeinViewModel
 ) {
   var canClick by remember { mutableStateOf(true) }
 
@@ -139,7 +141,7 @@ fun ManageFinger(
             .clip(RoundedCornerShape(RoundRadius.Large))
             .clickable(
               onClick = {
-//                fingerVeinViewModel.toggleVerify()
+                fingerVienViewModel.toggleVerify()
                 navController.navigate(Routes.AddFingerprint.route)
               },
               enabled = userSharedViewModel.fingerprintList?.size!! < 5
