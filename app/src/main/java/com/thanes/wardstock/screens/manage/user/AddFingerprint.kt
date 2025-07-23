@@ -2,6 +2,7 @@ package com.thanes.wardstock.screens.manage.user
 
 import android.content.Context
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -50,14 +51,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.R
+import com.thanes.wardstock.data.repositories.ApiRepository
 import com.thanes.wardstock.data.viewModel.FingerVeinViewModel
 import com.thanes.wardstock.data.viewModel.UserViewModel
 import com.thanes.wardstock.screens.fvverify.MainDisplay
 import com.thanes.wardstock.ui.components.keyboard.Keyboard
+import com.thanes.wardstock.ui.components.loading.LoadingDialog
 import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
+import com.thanes.wardstock.utils.parseErrorMessage
+import com.thanes.wardstock.utils.parseExceptionMessage
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 data class BiometricData(
   val featureData: String,
@@ -77,18 +84,72 @@ fun AddFingerprint(
   val isFocus = remember { FocusRequester() }
   val isLockedOut by fingerVeinViewModel.isLockedOut
   val lockoutCountdown by fingerVeinViewModel.lockoutCountdown
-  var enrolledBiometrics by remember { mutableStateOf<List<BiometricData>>(emptyList()) }
+  var featureData by remember { mutableStateOf("") }
   var description by remember { mutableStateOf("") }
+  var isLoading by remember { mutableStateOf(false) }
+  var errorMessage by remember { mutableStateOf("") }
+  val completeFieldMessage = stringResource(R.string.complete_field)
   val hideKeyboard = Keyboard.hideKeyboard()
   val scope = rememberCoroutineScope()
 
+  fun handleAddFingerprint() {
+    errorMessage = ""
+    isLoading = true
+
+    scope.launch {
+      if (description.isEmpty() && featureData.isEmpty()) {
+        errorMessage = completeFieldMessage
+        isLoading = false
+        return@launch
+      }
+
+      userSharedViewModel.fingerprintObject.let {
+        try {
+          hideKeyboard()
+          val response = ApiRepository.addFingerprint(
+            userId = it?.userId ?: "",
+            featureData = featureData,
+            description = description
+          )
+
+          if (response.isSuccessful) {
+            val message = response.body()?.data
+            errorMessage = message ?: "Successfully"
+            userSharedViewModel.fetchUserFingerprint(it?.userId ?: "")
+            fingerVeinViewModel.reloadAllBiometrics()
+            userSharedViewModel.fetchUser()
+          } else {
+            val errorJson = response.errorBody()?.string()
+            val message = parseErrorMessage(response.code(), errorJson)
+            errorMessage = message
+          }
+        } catch (e: Exception) {
+          errorMessage = parseExceptionMessage(e)
+        } finally {
+          isLoading = false
+          delay(650)
+          navController.popBackStack()
+        }
+      }
+    }
+  }
+
   LaunchedEffect(fingerVeinViewModel.lastEnrolledTemplate) {
     fingerVeinViewModel.lastEnrolledTemplate.value?.let { templateData ->
-      enrolledBiometrics = listOf(BiometricData(featureData = templateData))
+      featureData = templateData
 
       fingerVeinViewModel.clearLastEnrolledTemplate()
     }
   }
+
+  LaunchedEffect(errorMessage) {
+    if (errorMessage.isNotEmpty()) {
+      Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+      errorMessage = ""
+    }
+  }
+
+  LoadingDialog(isRemoving = isLoading)
 
   Scaffold(
     topBar = {
@@ -135,8 +196,8 @@ fun AddFingerprint(
               )
             }
             TextButton(
-              onClick = { },
-              enabled = description.isNotEmpty()
+              onClick = { handleAddFingerprint() },
+              enabled = description.isNotEmpty() && featureData.isNotEmpty(),
             ) {
               Text(
                 stringResource(R.string.done_button),

@@ -41,6 +41,11 @@ data class MachineRequest(
 data class FingerprintRequest(
   val description: String
 )
+data class AddFingerprintRequest(
+  val userId: String,
+  val featureData: String,
+  val description: String?
+)
 data class InventoryRequest(
   val position: Int,
   val min: Int,
@@ -226,4 +231,7 @@ interface ApiService {
 
   @DELETE("config/fingerprint/{bioId}")
   suspend fun deleteFingerprint(@Path("bioId") bioId: String): Response<ApiResponse<String>>
+
+  @POST("config/fingerprint")
+  suspend fun addFingerprint(@Body request: AddFingerprintRequest): Response<ApiResponse<String>>
 }
