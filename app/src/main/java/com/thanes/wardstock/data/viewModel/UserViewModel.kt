@@ -23,6 +23,9 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
   var errorMessage by mutableStateOf("")
     internal set
 
+  var userId by mutableStateOf("")
+    internal set
+
   var selectedUser by mutableStateOf<UserModel?>(null)
     private set
 
@@ -44,12 +47,20 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     selectedUser = user
   }
 
+  fun setUserId(id: String) {
+    userId = id
+  }
+
   fun clearFingerObject() {
     fingerprintObject = null
   }
 
   fun clearFingerprintList() {
     fingerprintList = emptyList()
+  }
+
+  fun clearUserId() {
+    userId = ""
   }
 
   fun clear() {

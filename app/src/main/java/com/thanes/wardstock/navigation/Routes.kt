@@ -26,6 +26,7 @@ sealed class Routes(val route: String) {
   object FingerPrintVein: Routes(route = "finger_print_vein")
   object ManageFingerprint: Routes(route = "manage_fingerprint")
   object EditFingerprint: Routes(route = "edit_fingerprint")
+  object AddFingerprint: Routes(route = "add_fingerprint")
 
   object DispenseTestTool: Routes(route = "dispensetesttool_route")
 }

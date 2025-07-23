@@ -285,7 +285,7 @@ fun EditFingerprint(
                 unfocusedContainerColor = Colors.BlueGrey120,
                 focusedBorderColor = Colors.BlueGrey80,
                 unfocusedBorderColor = Colors.BlueGrey80,
-                cursorColor = Color.Black
+                cursorColor = Colors.BluePrimary,
               ),
               trailingIcon = {
                 if (description.isNotEmpty()) {
@@ -356,14 +356,14 @@ fun EditFingerprint(
         ) {
           Text(
             text = contextLang.getString(R.string.delete_finger_title),
-            fontSize = 24.sp,
+            fontSize = 22.sp,
             fontWeight = FontWeight.Medium,
             lineHeight = 32.sp,
             color = Colors.black
           )
           Text(
             text = contextLang.getString(R.string.cannot_undo),
-            fontSize = 20.sp,
+            fontSize = 18.sp,
             lineHeight = 16.sp,
             color = Colors.BlueGrey40
           )
@@ -386,7 +386,7 @@ fun EditFingerprint(
               colors = listOf(Colors.BlueGrey80.copy(0.8f), Colors.BlueGrey80.copy(0.8f))
             ),
             modifier = Modifier
-              .height(60.dp)
+              .height(58.dp)
               .weight(1f)
           ) {
             Text(
@@ -408,7 +408,7 @@ fun EditFingerprint(
             shape = RoundedCornerShape(RoundRadius.ExtraLarge),
             textSize = 20.sp,
             modifier = Modifier
-              .height(60.dp)
+              .height(58.dp)
               .weight(1f),
             gradient = Brush.horizontalGradient(
               colors = listOf(Colors.alert, Colors.alert)

@@ -49,6 +49,7 @@ import com.thanes.wardstock.screens.manage.machine.EditMachine
 import com.thanes.wardstock.screens.manage.machine.ManageMachineScreen
 import com.thanes.wardstock.screens.manage.manage.ManageScreen
 import com.thanes.wardstock.screens.manage.manage.ManageStockScreen
+import com.thanes.wardstock.screens.manage.user.AddFingerprint
 import com.thanes.wardstock.screens.manage.user.AddUser
 import com.thanes.wardstock.screens.manage.user.EditFingerprint
 import com.thanes.wardstock.screens.manage.user.EditUser
@@ -260,11 +261,15 @@ fun AppNavigation(
     }
 
     composable(route = Routes.ManageFingerprint.route) {
-      ManageFinger(navController, context, userSharedViewModel, fingerVienViewModel)
+      ManageFinger(navController, userSharedViewModel)
     }
 
     composable(route = Routes.EditFingerprint.route) {
       EditFingerprint(navController, context, userSharedViewModel, fingerVienViewModel)
+    }
+
+    composable(route = Routes.AddFingerprint.route) {
+      AddFingerprint(navController, context, userSharedViewModel, fingerVienViewModel)
     }
   }
 }

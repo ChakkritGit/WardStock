@@ -479,6 +479,7 @@ fun UserFormScreen(
           GradientButton(
             onClick = {
               userSharedViewModel?.setUserFingerprintList(initialData.biometrics)
+              userSharedViewModel?.setUserId(initialData.userId)
               navController?.navigate(Routes.ManageFingerprint.route)
             },
             shape = RoundedCornerShape(RoundRadius.Medium),
