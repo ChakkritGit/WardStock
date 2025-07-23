@@ -12,17 +12,17 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 latestAppCompatVersion = "1.7.1"
-lifecycleRuntimeKtx = "2.9.1"
+lifecycleRuntimeKtx = "2.9.2"
 activityCompose = "1.10.1"
-composeBom = "2025.06.01"
-material = "1.9.0-beta02"
+composeBom = "2025.07.00"
+material = "1.9.0-beta03"
 retrofit = "3.0.0"
-amqpClient = "5.25.0"
-coilCompose = "3.2.0"
-coilGif = "3.2.0"
+amqpClient = "5.26.0"
+coilCompose = "3.3.0"
+coilGif = "3.3.0"
 converterGson = "3.0.0"
 foundation = "1.8.3"
-navigationCompose = "2.9.1"
+navigationCompose = "2.9.2"
 
 [libraries]
 accompanist-navigation-animation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanistNavigationAnimation" }
@@ -60,4 +60,3 @@ androidx-foundation = { module = "androidx.compose.foundation:foundation", versi
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-#kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version = "2.2.0" }
