@@ -2,7 +2,9 @@ package com.thanes.wardstock.screens.manage.user
 
 import android.app.Activity
 import android.content.Context
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,7 +15,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
@@ -41,6 +45,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -125,8 +130,42 @@ fun EditFingerprint(
         } finally {
           isLoading = false
           delay(650)
-          userSharedViewModel.clearFingerObject()
           navController.popBackStack()
+          userSharedViewModel.clearFingerObject()
+        }
+      }
+    }
+  }
+
+  @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
+  fun removeFinger() {
+    if (isLoading) return
+
+    scope.launch {
+      userSharedViewModel.fingerprintObject.let {
+        try {
+          isLoading = true
+
+          val response = ApiRepository.deleteFingerprint(bioId = it?.id ?: "")
+
+          if (response.isSuccessful) {
+            val message = response.body()?.data
+            errorMessage = message ?: "Successfully"
+            userSharedViewModel.fetchUserFingerprint(it?.userId ?: "")
+            fingerVeinViewModel.reloadAllBiometrics()
+            userSharedViewModel.fetchUser()
+          } else {
+            val errorJson = response.errorBody()?.string()
+            val message = parseErrorMessage(response.code(), errorJson)
+            errorMessage = message
+          }
+        } catch (e: Exception) {
+          errorMessage = parseExceptionMessage(e)
+        } finally {
+          isLoading = false
+          delay(650)
+          navController.popBackStack()
+          userSharedViewModel.clearFingerObject()
         }
       }
     }
@@ -299,78 +338,86 @@ fun EditFingerprint(
   }
 
   if (showDeleteDialog) {
+    val contextLang = LocalContext.current
+
     AlertDialog(
       properties = DialogProperties(
-        dismissOnBackPress = true, dismissOnClickOutside = true, usePlatformDefaultWidth = true
-      ), icon = {
-        Surface(
-          modifier = Modifier.clip(CircleShape), color = Color(0xFFD32F2F).copy(alpha = 0.3f)
-        ) {
-          Icon(
-            painter = painterResource(R.drawable.delete_24px),
-            contentDescription = "delete_user",
-            modifier = Modifier
-              .size(56.dp)
-              .padding(6.dp),
-            tint = Color(0xFFD32F2F)
-          )
-        }
-      }, text = {
+        dismissOnBackPress = true,
+        dismissOnClickOutside = true,
+        usePlatformDefaultWidth = false
+      ),
+      modifier = Modifier
+        .width(400.dp)
+        .wrapContentHeight(),
+      shape = RoundedCornerShape(RoundRadius.VeryExtraLarge),
+      text = {
         Column(
-          verticalArrangement = Arrangement.spacedBy(6.dp),
-          horizontalAlignment = Alignment.CenterHorizontally,
-          modifier = Modifier.fillMaxWidth(0.7f)
+          verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
           Text(
-            text = stringResource(R.string.delete_user),
+            text = contextLang.getString(R.string.delete_finger_title),
             fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = ibmpiexsansthailooped
+            fontWeight = FontWeight.Medium,
+            lineHeight = 32.sp,
+            color = Colors.black
           )
           Text(
-            text = stringResource(R.string.confirm_delete_desc),
+            text = contextLang.getString(R.string.cannot_undo),
             fontSize = 20.sp,
-            fontFamily = ibmpiexsansthailooped
+            lineHeight = 16.sp,
+            color = Colors.BlueGrey40
           )
         }
-      }, onDismissRequest = {
+      },
+      onDismissRequest = {
         showDeleteDialog = false
-      }, confirmButton = {
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+      },
+      confirmButton = {
+        Row(
+          horizontalArrangement = Arrangement.spacedBy(12.dp),
+          verticalAlignment = Alignment.CenterVertically
+        ) {
           GradientButton(
             onClick = {
               showDeleteDialog = false
             },
-            text = stringResource(R.string.delete),
-            fontWeight = FontWeight.Medium,
-            shape = RoundedCornerShape(RoundRadius.Medium),
-            textSize = 20.sp,
+            shape = RoundedCornerShape(RoundRadius.ExtraLarge),
+            gradient = Brush.horizontalGradient(
+              colors = listOf(Colors.BlueGrey80.copy(0.8f), Colors.BlueGrey80.copy(0.8f))
+            ),
             modifier = Modifier
-              .fillMaxWidth(0.7f)
-              .height(56.dp),
-            gradient = Brush.verticalGradient(
-              colors = listOf(Color(0xFFD32F2F), Color(0xFFB71C1C))
+              .height(60.dp)
+              .weight(1f)
+          ) {
+            Text(
+              text = contextLang.getString(R.string.cancel),
+              color = Colors.BluePrimary,
+              fontSize = 20.sp,
+              fontWeight = FontWeight.Medium
             )
-          )
+          }
 
           GradientButton(
             onClick = {
+              removeFinger()
               showDeleteDialog = false
             },
-            shape = RoundedCornerShape(RoundRadius.Medium),
-            gradient = Brush.verticalGradient(
-              colors = listOf(Colors.BlueGrey80, Colors.BlueGrey80),
-            ),
+            text = contextLang.getString(R.string.delete),
+            textColor = Color.White,
+            fontWeight = FontWeight.Medium,
+            shape = RoundedCornerShape(RoundRadius.ExtraLarge),
+            textSize = 20.sp,
             modifier = Modifier
-              .fillMaxWidth(0.7f)
-              .height(56.dp)
-          ) {
-            Text(
-              stringResource(R.string.cancel), color = Colors.BlueSecondary, fontSize = 20.sp
+              .height(60.dp)
+              .weight(1f),
+            gradient = Brush.horizontalGradient(
+              colors = listOf(Colors.alert, Colors.alert)
             )
-          }
+          )
         }
-      }, dismissButton = {}, containerColor = Colors.BlueGrey100
+      },
+      dismissButton = {},
+      containerColor = Colors.BlueGrey100
     )
   }
 }

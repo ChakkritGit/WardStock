@@ -223,4 +223,7 @@ interface ApiService {
     @Path("bioId") bioId: String,
     @Body request: FingerprintRequest
   ): Response<ApiResponse<String>>
+
+  @DELETE("config/fingerprint/{bioId}")
+  suspend fun deleteFingerprint(@Path("bioId") bioId: String): Response<ApiResponse<String>>
 }

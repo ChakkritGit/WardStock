@@ -8,6 +8,8 @@ object RoundRadius {
   val Large = 24.0.dp
   val ExtraLarge = 32.0.dp
 
+  val VeryExtraLarge = 48.0.dp
+
   // Home screen
   val  BorderRadius = ExtraLarge
 }

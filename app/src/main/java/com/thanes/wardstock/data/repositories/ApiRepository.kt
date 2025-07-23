@@ -398,4 +398,8 @@ object ApiRepository {
 
     return createApiWithAuth().updateFingerprint(id, request)
   }
+
+  suspend fun deleteFingerprint(bioId: String): Response<ApiResponse<String>> {
+    return createApiWithAuth().deleteFingerprint(bioId)
+  }
 }

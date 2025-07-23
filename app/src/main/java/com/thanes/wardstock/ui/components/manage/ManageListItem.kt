@@ -5,6 +5,7 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -123,12 +124,11 @@ fun MenuItemCard(
     modifier = Modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp, vertical = 8.dp)
+      .clip(RoundedCornerShape(RoundRadius.Large))
       .clickable { onClick() },
-    shape = RoundedCornerShape(RoundRadius.Medium),
-    colors = CardDefaults.cardColors(
-      containerColor = Colors.BlueGrey120
-    ),
-    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    colors = CardDefaults.cardColors(containerColor = Colors.BlueGrey120),
+    shape = RoundedCornerShape(RoundRadius.Large),
+    border = BorderStroke(1.dp, color = Colors.BlueGrey80)
   ) {
     Row(
       modifier = Modifier
