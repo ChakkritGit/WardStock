@@ -2,7 +2,6 @@ package com.thanes.wardstock.screens.login
 
 import android.app.Activity
 import android.content.Context
-import android.content.ContextWrapper
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -187,15 +186,6 @@ fun LoginScreen(
         isLoadingFinger = false
       }
     }
-  }
-
-  fun Context.findActivity(): Activity? {
-    var context = this
-    while (context is ContextWrapper) {
-      if (context is Activity) return context
-      context = context.baseContext
-    }
-    return null
   }
 
   LaunchedEffect(fingerVienViewModel.verifiedUid) {

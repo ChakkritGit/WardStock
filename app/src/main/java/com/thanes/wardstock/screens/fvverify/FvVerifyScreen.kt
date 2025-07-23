@@ -6,8 +6,6 @@ import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -175,7 +173,9 @@ fun MainDisplay(
   modifier: Modifier = Modifier,
   bitmap: Bitmap?,
   isEnrolling: Boolean,
-  isVerifying: Boolean, lastLogMessage: String, isLockedOut: Boolean,
+  isVerifying: Boolean,
+  lastLogMessage: String,
+  isLockedOut: Boolean,
   lockoutCountdown: Int
 ) {
   Column(
@@ -185,22 +185,10 @@ fun MainDisplay(
   ) {
     Box(
       modifier = Modifier
-        .fillMaxWidth(0.9f)
+        .fillMaxWidth()
         .aspectRatio(1f)
-        .clip(RoundedCornerShape(RoundRadius.Large))
-        .border(
-          width = 2.dp, color = when {
-            isEnrolling -> Colors.BluePrimary
-            isVerifying -> Colors.BlueTertiary
-            isLockedOut -> Colors.alert
-            else -> Colors.BlueSecondary
-          }, shape = RoundedCornerShape(RoundRadius.Large)
-        )
-        .background(
-          if (isLockedOut) Colors.alert.copy(alpha = 0.05f) else Colors.BlueGrey80.copy(
-            alpha = 0.5f
-          )
-        ), contentAlignment = Alignment.Center
+        .clip(RoundedCornerShape(RoundRadius.Large)),
+      contentAlignment = Alignment.Center
     ) {
       if (isLockedOut) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -254,8 +242,8 @@ fun MainDisplay(
                 painter = painterResource(R.drawable.fingerprint_24px),
                 contentDescription = "fingerprint_24px",
                 modifier = Modifier
-                  .size(48.dp)
-                  .padding(6.dp),
+                  .size(52.dp)
+                  .padding(8.dp),
                 tint = Colors.BluePrimary.copy(alpha = 0.8f)
               )
             }

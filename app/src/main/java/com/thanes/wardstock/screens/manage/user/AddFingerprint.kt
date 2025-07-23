@@ -1,6 +1,5 @@
 package com.thanes.wardstock.screens.manage.user
 
-import android.app.Activity
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -23,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -31,12 +31,10 @@ import com.thanes.wardstock.data.viewModel.FingerVeinViewModel
 import com.thanes.wardstock.data.viewModel.UserViewModel
 import com.thanes.wardstock.screens.fvverify.MainDisplay
 import com.thanes.wardstock.ui.components.appbar.AppBar
-import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
-import kotlinx.coroutines.delay
 
 data class BiometricData(
   val featureData: String,
@@ -54,25 +52,13 @@ fun AddFingerprint(
   var canClick by remember { mutableStateOf(true) }
   val isLockedOut by fingerVeinViewModel.isLockedOut
   val lockoutCountdown by fingerVeinViewModel.lockoutCountdown
-  var showEnrollDialog by remember { mutableStateOf(false) }
   var enrolledBiometrics by remember { mutableStateOf<List<BiometricData>>(emptyList()) }
 
   LaunchedEffect(fingerVeinViewModel.lastEnrolledTemplate) {
     fingerVeinViewModel.lastEnrolledTemplate.value?.let { templateData ->
       enrolledBiometrics = listOf(BiometricData(featureData = templateData))
 
-      showEnrollDialog = false
-
       fingerVeinViewModel.clearLastEnrolledTemplate()
-    }
-  }
-
-  LaunchedEffect(showEnrollDialog) {
-    if (showEnrollDialog) {
-      delay(20)
-      (context as? Activity)?.let { activity ->
-        HideSystemControll.manageSystemBars(activity, true)
-      }
     }
   }
 
@@ -83,6 +69,7 @@ fun AddFingerprint(
         onBack = {
           if (canClick) {
             canClick = false
+//            fingerVeinViewModel.toggleVerify()
             navController.popBackStack()
           }
         })
@@ -110,21 +97,25 @@ fun AddFingerprint(
 
         GradientButton(
           onClick = {
+            if (canClick) {
+              canClick = false
 //              fingerVeinViewModel.toggleVerify()
-            showEnrollDialog = false
+              navController.popBackStack()
+            }
           }, shape = RoundedCornerShape(RoundRadius.Medium), gradient = Brush.verticalGradient(
             colors = listOf(
               Colors.BlueGrey80, Colors.BlueGrey80
             ),
           ), modifier = Modifier
-            .fillMaxWidth(0.9f)
+            .fillMaxWidth()
             .height(56.dp)
         ) {
           Text(
-            stringResource(R.string.close),
+            stringResource(R.string.cancel),
             fontFamily = ibmpiexsansthailooped,
             color = Colors.BlueSecondary,
             fontSize = 20.sp,
+            fontWeight = FontWeight.Medium
           )
         }
       }
