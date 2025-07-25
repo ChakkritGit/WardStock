@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
           Surface(
             modifier = Modifier
               .fillMaxSize()
-              .background(Colors.blackGrey),
+              .background(Colors.black),
             shape = RoundedCornerShape(RoundRadius.Large)
           ) {
             Scaffold(

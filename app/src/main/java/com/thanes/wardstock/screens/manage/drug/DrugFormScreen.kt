@@ -5,8 +5,7 @@ import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -123,7 +122,8 @@ fun DrugFormScreen(
   var comment by remember { mutableStateOf(initialData?.comment ?: "") }
   val scope = rememberCoroutineScope()
 
-  val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
+  val pickMedia =
+    rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
     if (uri != null) {
       selectedImageUri = uri
       Log.d("PhotoPicker", "Selected URI: $uri")
@@ -183,7 +183,7 @@ fun DrugFormScreen(
           .background(Colors.BlueGrey100)
           .border(2.dp, Colors.BlueGrey80, RoundedCornerShape((RoundRadius.Large)))
           .clickable {
-            pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+            pickMedia.launch("image/*")
           }, contentAlignment = Alignment.Center
       ) {
         val imagePainter = rememberAsyncImagePainter(selectedImageUri ?: initialData?.picture)
@@ -195,7 +195,7 @@ fun DrugFormScreen(
             .background(Colors.BlueGrey100)
             .border(2.dp, Colors.BlueGrey80, RoundedCornerShape((RoundRadius.Large)))
             .clickable {
-              pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+              pickMedia.launch("image/*")
             }, contentAlignment = Alignment.Center
         ) {
           if (selectedImageUri != null || initialData?.picture != null) {
@@ -241,7 +241,7 @@ fun DrugFormScreen(
             .clip(RoundedCornerShape((RoundRadius.Large)))
             .background(Colors.BlueSecondary)
             .clickable {
-              pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+              pickMedia.launch("image/*")
             }, contentAlignment = Alignment.Center
         ) {
           Icon(

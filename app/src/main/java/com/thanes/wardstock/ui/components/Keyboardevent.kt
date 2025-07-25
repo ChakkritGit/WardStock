@@ -1,5 +1,6 @@
 package com.thanes.wardstock.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
@@ -40,6 +41,7 @@ fun BarcodeInputField(
       .focusRequester(focusRequester)
       .focusable()
       .onKeyEvent {
+        Log.d("scanned barcode", "onKeyEvent: $it")
         if (it.type == KeyEventType.KeyDown) {
           when (it.key) {
             Key.Enter -> {
@@ -65,7 +67,7 @@ fun BarcodeInputField(
 
             else -> {
               val char = it.nativeKeyEvent.unicodeChar.toChar()
-              if (char.isLetterOrDigit()) {
+              if (char.isLetterOrDigit() || char == '-') {
                 inputBuffer += char
               }
               true

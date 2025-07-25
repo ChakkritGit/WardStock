@@ -7,8 +7,7 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -133,7 +132,8 @@ fun UserFormScreen(
 
   val scope = rememberCoroutineScope()
 
-  val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
+  val pickMedia =
+    rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
     if (uri != null) {
       selectedImageUri = uri
       Log.d("PhotoPicker", "Selected URI: $uri")
@@ -200,7 +200,7 @@ fun UserFormScreen(
           .background(Colors.BlueGrey100)
           .border(2.dp, Colors.BlueGrey80, RoundedCornerShape((RoundRadius.Large)))
           .clickable {
-            pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+            pickMedia.launch("image/*")
           }, contentAlignment = Alignment.Center
       ) {
         val imagePainter = rememberAsyncImagePainter(selectedImageUri ?: initialData?.imageUri)
@@ -212,7 +212,7 @@ fun UserFormScreen(
             .background(Colors.BlueGrey100)
             .border(2.dp, Colors.BlueGrey80, RoundedCornerShape((RoundRadius.Large)))
             .clickable {
-              pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+              pickMedia.launch("image/*")
             }, contentAlignment = Alignment.Center
         ) {
           if (selectedImageUri != null || initialData?.imageUri != null) {
@@ -258,7 +258,7 @@ fun UserFormScreen(
             .clip(RoundedCornerShape((RoundRadius.Large)))
             .background(Colors.BlueSecondary)
             .clickable {
-              pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+              pickMedia.launch("image/*")
             }, contentAlignment = Alignment.Center
         ) {
           Icon(

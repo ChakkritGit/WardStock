@@ -292,6 +292,7 @@ open class FingerVeinLib {
     ): Int
 
     fun fv_verify(start: Int, CB_VERIFY: CbVerifyImpl?): Int
+
     fun fv_syn_verify(
       featureData: String,
       featureLen: Int,
