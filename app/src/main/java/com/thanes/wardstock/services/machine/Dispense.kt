@@ -556,7 +556,7 @@ class Dispense private constructor(
     private const val LIFT_MOVEMENT_TIMEOUT_MS = 20_000L
     private const val DOOR_MOVEMENT_TIMEOUT_MS = 7_000L
     private const val DISPENSE_STATUS_TIMEOUT_MS = 15_000L
-    private const val COMMUNICATION_TIMEOUT_MS = 3_000L
+    private const val COMMUNICATION_TIMEOUT_MS = 5_000L
     private const val MAX_TTY_RETRY = 3
     private const val VMC_ACK_RESPONSE = "fa,fb,42,00,43"
     private const val VMC_POLL_REQUEST = "fa,fb,41,00,40"
@@ -698,8 +698,8 @@ class Dispense private constructor(
                           prepareTtyS1Command(positionsToDispense[currentDispenseIndex])
                           progress = "waitingForPoll"
                         } else {
-                          progress = "liftingDown"
-                          val cmd = "# 1 1 1 -1 2"
+                          progress = "liftingDownToFifty"
+                          val cmd = "# 1 1 1 50 53"
                           serialPortManager.writeSerialttyS2(cmd)
                           startCommandTimeout(cmd, "ttyS2")
                         }
@@ -739,6 +739,11 @@ class Dispense private constructor(
                       "liftingUp" -> {
                         prepareTtyS1Command(positionsToDispense[currentDispenseIndex]); progress =
                           "waitingForPoll"
+                      }
+
+                      "liftingDownToFifty" -> {
+                        nextCommand = "# 1 1 1 -1 2"; progress = "liftingDown"; nextTimeout =
+                          COMMUNICATION_TIMEOUT_MS
                       }
 
                       "liftingDown" -> {

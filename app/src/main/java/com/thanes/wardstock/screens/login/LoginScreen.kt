@@ -52,7 +52,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -101,7 +100,6 @@ fun LoginScreen(
   var isLoadingFinger by remember { mutableStateOf(false) }
   var showPass by remember { mutableStateOf(false) }
   var showDialog by remember { mutableStateOf(false) }
-  val contextLang = LocalContext.current
   val isLockedOut by fingerVienViewModel.isLockedOut
   val lockoutCountdown by fingerVienViewModel.lockoutCountdown
 
@@ -184,6 +182,8 @@ fun LoginScreen(
         errorMessage = parseExceptionMessage(e)
       } finally {
         isLoadingFinger = false
+//        fingerVienViewModel.clearVerifyUserId()
+        fingerVienViewModel.verifiedUid.value = ""
       }
     }
   }
@@ -459,95 +459,110 @@ fun LoginScreen(
 
           Spacer(modifier = Modifier.height(16.dp))
 
-          GradientButton(
-            onClick = {
-              fingerVienViewModel.toggleVerify()
-              showDialog = true
-            },
-            shape = RoundedCornerShape(RoundRadius.Large),
-            modifier = Modifier
-              .fillMaxWidth()
-              .height(56.dp)
-              .border(1.dp, Colors.BlueGrey100, RoundedCornerShape(RoundRadius.Large)),
-            enabled = !isLoadingFinger,
-            gradient = Brush.verticalGradient(
-              colors = listOf(
-                Color.Transparent,
-                Color.Transparent
-              ),
-            )
+          Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
           ) {
-            if (isLoadingFinger) {
-              CircularProgressIndicator(
-                color = Colors.BlueGrey100, strokeWidth = 2.dp, modifier = Modifier.size(24.dp)
+            GradientButton(
+              onClick = {
+                if (!isLockedOut) {
+                  fingerVienViewModel.toggleVerify()
+                  showDialog = true
+                } else {
+                  Toast.makeText(context, "ระบบถูกล็อกชั่วคราว กรุณารอ", Toast.LENGTH_SHORT).show()
+                }
+              },
+              shape = RoundedCornerShape(RoundRadius.Large),
+              modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .border(1.dp, Colors.BlueGrey100, RoundedCornerShape(RoundRadius.Large)),
+              enabled = !isLoadingFinger,
+              gradient = Brush.verticalGradient(
+                colors = listOf(
+                  if (isLockedOut) Color.Gray.copy(alpha = 0.2f) else Color.Transparent,
+                  if (isLockedOut) Color.Gray.copy(alpha = 0.2f) else Color.Transparent
+                )
               )
-            } else {
-              Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-              ) {
-                Icon(
-                  painter = painterResource(R.drawable.fingerprint_24px),
-                  contentDescription = "fingerprint_24px",
-                  tint = Colors.BlueGrey100,
+            ) {
+              if (isLoadingFinger) {
+                CircularProgressIndicator(
+                  color = Colors.BlueGrey100,
+                  strokeWidth = 2.dp,
                   modifier = Modifier.size(24.dp)
                 )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                  stringResource(R.string.sign_in_with_finger),
-                  fontSize = 18.sp,
-                  fontWeight = FontWeight.Medium,
-                  color = Colors.BlueGrey100
-                )
+              } else {
+                Row(
+                  horizontalArrangement = Arrangement.Center,
+                  verticalAlignment = Alignment.CenterVertically,
+                  modifier = Modifier.fillMaxWidth()
+                ) {
+                  Icon(
+                    painter = painterResource(R.drawable.fingerprint_24px),
+                    contentDescription = "fingerprint_24px",
+                    tint = Colors.BlueGrey100,
+                    modifier = Modifier.size(24.dp)
+                  )
+                  Spacer(modifier = Modifier.width(6.dp))
+                  Text(
+                    stringResource(R.string.sign_in_with_finger),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Colors.BlueGrey100
+                  )
+                }
               }
             }
           }
         }
       }
     }
+  }
 
-    LaunchedEffect(showDialog) {
-      if (showDialog) {
-        delay(20)
-        (context as? Activity)?.let { activity ->
-          HideSystemControll.manageSystemBars(activity, true)
-        }
+  LaunchedEffect(showDialog) {
+    if (showDialog) {
+      delay(20)
+      (context as? Activity)?.let { activity ->
+        HideSystemControll.manageSystemBars(activity, true)
       }
     }
+  }
 
-    if (showDialog) {
-      AlertDialog(
-        properties = DialogProperties(
-          dismissOnBackPress = false,
-          dismissOnClickOutside = false,
-          usePlatformDefaultWidth = false
-        ),
-        icon = {},
-        text = {
-          Column(
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth(0.9f)
-          ) {
-            MainDisplay(
-              bitmap = fingerVienViewModel.imageBitmap.value,
-              isEnrolling = fingerVienViewModel.isEnrolling.value,
-              isVerifying = fingerVienViewModel.isVerifying.value,
-              lastLogMessage = fingerVienViewModel.logMessages.firstOrNull() ?: "",
-              isLockedOut = isLockedOut,
-              lockoutCountdown = lockoutCountdown
-            )
-          }
-        },
-        onDismissRequest = {
+  if (showDialog) {
+    AlertDialog(
+      properties = DialogProperties(
+        dismissOnBackPress = false,
+        dismissOnClickOutside = false,
+        usePlatformDefaultWidth = false
+      ),
+      onDismissRequest = {
+        if (!fingerVienViewModel.isVerifying.value && !isLockedOut) {
           showDialog = false
-        },
-        confirmButton = {},
-        dismissButton = {
+        }
+      },
+      text = {
+        Column(
+          verticalArrangement = Arrangement.spacedBy(16.dp),
+          horizontalAlignment = Alignment.CenterHorizontally,
+          modifier = Modifier.fillMaxWidth()
+        ) {
+          MainDisplay(
+            bitmap = fingerVienViewModel.imageBitmap.value,
+            isVerifying = fingerVienViewModel.isVerifying.value,
+            lastLogMessage = fingerVienViewModel.logMessages.firstOrNull() ?: "",
+            isLockedOut = isLockedOut,
+            lockoutCountdown = lockoutCountdown
+          )
+        }
+      },
+      confirmButton = {},
+      dismissButton = {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
           GradientButton(
             onClick = {
-              fingerVienViewModel.toggleVerify()
+              if (fingerVienViewModel.isVerifying.value) {
+                fingerVienViewModel.toggleVerify()
+              }
               showDialog = false
             },
             shape = RoundedCornerShape(RoundRadius.Medium),
@@ -555,22 +570,24 @@ fun LoginScreen(
               colors = listOf(
                 Colors.BlueGrey80,
                 Colors.BlueGrey80
-              ),
+              )
             ),
             modifier = Modifier
-              .fillMaxWidth(0.9f)
+              .fillMaxWidth(0.8f)
               .height(56.dp)
           ) {
             Text(
-              contextLang.getString(R.string.close),
+              text = if (fingerVienViewModel.isVerifying.value || isLockedOut) stringResource(R.string.cancel) else stringResource(
+                R.string.close
+              ),
               fontFamily = ibmpiexsansthailooped,
               color = Colors.BlueSecondary,
-              fontSize = 20.sp,
+              fontSize = 20.sp
             )
           }
-        },
-        containerColor = Colors.BlueGrey100,
-      )
-    }
+        }
+      },
+      containerColor = Colors.BlueGrey100,
+    )
   }
 }

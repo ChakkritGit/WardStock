@@ -6,6 +6,8 @@ import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -143,9 +146,7 @@ fun FvVerifyScreen(navController: NavHostController, fingerVienViewModel: Finger
       verticalArrangement = Arrangement.SpaceBetween
     ) {
       MainDisplay(
-        modifier = Modifier.weight(1f),
         bitmap = fingerVienViewModel.imageBitmap.value,
-        isEnrolling = fingerVienViewModel.isEnrolling.value,
         isVerifying = fingerVienViewModel.isVerifying.value,
         lastLogMessage = fingerVienViewModel.logMessages.firstOrNull() ?: "...",
         isLockedOut = isLockedOut,
@@ -170,104 +171,92 @@ fun FvVerifyScreen(navController: NavHostController, fingerVienViewModel: Finger
 
 @Composable
 fun MainDisplay(
-  modifier: Modifier = Modifier,
   bitmap: Bitmap?,
-  isEnrolling: Boolean,
   isVerifying: Boolean,
   lastLogMessage: String,
   isLockedOut: Boolean,
   lockoutCountdown: Int
 ) {
   Column(
-    modifier = modifier.fillMaxWidth(),
     horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.Center
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+    modifier = Modifier.fillMaxWidth()
   ) {
+    Text(
+      text = "ยืนยันตัวตนด้วยลายนิ้วมือ",
+      style = MaterialTheme.typography.headlineSmall,
+      fontWeight = FontWeight.Bold
+    )
+
     Box(
       modifier = Modifier
-        .fillMaxWidth()
+        .fillMaxWidth(0.8f)
         .aspectRatio(1f)
-        .clip(RoundedCornerShape(RoundRadius.Large)),
+        .clip(RoundedCornerShape(16.dp))
+        .border(
+          width = 2.dp,
+          color = if (isVerifying && !isLockedOut) MaterialTheme.colorScheme.primary else Color.Gray,
+          shape = RoundedCornerShape(16.dp)
+        )
+        .background(Color.Black),
       contentAlignment = Alignment.Center
     ) {
-      if (isLockedOut) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-          Surface(
-            modifier = Modifier
-              .clip(shape = CircleShape),
-            color = Colors.alert.copy(alpha = 0.5f)
-          ) {
-            Icon(
-              painter = painterResource(R.drawable.lock_24px),
-              contentDescription = "lock_24px",
-              modifier = Modifier
-                .size(48.dp)
-                .padding(6.dp),
-              tint = Colors.alert
-            )
-          }
-          Spacer(modifier = Modifier.height(12.dp))
-          Text(
-            stringResource(R.string.temporary_lock),
-            color = Colors.alert,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Medium
-          )
-          Spacer(modifier = Modifier.height(6.dp))
-          Text(
-            text = "$lockoutCountdown วินาที",
-            color = Colors.alert.copy(0.7f),
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Normal
-          )
-        }
+      // ส่วนแสดงรูปภาพ
+      if (bitmap != null) {
+        Image(
+          bitmap = bitmap.asImageBitmap(),
+          contentDescription = "ภาพสแกนเส้นเลือด",
+          contentScale = ContentScale.Crop,
+          modifier = Modifier.fillMaxSize()
+        )
       } else {
-        if (bitmap != null) {
-          Image(
-            bitmap = bitmap.asImageBitmap(),
-            contentDescription = "ภาพสแกนเส้นเลือด",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-          )
-        } else {
-          Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-          ) {
-            Surface(
-              modifier = Modifier.clip(shape = CircleShape),
-              color = Colors.BlueGrey80.copy(alpha = 0.5f)
-            ) {
-              Icon(
-                painter = painterResource(R.drawable.fingerprint_24px),
-                contentDescription = "fingerprint_24px",
-                modifier = Modifier
-                  .size(52.dp)
-                  .padding(8.dp),
-                tint = Colors.BluePrimary.copy(alpha = 0.8f)
-              )
-            }
+        Icon(
+          painter = painterResource(id = R.drawable.fingerprint_24px),
+          contentDescription = "fingerprint icon",
+          tint = Color.White.copy(alpha = 0.5f),
+          modifier = Modifier.size(64.dp)
+        )
+      }
+
+      // แสดง Overlay ทับเมื่อถูกล็อก
+      if (isLockedOut) {
+        Box(
+          modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.8f)),
+          contentAlignment = Alignment.Center
+        ) {
+          Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(
+              painter = painterResource(id = R.drawable.lock_24px),
+              contentDescription = "Locked",
+              tint = Color.Red,
+              modifier = Modifier.size(48.dp)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
-              stringResource(R.string.place_your_finger_on_the_scanner),
-              color = Colors.BluePrimary.copy(alpha = 0.8f),
-              fontSize = 18.sp,
-              fontFamily = ibmpiexsansthailooped
+              "ระบบถูกล็อก",
+              color = Color.Red,
+              style = MaterialTheme.typography.titleLarge,
+              fontWeight = FontWeight.Bold
+            )
+            Text(
+              "$lockoutCountdown",
+              color = Color.Red,
+              style = MaterialTheme.typography.displayMedium,
+              fontWeight = FontWeight.Bold
             )
           }
         }
       }
     }
-
-    Spacer(modifier = Modifier.height(16.dp))
-
-    if (lastLogMessage.isNotEmpty()) {
-      Text(
-        text = lastLogMessage,
-        color = Colors.BlueGrey40,
-        textAlign = TextAlign.Center,
-        modifier = Modifier.padding(horizontal = 16.dp)
-      )
-    }
+    Text(
+      text = lastLogMessage,
+      style = MaterialTheme.typography.bodyLarge,
+      textAlign = TextAlign.Center,
+      minLines = 2,
+      modifier = Modifier.padding(horizontal = 16.dp)
+    )
   }
 }
 
@@ -328,7 +317,10 @@ fun MinimalControlPanel(
       }
 
       Button(
-        onClick = { viewModel.toggleVerify() },
+        onClick = {
+          viewModel.toggleVerify()
+//          viewModel.clearVerifyUserId()
+        },
         enabled = !isEnrolling,
         shape = RoundedCornerShape(RoundRadius.Medium),
         modifier = Modifier.weight(1f),
