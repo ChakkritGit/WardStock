@@ -2,6 +2,7 @@ package com.thanes.wardstock.screens.manage.user
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -103,11 +103,11 @@ fun AddFingerprint(
         return@launch
       }
 
-      userSharedViewModel.fingerprintObject.let {
+      userSharedViewModel.selectedUser.let {
         try {
           hideKeyboard()
           val response = ApiRepository.addFingerprint(
-            userId = it?.userId ?: "",
+            userId = it?.id ?: "",
             featureData = featureData,
             description = description
           )
@@ -115,7 +115,7 @@ fun AddFingerprint(
           if (response.isSuccessful) {
             val message = response.body()?.data
             errorMessage = message ?: "Successfully"
-            userSharedViewModel.fetchUserFingerprint(it?.userId ?: "")
+            userSharedViewModel.fetchUserFingerprint(it?.id ?: "")
             fingerVeinViewModel.reloadAllBiometrics()
             userSharedViewModel.fetchUser()
           } else {
@@ -134,7 +134,7 @@ fun AddFingerprint(
     }
   }
 
-  LaunchedEffect(fingerVeinViewModel.lastEnrolledTemplate) {
+  LaunchedEffect(fingerVeinViewModel.lastEnrolledTemplate.value) {
     fingerVeinViewModel.lastEnrolledTemplate.value?.let { templateData ->
       featureData = templateData
 
@@ -170,7 +170,7 @@ fun AddFingerprint(
                 .clickable(onClick = {
                   if (canClick) {
                     canClick = false
-                    fingerVeinViewModel.toggleVerify()
+                    fingerVeinViewModel.enroll(uid = "", uname = "")
                     navController.popBackStack()
                   }
                 })
@@ -217,8 +217,8 @@ fun AddFingerprint(
   ) { innerPadding ->
     Box(
       modifier = Modifier
-        .padding(innerPadding)
         .fillMaxSize()
+        .padding(innerPadding)
     ) {
       Column(
         modifier = Modifier
@@ -236,64 +236,57 @@ fun AddFingerprint(
           modifier = Modifier.height(480.dp)
         )
 
-        Box(
+        OutlinedTextField(
+          value = description,
+          onValueChange = { description = it },
           modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 20.dp)
-        ) {
-          OutlinedTextField(
-            value = description,
-            onValueChange = { description = it },
-            modifier = Modifier
-              .fillMaxWidth()
-              .focusRequester(isFocus),
-            singleLine = true,
-            textStyle = TextStyle(
-              fontSize = 20.sp,
-              fontFamily = ibmpiexsansthailooped
-            ),
-            shape = RoundedCornerShape(RoundRadius.Large),
-            colors = OutlinedTextFieldDefaults.colors(
-              focusedContainerColor = Colors.BlueGrey120,
-              unfocusedContainerColor = Colors.BlueGrey120,
-              focusedBorderColor = Colors.BlueGrey80,
-              unfocusedBorderColor = Colors.BlueGrey80,
-              cursorColor = Colors.BluePrimary,
-            ),
-            trailingIcon = {
-              if (description.isNotEmpty()) {
-                Surface(
+            .focusRequester(isFocus)
+            .padding(top = 20.dp),
+          singleLine = true,
+          textStyle = TextStyle(
+            fontSize = 20.sp,
+            fontFamily = ibmpiexsansthailooped
+          ),
+          shape = RoundedCornerShape(RoundRadius.Large),
+          colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Colors.BlueGrey120,
+            unfocusedContainerColor = Colors.BlueGrey120,
+            focusedBorderColor = Colors.BlueGrey80,
+            unfocusedBorderColor = Colors.BlueGrey80,
+            cursorColor = Colors.BluePrimary,
+          ),
+          trailingIcon = {
+            if (description.isNotEmpty()) {
+              Surface(
+                modifier = Modifier
+                  .padding(end = 16.dp)
+                  .size(32.dp)
+                  .clip(CircleShape)
+                  .clickable {
+                    description = ""
+                    isFocus.requestFocus()
+                  },
+                color = Colors.BlueGrey80.copy(alpha = 0.5f)
+              ) {
+                Icon(
+                  painter = painterResource(id = R.drawable.close_24px),
+                  contentDescription = "close_24px",
                   modifier = Modifier
-                    .padding(end = 16.dp)
-                    .size(32.dp)
-                    .clip(CircleShape)
-                    .clickable {
-                      description = ""
-                      isFocus.requestFocus()
-                    },
-                  color = Colors.BlueGrey80.copy(alpha = 0.5f)
-                ) {
-                  Icon(
-                    painter = painterResource(id = R.drawable.close_24px),
-                    contentDescription = "close_24px",
-                    modifier = Modifier
-                      .size(28.dp)
-                      .padding(6.dp),
-                    tint = Color.DarkGray
-                  )
-                }
+                    .size(28.dp)
+                    .padding(6.dp),
+                  tint = Color.DarkGray
+                )
               }
             }
-          )
-        }
-
-        Spacer(modifier = Modifier.height(6.dp))
+          }
+        )
 
         GradientButton(
           onClick = {
             if (canClick) {
               canClick = false
-              fingerVeinViewModel.toggleVerify()
+              fingerVeinViewModel.enroll(uid = "", uname = "")
               navController.popBackStack()
             }
           }, shape = RoundedCornerShape(RoundRadius.Medium), gradient = Brush.verticalGradient(
@@ -312,6 +305,8 @@ fun AddFingerprint(
             fontWeight = FontWeight.Medium
           )
         }
+
+        Text(fingerVeinViewModel.logMessages.toString(), fontSize = 14.sp)
       }
     }
   }

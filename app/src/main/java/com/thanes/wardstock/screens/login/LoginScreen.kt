@@ -188,7 +188,7 @@ fun LoginScreen(
     }
   }
 
-  LaunchedEffect(fingerVienViewModel.verifiedUid) {
+  LaunchedEffect(fingerVienViewModel.verifiedUid.value) {
     if (fingerVienViewModel.verifiedUid.value.isNotEmpty()) {
       handleLoginWithFinger(fingerVienViewModel.verifiedUid.value)
     }
@@ -547,7 +547,7 @@ fun LoginScreen(
         dismissButton = {
           GradientButton(
             onClick = {
-//              fingerVienViewModel.toggleVerify()
+              fingerVienViewModel.toggleVerify()
               showDialog = false
             },
             shape = RoundedCornerShape(RoundRadius.Medium),

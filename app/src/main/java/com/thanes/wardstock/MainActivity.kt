@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
             modifier = Modifier
               .fillMaxSize()
               .background(Colors.black),
-            shape = RoundedCornerShape(RoundRadius.Large)
+            shape = RoundedCornerShape(RoundRadius.Medium)
           ) {
             Scaffold(
               modifier = Modifier.fillMaxSize()

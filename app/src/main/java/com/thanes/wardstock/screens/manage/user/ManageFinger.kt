@@ -141,8 +141,10 @@ fun ManageFinger(
             .clip(RoundedCornerShape(RoundRadius.Large))
             .clickable(
               onClick = {
-                fingerVienViewModel.toggleVerify()
-                navController.navigate(Routes.AddFingerprint.route)
+                userSharedViewModel.selectedUser.let {
+                  fingerVienViewModel.enroll(uid = it?.id ?: "", uname = it?.username ?: "")
+                  navController.navigate(Routes.AddFingerprint.route)
+                }
               },
               enabled = userSharedViewModel.fingerprintList?.size!! < 5
             )
