@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -23,12 +22,10 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -49,7 +46,6 @@ import com.thanes.wardstock.data.models.UserRole
 import com.thanes.wardstock.data.repositories.ApiRepository
 import com.thanes.wardstock.data.viewModel.AuthState
 import com.thanes.wardstock.data.viewModel.OrderViewModel
-import com.thanes.wardstock.screens.home.AnimatedCounter
 import com.thanes.wardstock.services.rabbit.RabbitMQPendingAck
 import com.thanes.wardstock.services.rabbit.RabbitMQService
 import com.thanes.wardstock.ui.components.BarcodeInputField
@@ -62,10 +58,8 @@ import com.thanes.wardstock.utils.parseErrorMessage
 import com.thanes.wardstock.utils.parseExceptionMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.time.LocalTime
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -87,19 +81,19 @@ fun HomeWrapperContent(
     }
   )
 
-  var hour by remember { mutableIntStateOf(0) }
-  var minute by remember { mutableIntStateOf(0) }
-  var second by remember { mutableIntStateOf(0) }
-
-  LaunchedEffect(true) {
-    while (true) {
-      val now = LocalTime.now()
-      hour = now.hour
-      minute = now.minute
-      second = now.second
-      delay(1000L)
-    }
-  }
+//  var hour by remember { mutableIntStateOf(0) }
+//  var minute by remember { mutableIntStateOf(0) }
+//  var second by remember { mutableIntStateOf(0) }
+//
+//  LaunchedEffect(true) {
+//    while (true) {
+//      val now = LocalTime.now()
+//      hour = now.hour
+//      minute = now.minute
+//      second = now.second
+//      delay(1000L)
+//    }
+//  }
 
   LaunchedEffect(Unit) {
     applicationScope.launch {
@@ -327,24 +321,24 @@ fun HomeWrapperContent(
               fontFamily = ibmpiexsansthailooped
             )
 
-            Row(
-              modifier = Modifier,
-              horizontalArrangement = Arrangement.Center,
-              verticalAlignment = Alignment.CenterVertically
-            ) {
-              AnimatedCounter(count = hour / 10, style = MaterialTheme.typography.headlineLarge)
-              AnimatedCounter(count = hour % 10, style = MaterialTheme.typography.headlineLarge)
-
-              Text(":", style = MaterialTheme.typography.headlineLarge)
-
-              AnimatedCounter(count = minute / 10, style = MaterialTheme.typography.headlineLarge)
-              AnimatedCounter(count = minute % 10, style = MaterialTheme.typography.headlineLarge)
-
-              Text(":", style = MaterialTheme.typography.headlineLarge)
-
-              AnimatedCounter(count = second / 10, style = MaterialTheme.typography.headlineLarge)
-              AnimatedCounter(count = second % 10, style = MaterialTheme.typography.headlineLarge)
-            }
+//            Row(
+//              modifier = Modifier,
+//              horizontalArrangement = Arrangement.Center,
+//              verticalAlignment = Alignment.CenterVertically
+//            ) {
+//              AnimatedCounter(count = hour / 10, style = MaterialTheme.typography.headlineLarge)
+//              AnimatedCounter(count = hour % 10, style = MaterialTheme.typography.headlineLarge)
+//
+//              Text(":", style = MaterialTheme.typography.headlineLarge)
+//
+//              AnimatedCounter(count = minute / 10, style = MaterialTheme.typography.headlineLarge)
+//              AnimatedCounter(count = minute % 10, style = MaterialTheme.typography.headlineLarge)
+//
+//              Text(":", style = MaterialTheme.typography.headlineLarge)
+//
+//              AnimatedCounter(count = second / 10, style = MaterialTheme.typography.headlineLarge)
+//              AnimatedCounter(count = second % 10, style = MaterialTheme.typography.headlineLarge)
+//            }
           }
         }
       }

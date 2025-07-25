@@ -29,7 +29,7 @@ import retrofit2.http.Part
 import retrofit2.http.Path
 
 data class LoginRequest(val username: String, val password: String)
-data class LoginVeinRequest(val uid: String)
+data class LoginVeinRequest(val bid: String)
 data class AddDrugRequest(val inventoryQty: Int)
 data class MachineRequest(
   val machineName: String,

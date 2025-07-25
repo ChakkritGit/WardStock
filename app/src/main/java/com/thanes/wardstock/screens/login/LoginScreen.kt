@@ -461,7 +461,7 @@ fun LoginScreen(
 
           GradientButton(
             onClick = {
-//              fingerVienViewModel.toggleVerify()
+              fingerVienViewModel.toggleVerify()
               showDialog = true
             },
             shape = RoundedCornerShape(RoundRadius.Large),
