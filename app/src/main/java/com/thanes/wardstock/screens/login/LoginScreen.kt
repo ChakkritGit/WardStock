@@ -472,7 +472,7 @@ fun LoginScreen(
 //                  fingerVeinViewModel.resetLockout()
                   Toast.makeText(context, "ระบบถูกปลดล็อกแล้ว", Toast.LENGTH_SHORT).show()
                 } else {
-                  fingerVeinViewModel.startVerification()
+                  fingerVeinViewModel.toggleVerify()
                   showDialog = true
                 }
               },
@@ -549,7 +549,7 @@ fun LoginScreen(
           MainDisplay(
             bitmap = fingerVeinViewModel.imageBitmap.value,
             isVerifying = isVerifying,
-            lastLogMessage = fingerVeinViewModel.customMessage.value,
+            lastLogMessage = fingerVeinViewModel.logMessages.first(),
             isLockedOut = isLockedOut,
             lockoutCountdown = lockoutCountdown
           )
@@ -560,7 +560,7 @@ fun LoginScreen(
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
           GradientButton(
             onClick = {
-              fingerVeinViewModel.stopVerification()
+              fingerVeinViewModel.toggleVerify()
               showDialog = false
             },
             shape = RoundedCornerShape(RoundRadius.Medium),

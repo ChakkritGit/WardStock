@@ -72,7 +72,7 @@ fun AddFingerprint(
 
   val isEnrolling by fingerVeinViewModel.isEnrolling
   val lastEnrolledTemplate by fingerVeinViewModel.lastEnrolledTemplate
-  val customMessage by fingerVeinViewModel.customMessage
+  val customMessage by remember { mutableStateOf(fingerVeinViewModel.logMessages) }
 
   fun handleAddFingerprint() {
     if (isLoading) return
@@ -110,18 +110,18 @@ fun AddFingerprint(
   LaunchedEffect(Unit) {
     val user = userSharedViewModel.selectedUser
     if (user != null) {
-      fingerVeinViewModel.startEnrollment(user.id, user.display)
+      fingerVeinViewModel.enroll(user.id, user.display)
     } else {
       Toast.makeText(context, "ไม่พบข้อมูลผู้ใช้", Toast.LENGTH_LONG).show()
       navController.popBackStack()
     }
   }
 
-  DisposableEffect(Unit) {
-    onDispose {
-      fingerVeinViewModel.cancelEnrollment()
-    }
-  }
+//  DisposableEffect(Unit) {
+//    onDispose {
+//      fingerVeinViewModel.cancelEnrollment()
+//    }
+//  }
 
   LaunchedEffect(fingerVeinViewModel.lastEnrolledTemplate.value) {
     fingerVeinViewModel.lastEnrolledTemplate.value?.let { templateData ->
@@ -174,7 +174,7 @@ fun AddFingerprint(
       MainDisplay(
         bitmap = fingerVeinViewModel.imageBitmap.value,
         isVerifying = isEnrolling,
-        lastLogMessage = customMessage,
+        lastLogMessage = customMessage.first(),
         isLockedOut = false,
         lockoutCountdown = 0
       )

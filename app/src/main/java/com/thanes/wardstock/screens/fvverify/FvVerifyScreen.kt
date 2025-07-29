@@ -146,7 +146,7 @@ fun FvVerifyScreen(navController: NavHostController, fingerVienViewModel: Finger
       MainDisplay(
         bitmap = fingerVienViewModel.imageBitmap.value,
         isVerifying = fingerVienViewModel.isVerifying.value,
-        lastLogMessage = fingerVienViewModel.customMessage.value,
+        lastLogMessage = fingerVienViewModel.logMessages.first(),
         isLockedOut = isLockedOut,
         lockoutCountdown = lockoutCountdown
       )
@@ -306,7 +306,7 @@ fun MinimalControlPanel(
       horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
     ) {
       Button(
-        onClick = { viewModel.startEnrollment(userId, "Test User") },
+        onClick = { viewModel.enroll(userId, "Test User") },
         modifier = Modifier.weight(1f),
         shape = RoundedCornerShape(RoundRadius.Medium),
         colors = ButtonDefaults.buttonColors(
@@ -321,9 +321,7 @@ fun MinimalControlPanel(
       Button(
         onClick = {
           if (isVerifying) {
-            viewModel.stopVerification()
-          } else {
-            viewModel.startVerification()
+            viewModel.toggleVerify()
           }
         },
         enabled = !isEnrolling,
