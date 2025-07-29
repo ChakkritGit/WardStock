@@ -1,7 +1,16 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.android)
   alias(libs.plugins.kotlin.compose)
+}
+
+val keystorePropertiesFile = rootProject.file("gradle.properties")
+val keystoreProperties = Properties()
+if (keystorePropertiesFile.exists()) {
+  keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
 android {
@@ -23,10 +32,21 @@ android {
     }
   }
 
+  signingConfigs {
+    create("release") {
+      keyAlias = keystoreProperties["MYAPP_RELEASE_KEY_ALIAS"] as String
+      keyPassword = keystoreProperties["MYAPP_RELEASE_KEY_PASSWORD"] as String
+      storeFile = file(keystoreProperties["MYAPP_RELEASE_STORE_FILE"] as String)
+      storePassword = keystoreProperties["MYAPP_RELEASE_STORE_PASSWORD"] as String
+    }
+  }
+
   buildTypes {
     release {
-      isMinifyEnabled = false
+      isMinifyEnabled = true
+      isShrinkResources = true
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+      signingConfig = signingConfigs.getByName("release")
     }
   }
 
