@@ -49,6 +49,7 @@ import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.utils.parseErrorMessage
 import com.thanes.wardstock.utils.parseExceptionMessage
 import kotlinx.coroutines.launch
+
 data class BiometricData(
   val featureData: String,
   val description: String? = "Fingerprint"
@@ -70,6 +71,8 @@ fun AddFingerprint(
   val scope = rememberCoroutineScope()
 
   val isEnrolling by fingerVeinViewModel.isEnrolling
+  val lastEnrolledTemplate by fingerVeinViewModel.lastEnrolledTemplate
+  val customMessage by fingerVeinViewModel.customMessage
 
   fun handleAddFingerprint() {
     if (isLoading) return
@@ -104,11 +107,19 @@ fun AddFingerprint(
     }
   }
 
+  LaunchedEffect(Unit) {
+    val user = userSharedViewModel.selectedUser
+    if (user != null) {
+      fingerVeinViewModel.startEnrollment(user.id, user.display)
+    } else {
+      Toast.makeText(context, "ไม่พบข้อมูลผู้ใช้", Toast.LENGTH_LONG).show()
+      navController.popBackStack()
+    }
+  }
+
   DisposableEffect(Unit) {
     onDispose {
-      if (fingerVeinViewModel.isEnrolling.value) {
-        fingerVeinViewModel.enroll(uid = "", uname = "")
-      }
+      fingerVeinViewModel.cancelEnrollment()
     }
   }
 
@@ -163,8 +174,7 @@ fun AddFingerprint(
       MainDisplay(
         bitmap = fingerVeinViewModel.imageBitmap.value,
         isVerifying = isEnrolling,
-        lastLogMessage = fingerVeinViewModel.logMessages.firstOrNull()
-          ?: "กด 'เริ่มสแกน' เพื่อลงทะเบียน",
+        lastLogMessage = customMessage,
         isLockedOut = false,
         lockoutCountdown = 0
       )
@@ -185,7 +195,7 @@ fun AddFingerprint(
         )
       )
 
-      if (!featureData.isNullOrBlank()) {
+      if (!lastEnrolledTemplate.isNullOrBlank()) {
         Spacer(modifier = Modifier.height(16.dp))
         Row(
           verticalAlignment = Alignment.CenterVertically,

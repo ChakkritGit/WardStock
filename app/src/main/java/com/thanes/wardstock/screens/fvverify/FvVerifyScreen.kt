@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -37,7 +36,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -61,10 +59,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.viewModel.FingerVeinViewModel
+import com.thanes.wardstock.screens.home.AnimatedCounter
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
@@ -148,7 +146,7 @@ fun FvVerifyScreen(navController: NavHostController, fingerVienViewModel: Finger
       MainDisplay(
         bitmap = fingerVienViewModel.imageBitmap.value,
         isVerifying = fingerVienViewModel.isVerifying.value,
-        lastLogMessage = fingerVienViewModel.logMessages.firstOrNull() ?: "...",
+        lastLogMessage = fingerVienViewModel.customMessage.value,
         isLockedOut = isLockedOut,
         lockoutCountdown = lockoutCountdown
       )
@@ -201,7 +199,6 @@ fun MainDisplay(
         .background(Color.Black),
       contentAlignment = Alignment.Center
     ) {
-      // ส่วนแสดงรูปภาพ
       if (bitmap != null) {
         Image(
           bitmap = bitmap.asImageBitmap(),
@@ -218,7 +215,6 @@ fun MainDisplay(
         )
       }
 
-      // แสดง Overlay ทับเมื่อถูกล็อก
       if (isLockedOut) {
         Box(
           modifier = Modifier
@@ -240,12 +236,18 @@ fun MainDisplay(
               style = MaterialTheme.typography.titleLarge,
               fontWeight = FontWeight.Bold
             )
-            Text(
-              "$lockoutCountdown",
-              color = Color.Red,
-              style = MaterialTheme.typography.displayMedium,
-              fontWeight = FontWeight.Bold
-            )
+            Row(
+              horizontalArrangement = Arrangement.Center,
+              verticalAlignment = Alignment.CenterVertically
+            ) {
+              val countdownStyle = MaterialTheme.typography.displayMedium.copy(
+                color = Color.Red,
+                fontWeight = FontWeight.Bold
+              )
+
+              AnimatedCounter(count = lockoutCountdown / 10, style = countdownStyle)
+              AnimatedCounter(count = lockoutCountdown % 10, style = countdownStyle)
+            }
           }
         }
       }
@@ -304,7 +306,7 @@ fun MinimalControlPanel(
       horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
     ) {
       Button(
-        onClick = { viewModel.enroll(userId) },
+        onClick = { viewModel.startEnrollment(userId, "Test User") },
         modifier = Modifier.weight(1f),
         shape = RoundedCornerShape(RoundRadius.Medium),
         colors = ButtonDefaults.buttonColors(
@@ -318,8 +320,11 @@ fun MinimalControlPanel(
 
       Button(
         onClick = {
-          viewModel.toggleVerify()
-//          viewModel.clearVerifyUserId()
+          if (isVerifying) {
+            viewModel.stopVerification()
+          } else {
+            viewModel.startVerification()
+          }
         },
         enabled = !isEnrolling,
         shape = RoundedCornerShape(RoundRadius.Medium),

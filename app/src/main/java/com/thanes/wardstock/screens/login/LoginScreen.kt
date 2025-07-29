@@ -89,7 +89,7 @@ import kotlinx.coroutines.launch
 fun LoginScreen(
   navController: NavHostController,
   authViewModel: AuthViewModel,
-  fingerVienViewModel: FingerVeinViewModel,
+  fingerVeinViewModel: FingerVeinViewModel,
   context: Context
 ) {
   val scope = rememberCoroutineScope()
@@ -100,8 +100,11 @@ fun LoginScreen(
   var isLoadingFinger by remember { mutableStateOf(false) }
   var showPass by remember { mutableStateOf(false) }
   var showDialog by remember { mutableStateOf(false) }
-  val isLockedOut by fingerVienViewModel.isLockedOut
-  val lockoutCountdown by fingerVienViewModel.lockoutCountdown
+
+  val isLockedOut by fingerVeinViewModel.isLockedOut
+  val lockoutCountdown by fingerVeinViewModel.lockoutCountdown
+  val isVerifying by fingerVeinViewModel.isVerifying
+  val verifiedUid by fingerVeinViewModel.verifiedUid
 
   val focusRequesterPassword = remember { FocusRequester() }
   val keyboardController = LocalSoftwareKeyboardController.current
@@ -183,14 +186,14 @@ fun LoginScreen(
       } finally {
         isLoadingFinger = false
 //        fingerVienViewModel.clearVerifyUserId()
-        fingerVienViewModel.verifiedUid.value = ""
+        fingerVeinViewModel.verifiedUid.value = ""
       }
     }
   }
 
-  LaunchedEffect(fingerVienViewModel.verifiedUid.value) {
-    if (fingerVienViewModel.verifiedUid.value.isNotEmpty()) {
-      handleLoginWithFinger(fingerVienViewModel.verifiedUid.value)
+  LaunchedEffect(verifiedUid) {
+    if (verifiedUid.isNotEmpty()) {
+      handleLoginWithFinger(verifiedUid)
     }
   }
 
@@ -465,11 +468,12 @@ fun LoginScreen(
           ) {
             GradientButton(
               onClick = {
-                if (!isLockedOut) {
-                  fingerVienViewModel.toggleVerify()
-                  showDialog = true
+                if (isLockedOut) {
+//                  fingerVeinViewModel.resetLockout()
+                  Toast.makeText(context, "ระบบถูกปลดล็อกแล้ว", Toast.LENGTH_SHORT).show()
                 } else {
-                  Toast.makeText(context, "ระบบถูกล็อกชั่วคราว กรุณารอ", Toast.LENGTH_SHORT).show()
+                  fingerVeinViewModel.startVerification()
+                  showDialog = true
                 }
               },
               shape = RoundedCornerShape(RoundRadius.Large),
@@ -535,11 +539,7 @@ fun LoginScreen(
         dismissOnClickOutside = false,
         usePlatformDefaultWidth = false
       ),
-      onDismissRequest = {
-        if (!fingerVienViewModel.isVerifying.value && !isLockedOut) {
-          showDialog = false
-        }
-      },
+      onDismissRequest = { },
       text = {
         Column(
           verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -547,9 +547,9 @@ fun LoginScreen(
           modifier = Modifier.fillMaxWidth()
         ) {
           MainDisplay(
-            bitmap = fingerVienViewModel.imageBitmap.value,
-            isVerifying = fingerVienViewModel.isVerifying.value,
-            lastLogMessage = fingerVienViewModel.logMessages.firstOrNull() ?: "",
+            bitmap = fingerVeinViewModel.imageBitmap.value,
+            isVerifying = isVerifying,
+            lastLogMessage = fingerVeinViewModel.customMessage.value,
             isLockedOut = isLockedOut,
             lockoutCountdown = lockoutCountdown
           )
@@ -560,9 +560,7 @@ fun LoginScreen(
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
           GradientButton(
             onClick = {
-              if (fingerVienViewModel.isVerifying.value) {
-                fingerVienViewModel.toggleVerify()
-              }
+              fingerVeinViewModel.stopVerification()
               showDialog = false
             },
             shape = RoundedCornerShape(RoundRadius.Medium),
@@ -577,9 +575,7 @@ fun LoginScreen(
               .height(56.dp)
           ) {
             Text(
-              text = if (fingerVienViewModel.isVerifying.value || isLockedOut) stringResource(R.string.cancel) else stringResource(
-                R.string.close
-              ),
+              text = if (isLockedOut) stringResource(R.string.close) else stringResource(R.string.cancel),
               fontFamily = ibmpiexsansthailooped,
               color = Colors.BlueSecondary,
               fontSize = 20.sp

@@ -218,7 +218,7 @@ interface ApiService {
   suspend fun getReportAlertMinMax(): Response<ApiResponse<List<InventoryMinMax>>>
 
   @GET("config/user")
-  suspend fun getUserConfig(): Response<ApiResponse<List<BiometricLoadModel>>>
+  suspend fun getAllBiometricsFromApi(): Response<ApiResponse<List<BiometricLoadModel>>>
 
   @GET("config/fingerprint/{userId}")
   suspend fun getUserFingerprint(@Path("userId") userId: String): Response<ApiResponse<List<UserFingerprint>>>
@@ -234,4 +234,7 @@ interface ApiService {
 
   @POST("config/fingerprint")
   suspend fun addFingerprint(@Body request: AddFingerprintRequest): Response<ApiResponse<String>>
+
+  @GET("dispense/prescription/order/clear")
+  suspend fun clearPrescription(): Response<ApiResponse<String>>
 }

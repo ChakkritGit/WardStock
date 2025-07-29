@@ -383,8 +383,8 @@ object ApiRepository {
     return createApiWithAuth().getReportAlertMinMax()
   }
 
-  suspend fun getUserConfig(): Response<ApiResponse<List<BiometricLoadModel>>> {
-    return createApiWithAuth().getUserConfig()
+  suspend fun getAllBiometricsFromApi(): Response<ApiResponse<List<BiometricLoadModel>>> {
+    return createApiWithAuth().getAllBiometricsFromApi()
   }
 
   suspend fun getUserFingerprint(userId: String): Response<ApiResponse<List<UserFingerprint>>> {
@@ -412,5 +412,9 @@ object ApiRepository {
     val request =
       AddFingerprintRequest(userId = userId, featureData = featureData, description = description)
     return createApiWithAuth().addFingerprint(request)
+  }
+
+  suspend fun clearPrescription(): Response<ApiResponse<String>> {
+    return createApiWithAuth().clearPrescription()
   }
 }

@@ -133,4 +133,5 @@
   <string name="delete_finger_title">คุณต้องการลบลายนิ้วมือนี้หรือไม่?</string>
   <string name="cannot_undo">คุณไม่สามารถเลิกทำการดำเนินการนี้ได้</string>
   <string name="temporary_lock">ระบบถูกล็อกชั่วคราว</string>
+  <string name="reset_prescription">รีเซ็ตใบยา</string>
 </resources>
