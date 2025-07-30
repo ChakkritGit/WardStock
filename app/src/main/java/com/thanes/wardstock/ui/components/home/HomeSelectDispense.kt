@@ -320,7 +320,7 @@ fun AnimatedGridItem(
 
   LaunchedEffect(showConfirmationDialog) {
     if (showBottomSheet) {
-      delay(20)
+      delay(40)
       (context as? Activity)?.let { activity ->
         HideSystemControll.manageSystemBars(activity, true)
       }
@@ -687,13 +687,23 @@ fun RefillItemGrid(item: GroupInventoryModel) {
 
       if (item.drugpriority > 0) {
         val drugLabel =
-          if (item.drugpriority == 1) stringResource((R.string.normal_drug)) else if (item.drugpriority == 2) stringResource(
-            R.string.Had_drug
-          ) else stringResource(R.string.Narcotic_drug)
+          when (item.drugpriority) {
+            1 -> stringResource((R.string.normal_drug))
+            2 -> stringResource(
+              R.string.Had_drug
+            )
+
+            else -> stringResource(R.string.Narcotic_drug)
+          }
         val drugColor =
-          if (item.drugpriority == 1) Color(0xFFE91E63) else if (item.drugpriority == 2) Color(
-            0xFFFF9800
-          ) else Color(0xFF78909C)
+          when (item.drugpriority) {
+            1 -> Color(0xFFE91E63)
+            2 -> Color(
+              0xFFFF9800
+            )
+
+            else -> Color(0xFF78909C)
+          }
 
         Box(
           modifier = Modifier
