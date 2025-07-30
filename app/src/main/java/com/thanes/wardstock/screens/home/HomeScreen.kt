@@ -1,8 +1,8 @@
 package com.thanes.wardstock.screens.home
 
+// เพิ่ม import ที่จำเป็นสำหรับ Animation
 import android.content.Context
 import android.widget.Toast
-// เพิ่ม import ที่จำเป็นสำหรับ Animation
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -30,7 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate // <-- import Modifier.rotate
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -44,8 +44,8 @@ import com.thanes.wardstock.R
 import com.thanes.wardstock.data.repositories.ApiRepository
 import com.thanes.wardstock.data.viewModel.AuthViewModel
 import com.thanes.wardstock.data.viewModel.GroupViewModel
+import com.thanes.wardstock.data.viewModel.MachineStatusViewModel
 import com.thanes.wardstock.data.viewModel.OrderViewModel
-import com.thanes.wardstock.data.viewModel.RefillViewModel
 import com.thanes.wardstock.ui.components.appbar.HomeAppBar
 import com.thanes.wardstock.ui.components.home.HomeMenu
 import com.thanes.wardstock.ui.components.home.HomeSelectDispense
@@ -62,7 +62,8 @@ fun HomeScreen(
   context: Context,
   authViewModel: AuthViewModel,
   orderSharedViewModel: OrderViewModel,
-  groupSharedViewModel: GroupViewModel
+  groupSharedViewModel: GroupViewModel,
+  machineStatusViewModel: MachineStatusViewModel
 ) {
   val authState by authViewModel.authState.collectAsState()
   var errorMessage by remember { mutableStateOf("") }
@@ -93,7 +94,14 @@ fun HomeScreen(
   ) {
     Scaffold(
       topBar = {
-        HomeAppBar(navController, context, authState, authViewModel, orderSharedViewModel)
+        HomeAppBar(
+          navController,
+          context,
+          authState,
+          authViewModel,
+          orderSharedViewModel,
+          machineStatusViewModel
+        )
       },
       floatingActionButton = {
         if (toggleDispense.value) {

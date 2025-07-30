@@ -30,6 +30,7 @@ import com.thanes.wardstock.data.viewModel.DrugViewModel
 import com.thanes.wardstock.data.viewModel.FingerVeinViewModel
 import com.thanes.wardstock.data.viewModel.GroupViewModel
 import com.thanes.wardstock.data.viewModel.InventoryViewModel
+import com.thanes.wardstock.data.viewModel.MachineStatusViewModel
 import com.thanes.wardstock.data.viewModel.MachineViewModel
 import com.thanes.wardstock.data.viewModel.OrderViewModel
 import com.thanes.wardstock.data.viewModel.RefillViewModel
@@ -82,6 +83,7 @@ fun AppNavigation(
   val machineSharedViewModel: MachineViewModel = viewModel()
   val inventorySharedViewModel: InventoryViewModel = viewModel()
   val groupSharedViewModel: GroupViewModel = viewModel()
+  val machineStatusViewModel: MachineStatusViewModel = viewModel()
 
   val authState by authViewModel.authState.collectAsState()
 
@@ -153,7 +155,14 @@ fun AppNavigation(
     }
 
     composable(route = Routes.Home.route) {
-      HomeScreen(navController, context, authViewModel, orderSharedViewModel, groupSharedViewModel)
+      HomeScreen(
+        navController,
+        context,
+        authViewModel,
+        orderSharedViewModel,
+        groupSharedViewModel,
+        machineStatusViewModel
+      )
     }
 
     composable(route = Routes.Setting.route) {

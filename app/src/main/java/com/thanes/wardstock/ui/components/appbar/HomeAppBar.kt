@@ -3,7 +3,7 @@ package com.thanes.wardstock.ui.components.appbar
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.ContextWrapper
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -42,15 +43,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.viewModel.AuthState
 import com.thanes.wardstock.data.viewModel.AuthViewModel
+import com.thanes.wardstock.data.viewModel.MachineStatusViewModel
 import com.thanes.wardstock.data.viewModel.OrderViewModel
 import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.components.system.HideSystemControll
@@ -80,7 +84,8 @@ fun HomeAppBar(
   context: Context,
   authState: AuthState,
   authViewModel: AuthViewModel,
-  orderSharedViewModel: OrderViewModel
+  orderSharedViewModel: OrderViewModel,
+  machineStatusViewModel: MachineStatusViewModel
 ) {
   val scope = rememberCoroutineScope()
   var greetingMessage by remember { mutableIntStateOf(getGreetingMessage()) }
@@ -90,20 +95,31 @@ fun HomeAppBar(
   val waitForDispenseMessage = stringResource(R.string.wait_for_dispensing)
   val userData = authState.userData
   val contextTwo = LocalContext.current
+  val machineStatus by machineStatusViewModel.machineStatus.collectAsStateWithLifecycle()
 
-  fun Context.findActivity(): Activity? {
-    var context = this
-    while (context is ContextWrapper) {
-      if (context is Activity) return context
-      context = context.baseContext
+  DisposableEffect(machineStatusViewModel) {
+    Log.d("HomeAppBar", "Composable is mounted. Starting status polling.")
+    machineStatusViewModel.startPollingMachineStatus()
+
+    onDispose {
+      Log.d("HomeAppBar", "Composable is unmounted. Stopping status polling.")
+      machineStatusViewModel.stopPollingMachineStatus()
     }
-    return null
   }
 
   LaunchedEffect(Unit) {
     while (true) {
       delay(60 * 60 * 1000L)
       greetingMessage = getGreetingMessage()
+    }
+  }
+
+  LaunchedEffect(openAlertDialog) {
+    if (openAlertDialog) {
+      delay(20)
+      (context as? Activity)?.let { activity ->
+        HideSystemControll.manageSystemBars(activity, true)
+      }
     }
   }
 
@@ -124,7 +140,8 @@ fun HomeAppBar(
     ) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(20.dp)
+        horizontalArrangement = Arrangement.spacedBy(20.dp),
+        modifier = Modifier.weight(1f)
       ) {
         Box(
           contentAlignment = Alignment.Center,
@@ -158,33 +175,73 @@ fun HomeAppBar(
           )
         }
       }
-      Button(
-        onClick = {
-          if (!isOrderActive) {
-            openAlertDialog = true
-          } else {
-            alertMessage = waitForDispenseMessage
-          }
-        },
-        modifier = Modifier.alpha(if (isOrderActive) 0.5f else 1f),
-        colors = ButtonDefaults.buttonColors(Color.Transparent)
-      ) {
-        Icon(
-          painter = painterResource(R.drawable.logout_24px),
-          contentDescription = "Logout",
-          tint = Colors.BlueGrey100,
-          modifier = Modifier
-            .size(48.dp)
-        )
-      }
-    }
-  }
 
-  LaunchedEffect(openAlertDialog) {
-    if (openAlertDialog) {
-      delay(20)
-      (context as? Activity)?.let { activity ->
-        HideSystemControll.manageSystemBars(activity, true)
+      Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically
+      ) {
+        Column(
+          verticalArrangement = Arrangement.Center,
+          horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
+            modifier = Modifier.padding(horizontal = 4.dp)
+          ) {
+            Icon(
+              painter = painterResource(id = R.drawable.ac_unit_24px),
+              contentDescription = "Temperature",
+              tint = if (machineStatus.isTempOk) Colors.BlueGrey120 else Colors.alert,
+              modifier = Modifier.size(20.dp)
+            )
+            Text(
+              text = machineStatus.temperature,
+              fontSize = 18.sp,
+              fontWeight = FontWeight.Medium,
+              color = if (machineStatus.isTempOk) Colors.BlueGrey120 else Colors.alert,
+              textAlign = TextAlign.Center
+            )
+          }
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
+            modifier = Modifier.padding(horizontal = 4.dp)
+          ) {
+            Icon(
+              painter = painterResource(id = R.drawable.cool_to_dry_24px),
+              contentDescription = "Humidity",
+              tint = if (machineStatus.isHumidityOk) Colors.BlueGrey120 else Colors.alert,
+              modifier = Modifier.size(20.dp)
+            )
+            Text(
+              text = machineStatus.humidity,
+              fontSize = 18.sp,
+              fontWeight = FontWeight.Medium,
+              color = if (machineStatus.isHumidityOk) Colors.BlueGrey120 else Colors.alert,
+              textAlign = TextAlign.Center
+            )
+          }
+        }
+        Button(
+          onClick = {
+            if (!isOrderActive) {
+              openAlertDialog = true
+            } else {
+              alertMessage = waitForDispenseMessage
+            }
+          },
+          modifier = Modifier.alpha(if (isOrderActive) 0.5f else 1f),
+          colors = ButtonDefaults.buttonColors(Color.Transparent)
+        ) {
+          Icon(
+            painter = painterResource(R.drawable.logout_24px),
+            contentDescription = "Logout",
+            tint = Colors.BlueGrey100,
+            modifier = Modifier
+              .size(48.dp)
+          )
+        }
       }
     }
   }
