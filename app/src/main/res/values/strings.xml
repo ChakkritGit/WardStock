@@ -134,4 +134,7 @@
   <string name="cannot_undo">You cannot undo this action</string>
   <string name="temporary_lock">The system is temporarily locked!</string>
   <string name="reset_prescription">Reset Prescription</string>
+  <string name="prescription_dispense">Prescription Dispense</string>
+  <string name="select_dispense">Select Dispense</string>
+  <string name="drug_empty">Out of stock</string>
 </resources>

@@ -153,7 +153,7 @@ fun AppNavigation(
     }
 
     composable(route = Routes.Home.route) {
-      HomeScreen(navController, context, authViewModel, orderSharedViewModel)
+      HomeScreen(navController, context, authViewModel, orderSharedViewModel, refillSharedViewModel)
     }
 
     composable(route = Routes.Setting.route) {

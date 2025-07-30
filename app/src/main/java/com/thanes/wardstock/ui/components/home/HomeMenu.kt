@@ -18,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,11 +44,13 @@ fun HomeMenu(
   navController: NavHostController,
   context: Context,
   authState: AuthState,
-  orderSharedViewModel: OrderViewModel
+  orderSharedViewModel: OrderViewModel,
+  toggleDispense: MutableState<Boolean>
 ) {
   val isOrderActive = orderSharedViewModel.orderState != null
   var alertMessage by remember { mutableStateOf("") }
   val waitForDispenseMessage = stringResource(R.string.wait_for_dispensing)
+
 
   LaunchedEffect(alertMessage) {
     if (alertMessage.isNotEmpty()) {
@@ -65,6 +68,31 @@ fun HomeMenu(
       .horizontalScroll(rememberScrollState())
       .alpha(if (isOrderActive) 0.5f else 1f)
   ) {
+    Button(
+      onClick = {
+        toggleDispense.value = !toggleDispense.value
+      },
+      colors = ButtonDefaults.buttonColors(Color.Transparent)
+    ) {
+      Column(
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+      ) {
+        Icon(
+          painter = painterResource(if (!toggleDispense.value) R.drawable.prescriptions_24px else R.drawable.grid_view_24px),
+          contentDescription = "dispense_icon",
+          tint = Colors.BlueGrey100,
+          modifier = Modifier
+            .size(48.dp)
+        )
+        Text(
+          stringResource(if (!toggleDispense.value) R.string.prescription_dispense else R.string.select_dispense),
+          fontSize = 20.sp,
+          fontFamily = ibmpiexsansthailooped
+        )
+      }
+    }
+    Spacer(modifier = Modifier.width(20.dp))
     Button(
       onClick = {
         if (!isOrderActive) {

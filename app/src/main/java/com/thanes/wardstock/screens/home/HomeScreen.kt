@@ -44,8 +44,10 @@ import com.thanes.wardstock.R
 import com.thanes.wardstock.data.repositories.ApiRepository
 import com.thanes.wardstock.data.viewModel.AuthViewModel
 import com.thanes.wardstock.data.viewModel.OrderViewModel
+import com.thanes.wardstock.data.viewModel.RefillViewModel
 import com.thanes.wardstock.ui.components.appbar.HomeAppBar
 import com.thanes.wardstock.ui.components.home.HomeMenu
+import com.thanes.wardstock.ui.components.home.HomeSelectDispense
 import com.thanes.wardstock.ui.components.home.HomeWrapperContent
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
@@ -59,10 +61,12 @@ fun HomeScreen(
   context: Context,
   authViewModel: AuthViewModel,
   orderSharedViewModel: OrderViewModel,
+  sharedViewModel: RefillViewModel
 ) {
   val authState by authViewModel.authState.collectAsState()
   var errorMessage by remember { mutableStateOf("") }
   var isLoading by remember { mutableStateOf(false) }
+  val toggleDispense = remember { mutableStateOf(false) }
   val scope = rememberCoroutineScope()
 
   LaunchedEffect(errorMessage) {
@@ -91,68 +95,70 @@ fun HomeScreen(
         HomeAppBar(navController, context, authState, authViewModel, orderSharedViewModel)
       },
       floatingActionButton = {
-        ExtendedFloatingActionButton(
-          onClick = {
-            if (isLoading) return@ExtendedFloatingActionButton
+        if (toggleDispense.value) {
+          ExtendedFloatingActionButton(
+            onClick = {
+              if (isLoading) return@ExtendedFloatingActionButton
 
-            scope.launch {
-              isLoading = true
-              try {
-                val response = ApiRepository.clearPrescription()
-                if (response.isSuccessful) {
-                  errorMessage = response.body()?.data ?: "Successfully"
-                } else {
-                  val errorJson = response.errorBody()?.string()
-                  val message = parseErrorMessage(response.code(), errorJson)
-                  errorMessage = message
+              scope.launch {
+                isLoading = true
+                try {
+                  val response = ApiRepository.clearPrescription()
+                  if (response.isSuccessful) {
+                    errorMessage = response.body()?.data ?: "Successfully"
+                  } else {
+                    val errorJson = response.errorBody()?.string()
+                    val message = parseErrorMessage(response.code(), errorJson)
+                    errorMessage = message
+                  }
+                } catch (e: Exception) {
+                  errorMessage = parseExceptionMessage(e)
+                } finally {
+                  orderSharedViewModel.fetchOrderInitial()
+                  isLoading = false
                 }
-              } catch (e: Exception) {
-                errorMessage = parseExceptionMessage(e)
-              } finally {
-                orderSharedViewModel.fetchOrderInitial()
-                isLoading = false
               }
-            }
-          },
-          containerColor = Colors.BluePrimary,
-          icon = {
-            if (isLoading) {
-              val infiniteTransition = rememberInfiniteTransition(label = "reset_icon_rotation")
-              val angle by infiniteTransition.animateFloat(
-                initialValue = 0f,
-                targetValue = 360f,
-                animationSpec = infiniteRepeatable(
-                  animation = tween(1000, easing = LinearEasing)
-                ),
-                label = "rotation_angle"
+            },
+            containerColor = Colors.BluePrimary,
+            icon = {
+              if (isLoading) {
+                val infiniteTransition = rememberInfiniteTransition(label = "reset_icon_rotation")
+                val angle by infiniteTransition.animateFloat(
+                  initialValue = 0f,
+                  targetValue = 360f,
+                  animationSpec = infiniteRepeatable(
+                    animation = tween(1000, easing = LinearEasing)
+                  ),
+                  label = "rotation_angle"
+                )
+                Icon(
+                  painter = painterResource(R.drawable.autorenew_24px),
+                  contentDescription = "Resetting prescription",
+                  tint = Colors.BlueGrey80,
+                  modifier = Modifier
+                    .size(24.dp)
+                    .rotate(angle)
+                )
+              } else {
+                Icon(
+                  painter = painterResource(R.drawable.autorenew_24px),
+                  contentDescription = "autorenew_24px",
+                  tint = Colors.BlueGrey80,
+                  modifier = Modifier.size(24.dp)
+                )
+              }
+            },
+            text = {
+              Text(
+                stringResource(R.string.reset_prescription),
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp
               )
-              Icon(
-                painter = painterResource(R.drawable.autorenew_24px),
-                contentDescription = "Resetting prescription",
-                tint = Colors.BlueGrey80,
-                modifier = Modifier
-                  .size(24.dp)
-                  .rotate(angle)
-              )
-            } else {
-              Icon(
-                painter = painterResource(R.drawable.autorenew_24px),
-                contentDescription = "autorenew_24px",
-                tint = Colors.BlueGrey80,
-                modifier = Modifier.size(24.dp)
-              )
-            }
-          },
-          text = {
-            Text(
-              stringResource(R.string.reset_prescription),
-              fontWeight = FontWeight.Medium,
-              fontSize = 16.sp
-            )
-          },
-          shape = RoundedCornerShape(RoundRadius.Medium),
-          modifier = Modifier.height(54.dp)
-        )
+            },
+            shape = RoundedCornerShape(RoundRadius.Medium),
+            modifier = Modifier.height(54.dp)
+          )
+        }
       },
       containerColor = Color.Transparent
     ) { innerPadding ->
@@ -165,8 +171,12 @@ fun HomeScreen(
           modifier = Modifier
             .fillMaxHeight()
         ) {
-          HomeMenu(navController, context, authState, orderSharedViewModel)
-          HomeWrapperContent(context, orderSharedViewModel, authState)
+          HomeMenu(navController, context, authState, orderSharedViewModel, toggleDispense)
+          if (!toggleDispense.value) {
+            HomeSelectDispense(context, sharedViewModel)
+          } else {
+            HomeWrapperContent(context, orderSharedViewModel, authState)
+          }
         }
       }
     }

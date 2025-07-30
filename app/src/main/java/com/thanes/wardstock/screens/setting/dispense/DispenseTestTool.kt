@@ -193,6 +193,7 @@ fun SlotGridWithBottomSheet(app: App, context: Context) {
       Card(
         modifier = Modifier
           .aspectRatio(1f)
+          .clip(RoundedCornerShape(RoundRadius.Large))
           .clickable {
             if (isDispenseServiceReady) {
               qty.intValue = 1
@@ -200,7 +201,6 @@ fun SlotGridWithBottomSheet(app: App, context: Context) {
               showBottomSheet = true
             }
           },
-        shape = RoundedCornerShape(RoundRadius.Large),
         colors = CardDefaults.cardColors(
           containerColor = Colors.BlueGrey80
         ),
@@ -369,6 +369,7 @@ fun SlotGridWithBottomSheet(app: App, context: Context) {
       }
     }
   }
+
   if (openAlertDialog) {
     AlertDialog(
       dialogTitle = contextLang.getString(R.string.dispensing),
