@@ -159,7 +159,7 @@ fun RefillItemCard(index: Int, item: RefillModel, filteredList: List<RefillModel
 
           val drugLabel =
             if (item.drugPriority == 1) stringResource((R.string.normal_drug)) else if (item.drugPriority == 2) stringResource(R.string.Had_drug) else stringResource(R.string.Narcotic_drug)
-          val drugColor = if (item.drugPriority == 1) Color(0xFFE91E63) else if (item.drugPriority == 2) Color(0xFFFF9800) else Color(0xFF78909C)
+          val drugColor = if (item.drugPriority == 1) Color(0xFF78909C) else if (item.drugPriority == 2) Color(0xFFFF9800) else Color(0xFFE91E63)
 
           Text(
             text = drugLabel,

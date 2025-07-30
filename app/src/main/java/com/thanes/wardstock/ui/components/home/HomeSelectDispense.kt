@@ -697,12 +697,12 @@ fun RefillItemGrid(item: GroupInventoryModel) {
           }
         val drugColor =
           when (item.drugpriority) {
-            1 -> Color(0xFFE91E63)
+            1 -> Color(0xFF78909C)
             2 -> Color(
               0xFFFF9800
             )
 
-            else -> Color(0xFF78909C)
+            else -> Color(0xFFE91E63)
           }
 
         Box(
