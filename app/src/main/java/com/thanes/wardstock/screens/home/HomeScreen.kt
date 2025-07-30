@@ -1,6 +1,5 @@
 package com.thanes.wardstock.screens.home
 
-// เพิ่ม import ที่จำเป็นสำหรับ Animation
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.animation.core.LinearEasing
@@ -44,7 +43,7 @@ import com.thanes.wardstock.R
 import com.thanes.wardstock.data.repositories.ApiRepository
 import com.thanes.wardstock.data.viewModel.AuthViewModel
 import com.thanes.wardstock.data.viewModel.GroupViewModel
-import com.thanes.wardstock.data.viewModel.MachineStatusViewModel
+//import com.thanes.wardstock.data.viewModel.MachineStatusViewModel
 import com.thanes.wardstock.data.viewModel.OrderViewModel
 import com.thanes.wardstock.ui.components.appbar.HomeAppBar
 import com.thanes.wardstock.ui.components.home.HomeMenu
@@ -63,7 +62,7 @@ fun HomeScreen(
   authViewModel: AuthViewModel,
   orderSharedViewModel: OrderViewModel,
   groupSharedViewModel: GroupViewModel,
-  machineStatusViewModel: MachineStatusViewModel
+//  machineStatusViewModel: MachineStatusViewModel
 ) {
   val authState by authViewModel.authState.collectAsState()
   var errorMessage by remember { mutableStateOf("") }
@@ -86,9 +85,7 @@ fun HomeScreen(
           colors = listOf(
             Colors.BluePrimary,
             Colors.BlueSky,
-          ),
-          start = Offset(0f, 0f),
-          end = Offset.Infinite
+          ), start = Offset(0f, 0f), end = Offset.Infinite
         )
       )
   ) {
@@ -100,7 +97,7 @@ fun HomeScreen(
           authState,
           authViewModel,
           orderSharedViewModel,
-          machineStatusViewModel
+//          machineStatusViewModel
         )
       },
       floatingActionButton = {
