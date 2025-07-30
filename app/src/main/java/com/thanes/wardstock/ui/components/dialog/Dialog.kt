@@ -24,7 +24,7 @@ import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 
 @Composable
-fun AlertDialog(
+fun AlertDialogCustom(
   dialogTitle: String,
   dialogText: String,
   icon: Int,

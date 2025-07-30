@@ -1,7 +1,6 @@
 package com.thanes.wardstock.ui.components.refill
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,25 +39,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.google.gson.JsonSyntaxException
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.repositories.ApiRepository
+import com.thanes.wardstock.data.viewModel.GroupViewModel
 import com.thanes.wardstock.data.viewModel.RefillViewModel
 import com.thanes.wardstock.ui.components.appbar.AppBar
 import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
+import com.thanes.wardstock.utils.parseErrorMessage
+import com.thanes.wardstock.utils.parseExceptionMessage
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import java.io.IOException
-import java.net.ConnectException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
-import javax.net.ssl.SSLException
 
 @Composable
 fun RefillDrug(
-  navController: NavHostController, context: Context, viewModel: RefillViewModel
+  navController: NavHostController,
+  context: Context,
+  viewModel: RefillViewModel,
+  groupSharedViewModel: GroupViewModel
+
 ) {
   val scope = rememberCoroutineScope()
   var canClick by remember { mutableStateOf(true) }
@@ -79,7 +79,7 @@ fun RefillDrug(
       }
 
       try {
-        val response = ApiRepository.addDrug(item.inventoryId.toString(), quality)
+        val response = ApiRepository.addDrug(item.inventoryId, quality)
 
         if (response.isSuccessful) {
           errorMessage = successSubmit
@@ -88,51 +88,17 @@ fun RefillDrug(
           val message = try {
             JSONObject(errorJson ?: "").getString("message")
           } catch (_: Exception) {
-            when (response.code()) {
-              400 -> "Invalid request data"
-              401 -> "Authentication required"
-              403 -> "Access denied"
-              404 -> "Prescription not found"
-              500 -> "Server error, please try again later"
-              else -> "HTTP Error ${response.code()}: ${response.message()}"
-            }
+            val errorJson = response.errorBody()?.string()
+            val message = parseErrorMessage(response.code(), errorJson)
+            errorMessage = message
           }
-          errorMessage = message
         }
       } catch (e: Exception) {
-        errorMessage = when (e) {
-          is UnknownHostException -> {
-            "No internet connection"
-          }
-
-          is SocketTimeoutException -> {
-            "Request timeout, please try again"
-          }
-
-          is ConnectException -> {
-            "Unable to connect to server"
-          }
-
-          is SSLException -> {
-            "Secure connection failed"
-          }
-
-          is JsonSyntaxException -> {
-            "Invalid response format"
-          }
-
-          is IOException -> {
-            "Network error occurred"
-          }
-
-          else -> {
-            Log.e("OrderAPI", "Unexpected error: ${e.javaClass.simpleName}", e)
-            "Unexpected error occurred: $somethingWrongMessage"
-          }
-        }
+        errorMessage = parseExceptionMessage(e)
       } finally {
         isLoading = false
         viewModel.fetchRefill()
+        groupSharedViewModel.fetchGroup()
         navController.popBackStack()
       }
     }

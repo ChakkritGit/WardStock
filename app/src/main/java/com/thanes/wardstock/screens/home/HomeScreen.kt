@@ -43,6 +43,7 @@ import androidx.navigation.NavHostController
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.repositories.ApiRepository
 import com.thanes.wardstock.data.viewModel.AuthViewModel
+import com.thanes.wardstock.data.viewModel.GroupViewModel
 import com.thanes.wardstock.data.viewModel.OrderViewModel
 import com.thanes.wardstock.data.viewModel.RefillViewModel
 import com.thanes.wardstock.ui.components.appbar.HomeAppBar
@@ -61,7 +62,7 @@ fun HomeScreen(
   context: Context,
   authViewModel: AuthViewModel,
   orderSharedViewModel: OrderViewModel,
-  sharedViewModel: RefillViewModel
+  groupSharedViewModel: GroupViewModel
 ) {
   val authState by authViewModel.authState.collectAsState()
   var errorMessage by remember { mutableStateOf("") }
@@ -173,7 +174,7 @@ fun HomeScreen(
         ) {
           HomeMenu(navController, context, authState, orderSharedViewModel, toggleDispense)
           if (!toggleDispense.value) {
-            HomeSelectDispense(context, sharedViewModel)
+            HomeSelectDispense(context, groupSharedViewModel)
           } else {
             HomeWrapperContent(context, orderSharedViewModel, authState)
           }

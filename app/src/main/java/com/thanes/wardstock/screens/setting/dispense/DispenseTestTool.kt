@@ -57,7 +57,7 @@ import com.thanes.wardstock.App
 import com.thanes.wardstock.R
 import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.components.appbar.AppBar
-import com.thanes.wardstock.ui.components.dialog.AlertDialog
+import com.thanes.wardstock.ui.components.dialog.AlertDialogCustom
 import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
@@ -371,7 +371,7 @@ fun SlotGridWithBottomSheet(app: App, context: Context) {
   }
 
   if (openAlertDialog) {
-    AlertDialog(
+    AlertDialogCustom(
       dialogTitle = contextLang.getString(R.string.dispensing),
       dialogText = contextLang.getString(R.string.dispensing_please_wait),
       icon = R.drawable.reading

@@ -33,6 +33,9 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -68,16 +71,16 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.thanes.wardstock.App
 import com.thanes.wardstock.R
-import com.thanes.wardstock.data.models.RefillModel
-import com.thanes.wardstock.data.viewModel.RefillViewModel
-import com.thanes.wardstock.ui.components.dialog.AlertDialog
+import com.thanes.wardstock.data.models.GroupInventoryModel
+import com.thanes.wardstock.data.viewModel.GroupViewModel
+import com.thanes.wardstock.ui.components.dialog.AlertDialogCustom
 import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
-import com.thanes.wardstock.utils.ExpireText
 import com.thanes.wardstock.utils.ImageUrl
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -87,28 +90,28 @@ import kotlinx.coroutines.withContext
 @Composable
 fun HomeSelectDispense(
   context: Context,
-  sharedViewModel: RefillViewModel
+  groupSharedViewModel: GroupViewModel
 ) {
   val app = context.applicationContext as App
   var pullState by remember { mutableStateOf(false) }
   val pullRefreshState = rememberPullRefreshState(
-    refreshing = sharedViewModel.isLoading,
+    refreshing = groupSharedViewModel.isLoading,
     onRefresh = {
-      sharedViewModel.fetchRefill()
+      groupSharedViewModel.fetchGroup()
       pullState = true
     }
   )
 
-  LaunchedEffect(sharedViewModel.refillState) {
-    if (sharedViewModel.refillState.isEmpty()) {
-      sharedViewModel.fetchRefill()
+  LaunchedEffect(groupSharedViewModel.groupInventoryState) {
+    if (groupSharedViewModel.groupInventoryState.isEmpty()) {
+      groupSharedViewModel.fetchGroup()
     }
   }
 
-  LaunchedEffect(sharedViewModel.errorMessage) {
-    if (sharedViewModel.errorMessage.isNotEmpty()) {
-      Toast.makeText(context, sharedViewModel.errorMessage, Toast.LENGTH_SHORT).show()
-      sharedViewModel.errorMessage = ""
+  LaunchedEffect(groupSharedViewModel.errorMessage) {
+    if (groupSharedViewModel.errorMessage.isNotEmpty()) {
+      Toast.makeText(context, groupSharedViewModel.errorMessage, Toast.LENGTH_SHORT).show()
+      groupSharedViewModel.errorMessage = ""
     }
   }
 
@@ -132,7 +135,7 @@ fun HomeSelectDispense(
       )
   ) {
     when {
-      sharedViewModel.isLoading && sharedViewModel.refillState.isEmpty() && !pullState -> {
+      groupSharedViewModel.isLoading && groupSharedViewModel.groupInventoryState.isEmpty() && !pullState -> {
         Column(
           modifier = Modifier.fillMaxSize(),
           verticalArrangement = Arrangement.Center,
@@ -154,7 +157,7 @@ fun HomeSelectDispense(
         }
       }
 
-      sharedViewModel.refillState.isEmpty() -> {
+      groupSharedViewModel.groupInventoryState.isEmpty() -> {
         Column(
           modifier = Modifier.fillMaxSize(),
           verticalArrangement = Arrangement.Center,
@@ -179,7 +182,7 @@ fun HomeSelectDispense(
       }
 
       else -> {
-        val itemsToDisplay: List<RefillModel> = sharedViewModel.refillState
+        val itemsToDisplay: List<GroupInventoryModel> = groupSharedViewModel.groupInventoryState
         val horizontalScrollState = rememberScrollState()
 
         Box(
@@ -205,7 +208,7 @@ fun HomeSelectDispense(
                     AnimatedGridItem(
                       index = itemIndex,
                       item = item,
-                      viewModel = sharedViewModel,
+                      viewModel = groupSharedViewModel,
                       app = app,
                       context = context
                     )
@@ -213,7 +216,7 @@ fun HomeSelectDispense(
                     Spacer(
                       modifier = Modifier
                         .width(180.dp)
-                        .height(235.dp)
+                        .height(200.dp)
                     )
                   }
                 }
@@ -225,7 +228,7 @@ fun HomeSelectDispense(
           }
 
           PullRefreshIndicator(
-            refreshing = sharedViewModel.isLoading,
+            refreshing = groupSharedViewModel.isLoading,
             state = pullRefreshState,
             modifier = Modifier.align(Alignment.TopCenter),
             backgroundColor = Colors.BlueGrey120,
@@ -242,8 +245,8 @@ fun HomeSelectDispense(
 @Composable
 fun AnimatedGridItem(
   index: Int,
-  item: RefillModel,
-  viewModel: RefillViewModel,
+  item: GroupInventoryModel,
+  viewModel: GroupViewModel,
   app: App,
   context: Context
 ) {
@@ -252,10 +255,14 @@ fun AnimatedGridItem(
   var showBottomSheet by remember { mutableStateOf(false) }
   var openAlertDialog by remember { mutableStateOf(false) }
   val qty = remember { mutableIntStateOf(1) }
-  var orderItem by remember { mutableStateOf<RefillModel?>(null) }
+  var orderItem by remember { mutableStateOf<GroupInventoryModel?>(null) }
   val sheetState = rememberModalBottomSheetState()
   val scope = rememberCoroutineScope()
   val contextLang = LocalContext.current
+
+  var showConfirmationDialog by remember { mutableStateOf(false) }
+  var confirmationDialogMessage by remember { mutableStateOf("") }
+  var confirmationDeferred by remember { mutableStateOf<CompletableDeferred<Unit>?>(null) }
 
   val animatedScale by animateFloatAsState(
     targetValue = if (visible) 1f else 0.85f,
@@ -311,10 +318,118 @@ fun AnimatedGridItem(
     }
   }
 
+  LaunchedEffect(showConfirmationDialog) {
+    if (showBottomSheet) {
+      delay(20)
+      (context as? Activity)?.let { activity ->
+        HideSystemControll.manageSystemBars(activity, true)
+      }
+    }
+  }
+
+  val totalQty = item.inventoryList.sumOf { it.inventoryQty }
+
+  fun dispenseOrder() {
+    scope.launch {
+      app.dispenseService?.let { dispenseService ->
+        orderItem?.let { currentItem ->
+          val availableInventories = currentItem.inventoryList
+            .filter { it.inventoryQty > 0 }
+            .sortedBy { it.inventoryQty }
+          var remainingQtyToDispense = qty.intValue
+
+          Log.d("DispenseDebug", "--- เริ่มกระบวนการ ---")
+          Log.d("DispenseDebug", "ต้องการจ่ายทั้งหมด: $remainingQtyToDispense ชิ้น")
+          Log.d(
+            "DispenseDebug",
+            "ช่องที่พร้อมจ่าย: ${availableInventories.map { "ช่อง ${it.inventoryPosition} (มี ${it.inventoryQty})" }}"
+          )
+
+          withContext(Dispatchers.IO) {
+            var isFirstRound = true
+
+            for ((index, inventory) in availableInventories.withIndex()) {
+              Log.d("DispenseDebug", "เข้า Loop รอบที่ ${index + 1} / ${availableInventories.size}")
+
+              if (remainingQtyToDispense <= 0) {
+                Log.d("DispenseDebug", "จ่ายครบแล้ว, ออกจาก Loop")
+                break
+              }
+
+              if (!isFirstRound) {
+                val deferred = CompletableDeferred<Unit>()
+                withContext(Dispatchers.Main) {
+                  confirmationDeferred = deferred
+                  confirmationDialogMessage =
+                    "กรุณาหยิบยาออกจากช่องก่อนหน้า แล้วกดยืนยันเพื่อจ่ายต่อ"
+                  showConfirmationDialog = true
+                  Log.d("DispenseDebug", "กำลังแสดง Popup และรอการยืนยัน...")
+                }
+                deferred.await()
+                Log.d("DispenseDebug", "ผู้ใช้กดยืนยัน, ทำงานต่อ")
+              }
+
+              val qtyToDispenseFromThisSlot = minOf(remainingQtyToDispense, inventory.inventoryQty)
+
+              withContext(Dispatchers.Main) { openAlertDialog = true }
+              Log.d(
+                "DispenseDebug",
+                "กำลังจ่าย $qtyToDispenseFromThisSlot ชิ้น จากช่อง ${inventory.inventoryPosition}"
+              )
+
+              val success = try {
+                dispenseService.sendToMachine(
+                  dispenseQty = qtyToDispenseFromThisSlot,
+                  position = inventory.inventoryPosition
+                )
+              } catch (e: Exception) {
+                Log.e("DispenseDebug", "เกิด Exception ตอนจ่ายยา: ${e.message}")
+                false
+              }
+
+              withContext(Dispatchers.Main) { openAlertDialog = false }
+
+              if (success) {
+                Log.d("DispenseDebug", "จ่ายสำเร็จ!")
+                remainingQtyToDispense -= qtyToDispenseFromThisSlot
+                isFirstRound = false
+                Log.d("DispenseDebug", "เหลือต้องจ่ายอีก: $remainingQtyToDispense")
+              } else {
+                Log.e("DispenseDebug", "จ่ายไม่สำเร็จ, หยุด Loop")
+                withContext(Dispatchers.Main) {
+                  Toast.makeText(
+                    context,
+                    "จ่ายยาจากช่อง ${inventory.inventoryPosition} ไม่สำเร็จ",
+                    Toast.LENGTH_LONG
+                  ).show()
+                }
+                break
+              }
+            }
+
+            withContext(Dispatchers.Main) {
+              Log.d("DispenseDebug", "--- จบกระบวนการ ---")
+              if (remainingQtyToDispense > 0) {
+                Log.d("DispenseDebug", "ผลลัพธ์: จ่ายไม่ครบ")
+                Toast.makeText(context, "จ่ายยาไม่ครบ ของในสต็อกไม่พอ", Toast.LENGTH_LONG).show()
+              } else {
+                Log.d("DispenseDebug", "ผลลัพธ์: จ่ายครบแล้ว")
+                Toast.makeText(context, "จ่ายยาครบแล้ว", Toast.LENGTH_SHORT).show()
+              }
+//                      viewModel.fetchRefill()
+              Log.d("DispenseDebug", "กำลังดึงข้อมูลใหม่...")
+            }
+          }
+
+        } ?: run { Log.e("DispenseDebug", "orderItem is null") }
+      } ?: run { Log.e("DispenseDebug", "dispenseService is null") }
+    }
+  }
+
   Box(
     modifier = Modifier
       .width(180.dp)
-      .height(235.dp)
+      .height(200.dp)
       .graphicsLayer {
         scaleX = animatedScale
         scaleY = animatedScale
@@ -323,9 +438,9 @@ fun AnimatedGridItem(
       }
       .clip(RoundedCornerShape(RoundRadius.Medium))
       .clickable(
-        enabled = item.inventoryQty > 0,
+        enabled = totalQty > 0,
         onClick = {
-          if (item.inventoryQty > 0) {
+          if (totalQty > 0) {
             showBottomSheet = true
             orderItem = item
           }
@@ -348,7 +463,7 @@ fun AnimatedGridItem(
         modifier = Modifier.padding(10.dp)
       ) {
         Text(
-          orderItem?.drugName ?: "Unknown",
+          orderItem?.drugname ?: "Unknown",
           style = TextStyle(fontSize = 24.sp),
           maxLines = 1,
           overflow = TextOverflow.Ellipsis,
@@ -381,7 +496,8 @@ fun AnimatedGridItem(
           Spacer(modifier = Modifier.width(32.dp))
           GradientButton(
             onClick = {
-              if (qty.intValue < (orderItem?.inventoryQty ?: 10)) {
+              val totalQty = orderItem?.inventoryList?.sumOf { it.inventoryQty }
+              if (qty.intValue < (totalQty ?: 10)) {
                 qty.intValue = qty.intValue + 1
               }
             },
@@ -399,29 +515,7 @@ fun AnimatedGridItem(
         Spacer(modifier = Modifier.height(30.dp))
         GradientButton(
           onClick = {
-            scope.launch {
-              app.dispenseService?.let { dispenseService ->
-                openAlertDialog = true
-
-                val continueReturn = withContext(Dispatchers.IO) {
-                  try {
-                    dispenseService.sendToMachine(
-                      dispenseQty = qty.intValue,
-                      position = orderItem?.inventoryPosition ?: 1
-                    )
-//                    viewModel.fetchRefill()
-                  } catch (e: Exception) {
-                    Log.e("Dispense", "Error during dispensing: ${e.message}")
-                    false
-                  }
-                }
-
-                Log.d("sendToMachine", "continue: $continueReturn")
-                openAlertDialog = false
-              } ?: run {
-                Log.e("Dispense", "Dispense service is not available")
-              }
-            }
+            dispenseOrder()
 
             scope.launch { sheetState.hide() }.invokeOnCompletion {
               if (!sheetState.isVisible) {
@@ -457,8 +551,40 @@ fun AnimatedGridItem(
     }
   }
 
-  if (openAlertDialog) {
+  if (showConfirmationDialog) {
     AlertDialog(
+      onDismissRequest = {
+      },
+      title = { Text("ดำเนินการต่อ") },
+      text = { Text(confirmationDialogMessage) },
+      confirmButton = {
+        Button(
+          onClick = {
+            confirmationDeferred?.complete(Unit)
+            showConfirmationDialog = false
+          }
+        ) {
+          Text("ยืนยัน (หยิบยาแล้ว)")
+        }
+      },
+      dismissButton = {
+        Button(
+          colors = ButtonDefaults.buttonColors(Colors.BluePrimary),
+          onClick = {
+            confirmationDeferred?.cancel()
+            showConfirmationDialog = false
+            Toast.makeText(context, "ยกเลิกกระบวนการจ่ายยา", Toast.LENGTH_SHORT).show()
+//                  viewModel.fetchRefill()
+          }
+        ) {
+          Text("ยกเลิกทั้งหมด")
+        }
+      }
+    )
+  }
+
+  if (openAlertDialog) {
+    AlertDialogCustom(
       dialogTitle = contextLang.getString(R.string.dispensing),
       dialogText = contextLang.getString(R.string.dispensing_please_wait),
       icon = R.drawable.reading
@@ -467,9 +593,10 @@ fun AnimatedGridItem(
 }
 
 @Composable
-fun RefillItemGrid(item: RefillModel) {
-  val stockQty = item.inventoryQty
-  val stockMin = item.inventoryMin
+fun RefillItemGrid(item: GroupInventoryModel) {
+  val totalQty = item.inventoryList.sumOf { it.inventoryQty }
+  val stockQty = totalQty
+  val stockMin = item.groupmin
   val (bg, border, text) = when {
     stockQty == 0 -> Triple(Color(0xFFFFCDD2), Color(0xFFD32F2F), Color(0xFFD32F2F))
     stockQty <= stockMin -> Triple(Color(0xFFFFF9C4), Color(0xFFFFA000), Color(0xFFFFA000))
@@ -497,13 +624,13 @@ fun RefillItemGrid(item: RefillModel) {
             .weight(1f),
           contentAlignment = Alignment.Center
         ) {
-          if (!item.drugImage.isNullOrBlank()) {
+          if (item.drugimage.isNotBlank()) {
             AsyncImage(
               model = ImageRequest.Builder(LocalContext.current)
-                .data(ImageUrl + item.drugImage)
+                .data(ImageUrl + item.drugimage)
                 .crossfade(true)
                 .build(),
-              contentDescription = item.drugName ?: "Drug",
+              contentDescription = item.drugname,
               contentScale = ContentScale.Crop,
               modifier = Modifier
                 .matchParentSize()
@@ -528,7 +655,7 @@ fun RefillItemGrid(item: RefillModel) {
         }
 
         Text(
-          text = item.drugName ?: "ไม่ทราบชื่อยา",
+          text = item.drugname,
           fontSize = 14.sp,
           color = Colors.black,
           maxLines = 1,
@@ -547,21 +674,24 @@ fun RefillItemGrid(item: RefillModel) {
         )
 
         Text(
-          text = "Min: ${item.inventoryMin} | Max: ${item.inventoryMAX} / ${item.inventoryPosition}",
+          text = "Min: ${item.groupmin} | Max: ${item.groupmax} / ${
+            item.inventoryList.map { it.inventoryPosition }
+              .joinToString(separator = ", ")
+          }",
           fontSize = 12.sp,
           color = Colors.BlueGrey40
         )
 
-        ExpireText(item.drugExpire, 12.sp)
+//        ExpireText(item.drugExpire, 12.sp)
       }
 
-      if ((item.drugPriority ?: 0) > 0) {
+      if (item.drugpriority > 0) {
         val drugLabel =
-          if (item.drugPriority == 1) stringResource((R.string.normal_drug)) else if (item.drugPriority == 2) stringResource(
+          if (item.drugpriority == 1) stringResource((R.string.normal_drug)) else if (item.drugpriority == 2) stringResource(
             R.string.Had_drug
           ) else stringResource(R.string.Narcotic_drug)
         val drugColor =
-          if (item.drugPriority == 1) Color(0xFFE91E63) else if (item.drugPriority == 2) Color(
+          if (item.drugpriority == 1) Color(0xFFE91E63) else if (item.drugpriority == 2) Color(
             0xFFFF9800
           ) else Color(0xFF78909C)
 
@@ -584,13 +714,13 @@ fun RefillItemGrid(item: RefillModel) {
           modifier = Modifier
             .matchParentSize()
             .clip(RoundedCornerShape(RoundRadius.Small))
-            .background(Colors.BlueGrey120.copy(alpha = 0.95f)),
+            .background(Colors.BlueGrey120.copy(alpha = 0.9f)),
           contentAlignment = Alignment.Center
         ) {
           Text(
             text = stringResource(R.string.drug_empty),
-            fontSize = 16.sp,
-            color = Colors.BlueGrey40,
+            fontSize = 20.sp,
+            color = Colors.blackGrey.copy(0.8f),
             fontWeight = FontWeight.Medium
           )
         }
