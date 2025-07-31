@@ -308,6 +308,29 @@ fun Racks(app: App) {
 
 @Composable
 fun Door(app: App) {
+  val scope = rememberCoroutineScope()
+
+  fun sendCommand(command: String) {
+    if (command.isEmpty()) return
+
+    scope.launch {
+      app.dispenseService?.let { dispenseService ->
+
+        val continueReturn = withContext(Dispatchers.IO) {
+          try {
+            dispenseService.sendTestModuleStty2(command)
+          } catch (e: Exception) {
+            Log.e("Dispense", "Error during dispensing: ${e.message}")
+            false
+          }
+        }
+        Log.d("Dispense", "continue: $continueReturn")
+      } ?: run {
+        Log.e("Dispense", "Dispense service is not available")
+      }
+    }
+  }
+
   Column(
     verticalArrangement = Arrangement.spacedBy(8.dp),
     horizontalAlignment = Alignment.Start,
@@ -321,13 +344,46 @@ fun Door(app: App) {
       .padding(12.dp)
   ) {
     Text(
-      "Door",
+      stringResource(R.string.test_door),
       fontSize = 20.sp,
       fontWeight = FontWeight.Medium,
       color = Colors.BlueGrey40,
       modifier = Modifier.padding(start = 10.dp, top = 4.dp, end = 0.dp, bottom = 2.dp)
     )
-    Text("Door")
+    GradientButton(
+      onClick = { sendCommand("# 1 1 5 10 17") },
+      shape = RoundedCornerShape(RoundRadius.Medium),
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(48.dp),
+    ) {
+      Text(
+        stringResource(R.string.door_open),
+        fontSize = 20.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = Colors.BlueGrey100
+      )
+    }
+    GradientButton(
+      onClick = { sendCommand("# 1 1 6 10 18") },
+      shape = RoundedCornerShape(RoundRadius.Medium),
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(48.dp),
+      gradient = Brush.verticalGradient(
+        colors = listOf(
+          Colors.BlueGrey80,
+          Colors.BlueGrey80
+        )
+      )
+    ) {
+      Text(
+        stringResource(R.string.door_close),
+        fontSize = 20.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = Colors.BluePrimary
+      )
+    }
   }
 }
 

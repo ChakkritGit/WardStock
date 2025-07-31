@@ -148,4 +148,7 @@
   <string name="test_rack">Rack test</string>
   <string name="Lock_rack">Lock rack</string>
   <string name="unlock_rack">Unlock rack</string>
+  <string name="test_door">Door test</string>
+  <string name="door_open">Door open</string>
+  <string name="door_close">Door close</string>
 </resources>
