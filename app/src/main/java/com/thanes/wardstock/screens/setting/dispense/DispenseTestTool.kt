@@ -424,7 +424,7 @@ fun Spring(app: App) {
       .padding(12.dp)
   ) {
     Text(
-      "Spring",
+      stringResource(R.string.test_spring),
       fontSize = 20.sp,
       fontWeight = FontWeight.Medium,
       color = Colors.BlueGrey40,
@@ -433,8 +433,8 @@ fun Spring(app: App) {
     LazyVerticalGrid(
       columns = GridCells.Fixed(10),
       modifier = Modifier.fillMaxWidth(),
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-      horizontalArrangement = Arrangement.spacedBy(8.dp)
+      verticalArrangement = Arrangement.spacedBy(4.dp),
+      horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
       items(numbers) { number ->
         Card(
@@ -445,7 +445,7 @@ fun Spring(app: App) {
           colors = CardDefaults.cardColors(
             containerColor = Colors.BlueGrey80
           ),
-          elevation = CardDefaults.cardElevation(1.5.dp)
+          elevation = CardDefaults.cardElevation(1.2.dp)
         ) {
           Box(
             modifier = Modifier.fillMaxSize(),
