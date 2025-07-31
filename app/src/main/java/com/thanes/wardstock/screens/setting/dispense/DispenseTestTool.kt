@@ -184,7 +184,19 @@ fun DispenseTestTool(navController: NavHostController, context: Context) {
           verticalAlignment = Alignment.Top
         ) {
           CardLift(app)
-          Text("Right")
+          Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+          ) {
+            Row(
+              horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+              Racks(app)
+              Door(app)
+
+            }
+            Text("Spring")
+          }
         }
         Spacer(modifier = Modifier.height(10.dp))
         Row(
@@ -210,6 +222,66 @@ fun DispenseTestTool(navController: NavHostController, context: Context) {
         SlotGridWithBottomSheet(app, context)
       }
     }
+  }
+}
+
+@Composable
+fun Racks(app: App) {
+  Column(
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+    horizontalAlignment = Alignment.Start,
+    modifier = Modifier
+      .animateContentSize(
+        animationSpec = tween(
+          durationMillis = 300, easing = FastOutSlowInEasing
+        )
+      )
+      .fillMaxWidth(.5f)
+      .padding(vertical = 8.dp)
+      .border(
+        shape = RoundedCornerShape(RoundRadius.Large), width = 1.dp, color = Colors.BlueGrey80
+      )
+      .clip(RoundedCornerShape(RoundRadius.Large))
+      .background(Colors.BlueGrey120)
+  ) {
+    Text(
+      "Rack",
+      fontSize = 16.sp,
+      fontWeight = FontWeight.Medium,
+      color = Colors.BlueGrey40,
+      modifier = Modifier.padding(start = 18.dp, top = 12.dp, end = 0.dp, bottom = 2.dp)
+    )
+    Text("Rack")
+  }
+}
+
+@Composable
+fun Door(app: App) {
+  Column(
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+    horizontalAlignment = Alignment.Start,
+    modifier = Modifier
+      .animateContentSize(
+        animationSpec = tween(
+          durationMillis = 300, easing = FastOutSlowInEasing
+        )
+      )
+      .fillMaxWidth(.5f)
+      .padding(vertical = 8.dp)
+      .border(
+        shape = RoundedCornerShape(RoundRadius.Large), width = 1.dp, color = Colors.BlueGrey80
+      )
+      .clip(RoundedCornerShape(RoundRadius.Large))
+      .background(Colors.BlueGrey120)
+  ) {
+    Text(
+      "Door",
+      fontSize = 16.sp,
+      fontWeight = FontWeight.Medium,
+      color = Colors.BlueGrey40,
+      modifier = Modifier.padding(start = 18.dp, top = 12.dp, end = 0.dp, bottom = 2.dp)
+    )
+    Text("Door")
   }
 }
 
