@@ -45,6 +45,7 @@ import com.thanes.wardstock.data.viewModel.AuthViewModel
 import com.thanes.wardstock.data.viewModel.GroupViewModel
 //import com.thanes.wardstock.data.viewModel.MachineStatusViewModel
 import com.thanes.wardstock.data.viewModel.OrderViewModel
+import com.thanes.wardstock.data.viewModel.RefillViewModel
 import com.thanes.wardstock.ui.components.appbar.HomeAppBar
 import com.thanes.wardstock.ui.components.home.HomeMenu
 import com.thanes.wardstock.ui.components.home.HomeSelectDispense
@@ -63,6 +64,7 @@ fun HomeScreen(
   orderSharedViewModel: OrderViewModel,
   groupSharedViewModel: GroupViewModel,
 //  machineStatusViewModel: MachineStatusViewModel
+  refillSharedViewModel: RefillViewModel
 ) {
   val authState by authViewModel.authState.collectAsState()
   var errorMessage by remember { mutableStateOf("") }
@@ -179,7 +181,7 @@ fun HomeScreen(
         ) {
           HomeMenu(navController, context, authState, orderSharedViewModel, toggleDispense)
           if (!toggleDispense.value) {
-            HomeSelectDispense(context, groupSharedViewModel)
+            HomeSelectDispense(context, groupSharedViewModel, refillSharedViewModel)
           } else {
             HomeWrapperContent(context, orderSharedViewModel, authState)
           }

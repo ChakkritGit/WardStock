@@ -155,6 +155,8 @@ fun DispenseTestTool(navController: NavHostController, context: Context) {
         modifier = Modifier
           .padding(10.dp)
       ) {
+        Text("Lift", fontSize = 32.sp)
+        Spacer(modifier = Modifier.height(10.dp))
         SlotGridWithBottomSheet(app, context)
       }
     }

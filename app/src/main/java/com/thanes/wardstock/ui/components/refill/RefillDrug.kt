@@ -56,7 +56,7 @@ import org.json.JSONObject
 fun RefillDrug(
   navController: NavHostController,
   context: Context,
-  viewModel: RefillViewModel,
+  refillSharedViewModel: RefillViewModel,
   groupSharedViewModel: GroupViewModel
 
 ) {
@@ -64,7 +64,7 @@ fun RefillDrug(
   var canClick by remember { mutableStateOf(true) }
   var isLoading by remember { mutableStateOf(false) }
   var quality by remember { mutableIntStateOf(1) }
-  val item = viewModel.selectedDrug
+  val item = refillSharedViewModel.selectedDrug
   var errorMessage by remember { mutableStateOf("") }
   val somethingWrongMessage = stringResource(R.string.something_wrong)
   val successSubmit = stringResource(R.string.successfully)
@@ -79,7 +79,7 @@ fun RefillDrug(
       }
 
       try {
-        val response = ApiRepository.addDrug(item.inventoryId, quality)
+        val response = ApiRepository.refillDrug(item.inventoryId, quality)
 
         if (response.isSuccessful) {
           errorMessage = successSubmit
@@ -97,7 +97,7 @@ fun RefillDrug(
         errorMessage = parseExceptionMessage(e)
       } finally {
         isLoading = false
-        viewModel.fetchRefill()
+        refillSharedViewModel.fetchRefill()
         groupSharedViewModel.fetchGroup()
         navController.popBackStack()
       }

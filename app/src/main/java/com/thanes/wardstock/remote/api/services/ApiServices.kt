@@ -82,7 +82,7 @@ interface ApiService {
   suspend fun refill(): Response<ApiResponse<List<RefillModel>>>
 
   @PATCH("group-inventory/stock/{inventoryId}")
-  suspend fun addDrug(@Path("inventoryId") inventoryId: String, @Body request: AddDrugRequest): Response<ApiResponse<RefillDrugModel>>
+  suspend fun refillDrug(@Path("inventoryId") inventoryId: String, @Body request: AddDrugRequest): Response<ApiResponse<RefillDrugModel>>
 
   @GET("users")
   suspend fun getUser(): Response<ApiResponse<List<UserModel>>>

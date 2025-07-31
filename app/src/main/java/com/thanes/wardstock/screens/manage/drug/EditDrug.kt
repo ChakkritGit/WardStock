@@ -15,6 +15,8 @@ import androidx.navigation.NavHostController
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.repositories.ApiRepository
 import com.thanes.wardstock.data.viewModel.DrugViewModel
+import com.thanes.wardstock.data.viewModel.GroupViewModel
+import com.thanes.wardstock.data.viewModel.RefillViewModel
 import com.thanes.wardstock.services.upload.uriToMultipartBodyPart
 import com.thanes.wardstock.ui.components.appbar.AppBar
 import com.thanes.wardstock.ui.theme.Colors
@@ -29,7 +31,9 @@ import java.time.format.DateTimeFormatter
 fun EditDrug(
   navController: NavHostController,
   drugSharedViewModel: DrugViewModel,
-  context: Context
+  context: Context,
+  refillSharedViewModel: RefillViewModel,
+  groupSharedViewModel: GroupViewModel
 ) {
   var canClick by remember { mutableStateOf(true) }
   var isLoading by remember { mutableStateOf(false) }
@@ -129,6 +133,8 @@ fun EditDrug(
             return@DrugFormScreen if (response.isSuccessful) {
               errorMessage = successMessage
               drugSharedViewModel.fetchDrug()
+              refillSharedViewModel.fetchRefill()
+              groupSharedViewModel.fetchGroup()
               navController.popBackStack()
               true
             } else {

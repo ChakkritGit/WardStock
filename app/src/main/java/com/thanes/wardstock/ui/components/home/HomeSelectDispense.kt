@@ -72,7 +72,9 @@ import coil3.request.crossfade
 import com.thanes.wardstock.App
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.models.GroupInventoryModel
+import com.thanes.wardstock.data.repositories.ApiRepository
 import com.thanes.wardstock.data.viewModel.GroupViewModel
+import com.thanes.wardstock.data.viewModel.RefillViewModel
 import com.thanes.wardstock.ui.components.dialog.AlertDialogCustom
 import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.components.utils.GradientButton
@@ -80,17 +82,19 @@ import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
 import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 import com.thanes.wardstock.utils.ImageUrl
+import com.thanes.wardstock.utils.parseErrorMessage
+import com.thanes.wardstock.utils.parseExceptionMessage
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun HomeSelectDispense(
-  context: Context,
-  groupSharedViewModel: GroupViewModel
+  context: Context, groupSharedViewModel: GroupViewModel, refillSharedViewModel: RefillViewModel
 ) {
   val app = context.applicationContext as App
   var pullState by remember { mutableStateOf(false) }
@@ -120,17 +124,13 @@ fun HomeSelectDispense(
       .fillMaxSize()
       .clip(
         RoundedCornerShape(
-          topStart = RoundRadius.BorderRadius,
-          topEnd = RoundRadius.BorderRadius
+          topStart = RoundRadius.BorderRadius, topEnd = RoundRadius.BorderRadius
         )
       )
       .background(color = Colors.BlueGrey100)
       .border(
-        width = 1.dp,
-        color = Color.Transparent,
-        shape = RoundedCornerShape(
-          topStart = RoundRadius.BorderRadius,
-          topEnd = RoundRadius.BorderRadius
+        width = 1.dp, color = Color.Transparent, shape = RoundedCornerShape(
+          topStart = RoundRadius.BorderRadius, topEnd = RoundRadius.BorderRadius
         )
       )
   ) {
@@ -209,8 +209,7 @@ fun HomeSelectDispense(
                       index = itemIndex,
                       item = item,
                       viewModel = groupSharedViewModel,
-                      app = app,
-                      context = context
+                      app = app, context = context, refillSharedViewModel
                     )
                   } else {
                     Spacer(
@@ -247,8 +246,7 @@ fun AnimatedGridItem(
   index: Int,
   item: GroupInventoryModel,
   viewModel: GroupViewModel,
-  app: App,
-  context: Context
+  app: App, context: Context, refillSharedViewModel: RefillViewModel
 ) {
   var visible by remember { mutableStateOf(false) }
   var isDispenseServiceReady by remember { mutableStateOf(false) }
@@ -394,6 +392,26 @@ fun AnimatedGridItem(
                 remainingQtyToDispense -= qtyToDispenseFromThisSlot
                 isFirstRound = false
                 Log.d("DispenseDebug", "เหลือต้องจ่ายอีก: $remainingQtyToDispense")
+                try {
+                  val response =
+                    ApiRepository.refillDrug(inventory.inventoryId, qtyToDispenseFromThisSlot)
+                  if (response.isSuccessful) {
+                    viewModel.fetchGroup()
+                    refillSharedViewModel.fetchRefill()
+                  } else {
+                    val errorJson = response.errorBody()?.string()
+                    val message = try {
+                      JSONObject(errorJson ?: "").getString("message")
+                    } catch (_: Exception) {
+                      val errorJson = response.errorBody()?.string()
+                      parseErrorMessage(response.code(), errorJson)
+                    }
+                    Log.e("DispenseDebug", "เกิดข้อผิดพลาด: $message")
+                  }
+                } catch (e: Exception) {
+                  val errorMessage = parseExceptionMessage(e)
+                  Log.e("DispenseDebug", "เกิดข้อผิดพลาด: $errorMessage")
+                }
               } else {
                 Log.e("DispenseDebug", "จ่ายไม่สำเร็จ, หยุด Loop")
                 withContext(Dispatchers.Main) {
@@ -438,8 +456,7 @@ fun AnimatedGridItem(
       }
       .clip(RoundedCornerShape(RoundRadius.Medium))
       .clickable(
-        enabled = totalQty > 0,
-        onClick = {
+        enabled = totalQty > 0, onClick = {
           if (totalQty > 0) {
             showBottomSheet = true
             orderItem = item

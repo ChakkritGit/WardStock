@@ -65,12 +65,12 @@ object ApiRepository {
     return createApiWithAuth().refill()
   }
 
-  suspend fun addDrug(
+  suspend fun refillDrug(
     prescriptionId: String,
     inventoryQty: Int
   ): Response<ApiResponse<RefillDrugModel>> {
     val request = AddDrugRequest(inventoryQty)
-    return createApiWithAuth().addDrug(prescriptionId, request)
+    return createApiWithAuth().refillDrug(prescriptionId, request)
   }
 
   suspend fun userWithInitial(): Response<ApiResponse<List<UserModel>>> {

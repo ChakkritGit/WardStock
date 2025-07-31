@@ -162,6 +162,7 @@ fun AppNavigation(
         orderSharedViewModel,
         groupSharedViewModel,
 //        machineStatusViewModel
+        refillSharedViewModel
       )
     }
 
@@ -210,7 +211,13 @@ fun AppNavigation(
     }
 
     composable(route = Routes.EditDrug.route) {
-      EditDrug(navController, drugSharedViewModel, context)
+      EditDrug(
+        navController,
+        drugSharedViewModel,
+        context,
+        refillSharedViewModel,
+        groupSharedViewModel
+      )
     }
 
     composable(route = Routes.AddDrug.route) {
