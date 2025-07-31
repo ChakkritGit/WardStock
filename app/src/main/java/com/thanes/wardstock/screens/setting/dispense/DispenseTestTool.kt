@@ -390,6 +390,7 @@ fun Door(app: App) {
 @Composable
 fun Spring(app: App) {
   val scope = rememberCoroutineScope()
+  val numbers = (1..60).toList()
 
   fun sendCommand(position: Int) {
     scope.launch {
@@ -429,7 +430,32 @@ fun Spring(app: App) {
       color = Colors.BlueGrey40,
       modifier = Modifier.padding(start = 10.dp, top = 4.dp, end = 0.dp, bottom = 2.dp)
     )
-    Text("Spring")
+    LazyVerticalGrid(
+      columns = GridCells.Fixed(10),
+      modifier = Modifier.fillMaxWidth(),
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+      horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+      items(numbers) { number ->
+        Card(
+          modifier = Modifier
+            .aspectRatio(1f)
+            .clip(RoundedCornerShape(RoundRadius.Medium))
+            .clickable { sendCommand(number) },
+          colors = CardDefaults.cardColors(
+            containerColor = Colors.BlueGrey80
+          ),
+          elevation = CardDefaults.cardElevation(1.5.dp)
+        ) {
+          Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+          ) {
+            Text(text = number.toString(), fontFamily = ibmpiexsansthailooped)
+          }
+        }
+      }
+    }
   }
 }
 
