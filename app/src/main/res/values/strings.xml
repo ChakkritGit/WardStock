@@ -142,5 +142,6 @@
   <string name="test_lift">Elevator test</string>
   <string name="dispense_test_tool_position">Position dispense test</string>
   <string name="location_value">Location value (–1 – 1400)</string>
-  <string name="sent">Sent</string>
+  <string name="sent">Send</string>
+  <string name="return_home">Return to home</string>
 </resources>

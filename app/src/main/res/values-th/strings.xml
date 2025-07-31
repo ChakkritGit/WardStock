@@ -143,4 +143,5 @@
   <string name="dispense_test_tool_position">ทดสอบการจ่ายรายช่อง</string>
   <string name="location_value">ใส่ค่าตำแหน่ง (–1 – 1400)</string>
   <string name="sent">ส่ง</string>
+  <string name="return_home">กลับตำแหน่งเริ่มต้น</string>
 </resources>

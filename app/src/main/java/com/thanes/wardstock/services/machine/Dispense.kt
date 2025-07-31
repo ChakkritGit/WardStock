@@ -529,6 +529,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -792,5 +793,122 @@ class Dispense private constructor(
       serialPortManager.stopReadingSerialttyS1()
       serialPortManager.stopReadingSerialttyS2()
     }
+  }
+
+  suspend fun sendTestModuleStty1(position: Int): Map<String, String>? {
+    Log.d(TAG, "[TEST_DISPENSE] Starting test for position: $position")
+
+    val lastKnownCommNo = serialPortManager.getRunning()
+    val testCommNo = if (lastKnownCommNo >= 255) 1 else lastKnownCommNo + 1
+    val commandList = serialPortManager.createSerialttyS1Command(
+      slot = position,
+      communicationNumber = testCommNo,
+      enableDropSensor = false,
+      enableElevator = false
+    )
+    val commandBytes = commandList.map { it.toByte() }.toByteArray()
+    Log.d(
+      TAG,
+      "[TEST_DISPENSE] Prepared command: ${commandBytes.joinToString(" ") { "%02x".format(it) }}"
+    )
+
+    val responseChannel = Channel<ByteArray>(Channel.CONFLATED)
+
+    val listenerJob = CoroutineScope(Dispatchers.IO).launch {
+      serialPortManager.startReadingSerialttyS1 { data ->
+        val responseHex = data.joinToString(",") { "%02x".format(it) }
+
+        when {
+          responseHex == VMC_POLL_REQUEST -> {
+            Log.d(TAG, "[TEST_DISPENSE] Poll received. Sending command now.")
+            serialPortManager.writeSerialttyS1Raw(commandBytes)
+          }
+
+          responseHex == VMC_ACK_RESPONSE -> {
+            Log.d(TAG, "[TEST_DISPENSE] ACK received!")
+            serialPortManager.saveRunning(testCommNo)
+            responseChannel.trySend(data)
+          }
+
+          responseHex.startsWith(VMC_DISPENSE_STATUS_PREFIX) -> {
+            Log.d(TAG, "[TEST_DISPENSE] Dispense Status received!")
+            serialPortManager.writeSerialttyS1Ack()
+            responseChannel.trySend(data)
+          }
+
+          else -> {
+          }
+        }
+      }
+    }
+
+    val results = mutableMapOf<String, String>()
+    try {
+      val ackResponse = withTimeoutOrNull(5000L) {
+        responseChannel.receive()
+      }
+
+      if (ackResponse != null && ackResponse.joinToString(",") { "%02x".format(it) } == VMC_ACK_RESPONSE) {
+        results["ACK"] = "OK"
+
+        val statusResponse = withTimeoutOrNull(15000L) {
+          responseChannel.receive()
+        }
+
+        if (statusResponse != null) {
+          results["STATUS"] = statusResponse.joinToString(",") { "%02x".format(it) }
+        } else {
+          results["STATUS"] = "Timeout waiting for status"
+          Log.w(TAG, "[TEST_DISPENSE] Timeout waiting for dispense status.")
+        }
+      } else {
+        results["ACK"] = "Timeout or Invalid ACK"
+        Log.e(TAG, "[TEST_DISPENSE] Failed to receive ACK.")
+      }
+
+    } catch (e: Exception) {
+      Log.e(TAG, "[TEST_DISPENSE] Exception during test: ${e.message}")
+      return null
+    } finally {
+      listenerJob.cancel()
+      serialPortManager.stopReadingSerialttyS1()
+      responseChannel.close()
+      Log.d(TAG, "[TEST_DISPENSE] Test finished.")
+    }
+
+    return results
+  }
+
+  suspend fun sendTestModuleStty2(asciiCommandString: String): ByteArray? {
+    Log.d(TAG, "[TEST_S2] Sending command: $asciiCommandString")
+
+    val responseChannel = Channel<ByteArray>(Channel.CONFLATED)
+
+    serialPortManager.startReadingSerialttyS2 { data ->
+      responseChannel.trySend(data)
+    }
+
+    val success = serialPortManager.writeSerialttyS2(asciiCommandString)
+    if (!success) {
+      Log.e(TAG, "[TEST_S2] Failed to write to serial port.")
+      serialPortManager.stopReadingSerialttyS2()
+      responseChannel.close()
+      return null
+    }
+
+    val response = withTimeoutOrNull(5000L) {
+      responseChannel.receive()
+    }
+
+    serialPortManager.stopReadingSerialttyS2()
+    responseChannel.close()
+
+    if (response != null) {
+      Log.d(TAG, "[TEST_S2] Received: ${response.joinToString(" ") { "%02x".format(it) }}")
+    } else {
+      Log.w(TAG, "[TEST_S2] No response within 5 seconds.")
+    }
+
+    return response
   }
 }

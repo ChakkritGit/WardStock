@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -60,6 +61,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -182,7 +184,7 @@ fun DispenseTestTool(navController: NavHostController, context: Context) {
           horizontalArrangement = Arrangement.spacedBy(8.dp),
           verticalAlignment = Alignment.Top
         ) {
-          CardLift()
+          CardLift(app)
           Text("Right")
         }
         Spacer(modifier = Modifier.height(10.dp))
@@ -214,7 +216,7 @@ fun DispenseTestTool(navController: NavHostController, context: Context) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CardLift() {
+fun CardLift(app: App) {
   val navController = rememberNavController()
   val startDestination = LiftTabs.Static
   var selectedDestination by rememberSaveable { mutableIntStateOf(startDestination.ordinal) }
@@ -293,7 +295,7 @@ fun CardLift() {
           Text("Static")
         }
         composable(LiftTabs.Dynamic.route) {
-          LiftPosition()
+          LiftPosition(app)
         }
       }
     }
@@ -301,8 +303,30 @@ fun CardLift() {
 }
 
 @Composable
-fun LiftPosition() {
+fun LiftPosition(app: App) {
+  val scope = rememberCoroutineScope()
   var liftPosition by remember { mutableStateOf("") }
+
+  fun sendCommand(command: String) {
+    if (command.isEmpty()) return
+
+    scope.launch {
+      app.dispenseService?.let { dispenseService ->
+
+        val continueReturn = withContext(Dispatchers.IO) {
+          try {
+            dispenseService.sendTestModuleStty2(command)
+          } catch (e: Exception) {
+            Log.e("Dispense", "Error during dispensing: ${e.message}")
+            false
+          }
+        }
+        Log.d("Dispense", "continue: $continueReturn")
+      } ?: run {
+        Log.e("Dispense", "Dispense service is not available")
+      }
+    }
+  }
 
   Column(
     verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -348,7 +372,9 @@ fun LiftPosition() {
       ),
       keyboardActions = KeyboardActions(
         onDone = {
-          // call dispense function
+          if (liftPosition.isEmpty()) return@KeyboardActions
+
+          sendCommand("# 1 1 1 $liftPosition ${liftPosition + 3}")
         }),
       colors = TextFieldDefaults.colors(
         focusedTextColor = Colors.BlueSecondary,
@@ -366,7 +392,9 @@ fun LiftPosition() {
     )
     GradientButton(
       onClick = {
-        // call dispense function
+        if (liftPosition.isEmpty()) return@GradientButton
+
+        sendCommand("# 1 1 1 $liftPosition ${liftPosition + 3}")
       },
       shape = RoundedCornerShape(RoundRadius.Large),
       modifier = Modifier
@@ -378,6 +406,31 @@ fun LiftPosition() {
         fontSize = 20.sp,
         fontWeight = FontWeight.SemiBold,
         color = Colors.BlueGrey100
+      )
+    }
+    GradientButton(
+      onClick = {
+        if (liftPosition.isEmpty()) return@GradientButton
+
+        sendCommand("# 1 1 1 -1 2")
+      },
+      shape = RoundedCornerShape(RoundRadius.Large),
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(48.dp)
+        .border(1.dp, Colors.BlueGrey100, RoundedCornerShape(RoundRadius.Large)),
+      gradient = Brush.verticalGradient(
+        colors = listOf(
+          Colors.BlueGrey100,
+          Colors.BlueGrey100
+        )
+      )
+    ) {
+      Text(
+        stringResource(R.string.return_home),
+        fontSize = 20.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = Colors.BluePrimary
       )
     }
   }
@@ -533,7 +586,7 @@ fun SlotGridWithBottomSheet(app: App, context: Context) {
                   }
                 }
 
-                Log.d("sendToMachine", "continue: $continueReturn")
+                Log.d("Dispense", "continue: $continueReturn")
                 openAlertDialog = false
               } ?: run {
                 Log.e("Dispense", "Dispense service is not available")
