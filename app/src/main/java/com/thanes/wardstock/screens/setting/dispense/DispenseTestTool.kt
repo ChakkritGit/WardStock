@@ -193,7 +193,6 @@ fun DispenseTestTool(navController: NavHostController, context: Context) {
             ) {
               Racks(app)
               Door(app)
-
             }
             Spring(app)
           }
@@ -433,8 +432,8 @@ fun Spring(app: App) {
     LazyVerticalGrid(
       columns = GridCells.Fixed(10),
       modifier = Modifier.fillMaxWidth(),
-      verticalArrangement = Arrangement.spacedBy(4.dp),
-      horizontalArrangement = Arrangement.spacedBy(4.dp)
+      verticalArrangement = Arrangement.spacedBy(6.dp),
+      horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
       items(numbers) { number ->
         Card(
