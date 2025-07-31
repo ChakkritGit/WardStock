@@ -145,4 +145,7 @@
   <string name="sent">ส่ง</string>
   <string name="return_home">กลับตำแหน่งเริ่มต้น</string>
   <string name="floor">ชั้น</string>
+  <string name="test_rack">ทดสอบกลอน</string>
+  <string name="Lock_rack">ล็อคกลอน</string>
+  <string name="unlock_rack">ปลดล็อคกลอน</string>
 </resources>

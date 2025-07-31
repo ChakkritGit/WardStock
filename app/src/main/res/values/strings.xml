@@ -145,4 +145,7 @@
   <string name="sent">Send</string>
   <string name="return_home">Return to home</string>
   <string name="floor">Floor</string>
+  <string name="test_rack">Rack test</string>
+  <string name="Lock_rack">Lock rack</string>
+  <string name="unlock_rack">Unlock rack</string>
 </resources>

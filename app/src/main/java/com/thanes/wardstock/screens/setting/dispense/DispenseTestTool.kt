@@ -209,7 +209,7 @@ fun DispenseTestTool(navController: NavHostController, context: Context) {
           )
           Text(
             stringResource(R.string.dispense_test_tool_position),
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             fontWeight = FontWeight.Medium,
             color = Colors.BlueGrey40
           )
@@ -227,31 +227,82 @@ fun DispenseTestTool(navController: NavHostController, context: Context) {
 
 @Composable
 fun Racks(app: App) {
+  val scope = rememberCoroutineScope()
+
+  fun sendCommand(command: String) {
+    if (command.isEmpty()) return
+
+    scope.launch {
+      app.dispenseService?.let { dispenseService ->
+
+        val continueReturn = withContext(Dispatchers.IO) {
+          try {
+            dispenseService.sendTestModuleStty2(command)
+          } catch (e: Exception) {
+            Log.e("Dispense", "Error during dispensing: ${e.message}")
+            false
+          }
+        }
+        Log.d("Dispense", "continue: $continueReturn")
+      } ?: run {
+        Log.e("Dispense", "Dispense service is not available")
+      }
+    }
+  }
+
   Column(
     verticalArrangement = Arrangement.spacedBy(8.dp),
     horizontalAlignment = Alignment.Start,
     modifier = Modifier
-      .animateContentSize(
-        animationSpec = tween(
-          durationMillis = 300, easing = FastOutSlowInEasing
-        )
-      )
       .fillMaxWidth(.5f)
-      .padding(vertical = 8.dp)
       .border(
         shape = RoundedCornerShape(RoundRadius.Large), width = 1.dp, color = Colors.BlueGrey80
       )
       .clip(RoundedCornerShape(RoundRadius.Large))
       .background(Colors.BlueGrey120)
+      .padding(12.dp)
   ) {
     Text(
-      "Rack",
-      fontSize = 16.sp,
+      stringResource(R.string.test_rack),
+      fontSize = 20.sp,
       fontWeight = FontWeight.Medium,
       color = Colors.BlueGrey40,
-      modifier = Modifier.padding(start = 18.dp, top = 12.dp, end = 0.dp, bottom = 2.dp)
+      modifier = Modifier.padding(start = 10.dp, top = 4.dp, end = 0.dp, bottom = 2.dp)
     )
-    Text("Rack")
+    GradientButton(
+      onClick = { sendCommand("# 1 1 3 1 6") },
+      shape = RoundedCornerShape(RoundRadius.Medium),
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(48.dp),
+    ) {
+      Text(
+        stringResource(R.string.Lock_rack),
+        fontSize = 20.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = Colors.BlueGrey100
+      )
+    }
+    GradientButton(
+      onClick = { sendCommand("# 1 1 3 0 5") },
+      shape = RoundedCornerShape(RoundRadius.Medium),
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(48.dp),
+      gradient = Brush.verticalGradient(
+        colors = listOf(
+          Colors.BlueGrey80,
+          Colors.BlueGrey80
+        )
+      )
+    ) {
+      Text(
+        stringResource(R.string.unlock_rack),
+        fontSize = 20.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = Colors.BluePrimary
+      )
+    }
   }
 }
 
@@ -261,25 +312,20 @@ fun Door(app: App) {
     verticalArrangement = Arrangement.spacedBy(8.dp),
     horizontalAlignment = Alignment.Start,
     modifier = Modifier
-      .animateContentSize(
-        animationSpec = tween(
-          durationMillis = 300, easing = FastOutSlowInEasing
-        )
-      )
       .fillMaxWidth()
-      .padding(vertical = 8.dp)
       .border(
         shape = RoundedCornerShape(RoundRadius.Large), width = 1.dp, color = Colors.BlueGrey80
       )
       .clip(RoundedCornerShape(RoundRadius.Large))
       .background(Colors.BlueGrey120)
+      .padding(12.dp)
   ) {
     Text(
       "Door",
-      fontSize = 16.sp,
+      fontSize = 20.sp,
       fontWeight = FontWeight.Medium,
       color = Colors.BlueGrey40,
-      modifier = Modifier.padding(start = 18.dp, top = 12.dp, end = 0.dp, bottom = 2.dp)
+      modifier = Modifier.padding(start = 10.dp, top = 4.dp, end = 0.dp, bottom = 2.dp)
     )
     Text("Door")
   }
@@ -291,25 +337,20 @@ fun Spring(app: App) {
     verticalArrangement = Arrangement.spacedBy(8.dp),
     horizontalAlignment = Alignment.Start,
     modifier = Modifier
-      .animateContentSize(
-        animationSpec = tween(
-          durationMillis = 300, easing = FastOutSlowInEasing
-        )
-      )
       .fillMaxWidth()
-      .padding(vertical = 8.dp)
       .border(
         shape = RoundedCornerShape(RoundRadius.Large), width = 1.dp, color = Colors.BlueGrey80
       )
       .clip(RoundedCornerShape(RoundRadius.Large))
       .background(Colors.BlueGrey120)
+      .padding(12.dp)
   ) {
     Text(
       "Spring",
-      fontSize = 16.sp,
+      fontSize = 20.sp,
       fontWeight = FontWeight.Medium,
       color = Colors.BlueGrey40,
-      modifier = Modifier.padding(start = 18.dp, top = 12.dp, end = 0.dp, bottom = 2.dp)
+      modifier = Modifier.padding(start = 10.dp, top = 4.dp, end = 0.dp, bottom = 2.dp)
     )
     Text("Spring")
   }
@@ -326,22 +367,22 @@ fun CardLift(app: App) {
     verticalArrangement = Arrangement.spacedBy(8.dp),
     horizontalAlignment = Alignment.Start,
     modifier = Modifier
-      .animateContentSize(
-        animationSpec = tween(
-          durationMillis = 300, easing = FastOutSlowInEasing
-        )
-      )
       .fillMaxWidth(.4f)
-      .padding(vertical = 8.dp)
       .border(
         shape = RoundedCornerShape(RoundRadius.Large), width = 1.dp, color = Colors.BlueGrey80
       )
       .clip(RoundedCornerShape(RoundRadius.Large))
       .background(Colors.BlueGrey120)
+      .padding(vertical = 8.dp)
+      .animateContentSize(
+        animationSpec = tween(
+          durationMillis = 300, easing = FastOutSlowInEasing
+        )
+      )
   ) {
     Text(
       stringResource(R.string.test_lift),
-      fontSize = 16.sp,
+      fontSize = 20.sp,
       fontWeight = FontWeight.Medium,
       color = Colors.BlueGrey40,
       modifier = Modifier.padding(start = 18.dp, top = 12.dp, end = 0.dp, bottom = 2.dp)
