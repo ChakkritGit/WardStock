@@ -658,9 +658,9 @@ class Dispense private constructor(
 
           try {
             val initialCmd = "# 1 1 3 1 6"
+            progress = "lockingRack"
             serialPortManager.writeSerialttyS2(initialCmd)
             startCommandTimeout(initialCmd, "ttyS2", COMMUNICATION_TIMEOUT_MS)
-            progress = "lockingRack"
 
             serialPortManager.startReadingSerialttyS1 { data ->
               CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
@@ -724,6 +724,8 @@ class Dispense private constructor(
                   commandRetryCount = 0
                   var nextCommand = ""
                   var nextTimeout = COMMUNICATION_TIMEOUT_MS
+
+                  Log.d("Dispense", "ttyS2 <<< $response (Progress: $progress)")
 
                   when (response) {
                     "26,31,0d,0a,32,0d,0a,33,0d,0a,31,0d,0a,37,0d,0a" -> if (progress == "lockingRack") {

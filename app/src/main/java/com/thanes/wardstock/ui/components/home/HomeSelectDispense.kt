@@ -417,7 +417,7 @@ fun AnimatedGridItem(
                 Log.d("DispenseDebug", "เหลือต้องจ่ายอีก: $remainingQtyToDispense")
                 try {
                   val response =
-                    ApiRepository.refillDrug(inventory.inventoryId, qtyToDispenseFromThisSlot)
+                    ApiRepository.refillDrug(inventory.inventoryId, inventory.inventoryQty - qtyToDispenseFromThisSlot)
                   if (response.isSuccessful) {
                     viewModel.fetchGroup()
                     refillSharedViewModel.fetchRefill()
