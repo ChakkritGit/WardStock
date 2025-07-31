@@ -181,7 +181,7 @@ fun HomeScreen(
         ) {
           HomeMenu(navController, context, authState, orderSharedViewModel, toggleDispense)
           if (!toggleDispense.value) {
-            HomeSelectDispense(context, groupSharedViewModel, refillSharedViewModel)
+            HomeSelectDispense(context, groupSharedViewModel, refillSharedViewModel, authState)
           } else {
             HomeWrapperContent(context, orderSharedViewModel, authState)
           }

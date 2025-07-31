@@ -72,10 +72,13 @@ import coil3.request.crossfade
 import com.thanes.wardstock.App
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.models.GroupInventoryModel
+import com.thanes.wardstock.data.models.UserRole
 import com.thanes.wardstock.data.repositories.ApiRepository
+import com.thanes.wardstock.data.viewModel.AuthState
 import com.thanes.wardstock.data.viewModel.GroupViewModel
 import com.thanes.wardstock.data.viewModel.RefillViewModel
 import com.thanes.wardstock.ui.components.dialog.AlertDialogCustom
+import com.thanes.wardstock.ui.components.dispense.showAuthDialogUntilVerified
 import com.thanes.wardstock.ui.components.system.HideSystemControll
 import com.thanes.wardstock.ui.components.utils.GradientButton
 import com.thanes.wardstock.ui.theme.Colors
@@ -85,6 +88,7 @@ import com.thanes.wardstock.utils.ImageUrl
 import com.thanes.wardstock.utils.parseErrorMessage
 import com.thanes.wardstock.utils.parseExceptionMessage
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -94,7 +98,10 @@ import org.json.JSONObject
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun HomeSelectDispense(
-  context: Context, groupSharedViewModel: GroupViewModel, refillSharedViewModel: RefillViewModel
+  context: Context,
+  groupSharedViewModel: GroupViewModel,
+  refillSharedViewModel: RefillViewModel,
+  authState: AuthState
 ) {
   val app = context.applicationContext as App
   var pullState by remember { mutableStateOf(false) }
@@ -209,7 +216,9 @@ fun HomeSelectDispense(
                       index = itemIndex,
                       item = item,
                       viewModel = groupSharedViewModel,
-                      app = app, context = context, refillSharedViewModel
+                      app = app,
+                      context = context, refillSharedViewModel,
+                      authState = authState
                     )
                   } else {
                     Spacer(
@@ -246,7 +255,8 @@ fun AnimatedGridItem(
   index: Int,
   item: GroupInventoryModel,
   viewModel: GroupViewModel,
-  app: App, context: Context, refillSharedViewModel: RefillViewModel
+  app: App, context: Context, refillSharedViewModel: RefillViewModel,
+  authState: AuthState
 ) {
   var visible by remember { mutableStateOf(false) }
   var isDispenseServiceReady by remember { mutableStateOf(false) }
@@ -335,6 +345,7 @@ fun AnimatedGridItem(
             .filter { it.inventoryQty > 0 }
             .sortedBy { it.inventoryQty }
           var remainingQtyToDispense = qty.intValue
+          val userData = authState.userData
 
           Log.d("DispenseDebug", "--- เริ่มกระบวนการ ---")
           Log.d("DispenseDebug", "ต้องการจ่ายทั้งหมด: $remainingQtyToDispense ชิ้น")
@@ -342,6 +353,18 @@ fun AnimatedGridItem(
             "DispenseDebug",
             "ช่องที่พร้อมจ่าย: ${availableInventories.map { "ช่อง ${it.inventoryPosition} (มี ${it.inventoryQty})" }}"
           )
+
+          if ((currentItem.drugpriority == 2 || currentItem.drugpriority == 3) && userData?.role == UserRole.NURSE) {
+            CoroutineScope(Dispatchers.Main).launch {
+              val verified = showAuthDialogUntilVerified(context)
+
+              if (!verified) {
+                qty.intValue = 1
+                orderItem = null
+                return@launch
+              }
+            }
+          }
 
           withContext(Dispatchers.IO) {
             var isFirstRound = true
@@ -456,10 +479,12 @@ fun AnimatedGridItem(
       }
       .clip(RoundedCornerShape(RoundRadius.Medium))
       .clickable(
-        enabled = totalQty > 0, onClick = {
+        enabled = totalQty > 0,
+        onClick = {
           if (totalQty > 0) {
-            showBottomSheet = true
+            qty.intValue = 1
             orderItem = item
+            showBottomSheet = true
           }
         }),
   ) {
