@@ -604,6 +604,10 @@ class Dispense private constructor(
     expectedTtyS1Response = "ACK_FOR_CMD"
   }
 
+  fun getConnectPort(): Boolean {
+    return serialPortManager.isConnected()
+  }
+
   suspend fun sendToMachine(dispenseQty: Int, position: Int): Boolean {
     resetInternalState()
 

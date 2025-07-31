@@ -117,24 +117,6 @@ class SerialPortManager private constructor(context: Context) {
     }
   }
 
-//  fun createSerialttyS1Command(slot: Int): MutableList<Int> {
-//    val running = getRunning()
-//    val newRunning = if (running == 255) 1 else running + 1
-//    saveRunning(newRunning)
-//
-//    val commands = mutableListOf(
-//      0xfa, 0xfb, 0x06, 0x05, newRunning, 0x00, 0x00, 0x00, slot
-//    )
-//
-//    var checksum = 0
-//    for (element in commands) {
-//      checksum = if (element == 0xfa) 0xfa else checksum xor element
-//    }
-//    commands.add(checksum)
-//
-//    return commands
-//  }
-
   fun createSerialttyS1Command(
     slot: Int,
     communicationNumber: Int,

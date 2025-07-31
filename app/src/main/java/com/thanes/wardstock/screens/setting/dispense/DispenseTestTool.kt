@@ -69,6 +69,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -175,50 +176,83 @@ fun DispenseTestTool(navController: NavHostController, context: Context) {
     containerColor = Colors.BlueGrey100
   ) { innerPadding ->
     Box(modifier = Modifier.padding(innerPadding)) {
-      Column(
-        modifier = Modifier
-          .padding(10.dp)
-      ) {
-        Row(
-          horizontalArrangement = Arrangement.spacedBy(8.dp),
-          verticalAlignment = Alignment.Top
-        ) {
-          CardLift(app)
+      app.dispenseService?.let { dispenseService ->
+        if (dispenseService.getConnectPort()) {
           Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+              .padding(10.dp)
           ) {
             Row(
-              horizontalArrangement = Arrangement.spacedBy(8.dp)
+              horizontalArrangement = Arrangement.spacedBy(8.dp),
+              verticalAlignment = Alignment.Top
             ) {
-              Racks(app)
-              Door(app)
+              CardLift(app)
+              Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+              ) {
+                Row(
+                  horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                  Racks(app)
+                  Door(app)
+                }
+                Spring(app)
+              }
             }
-            Spring(app)
+            Spacer(modifier = Modifier.height(10.dp))
+            Row(
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+              HorizontalDivider(
+                modifier = Modifier.weight(1f),
+                color = Colors.BlueGrey80
+              )
+              Text(
+                stringResource(R.string.dispense_test_tool_position),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = Colors.BlueGrey40
+              )
+              HorizontalDivider(
+                modifier = Modifier.weight(1f),
+                color = Colors.BlueGrey80
+              )
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            SlotGridWithBottomSheet(app, context)
+          }
+        } else {
+          Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+          ) {
+            Text(
+              text = "Serial port not ready!",
+              fontSize = 22.sp,
+              fontWeight = FontWeight.Medium,
+              color = Colors.BlueGrey40,
+              textAlign = TextAlign.Center,
+              modifier = Modifier.padding(16.dp)
+            )
           }
         }
-        Spacer(modifier = Modifier.height(10.dp))
-        Row(
-          verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.spacedBy(16.dp)
+      } ?: run {
+        Box(
+          modifier = Modifier.fillMaxSize(),
+          contentAlignment = Alignment.Center
         ) {
-          HorizontalDivider(
-            modifier = Modifier.weight(1f),
-            color = Colors.BlueGrey80
-          )
           Text(
-            stringResource(R.string.dispense_test_tool_position),
-            fontSize = 16.sp,
+            text = "Serial port not ready!\n(Service unavailable)",
+            fontSize = 22.sp,
             fontWeight = FontWeight.Medium,
-            color = Colors.BlueGrey40
-          )
-          HorizontalDivider(
-            modifier = Modifier.weight(1f),
-            color = Colors.BlueGrey80
+            color = Colors.BlueGrey40,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(16.dp)
           )
         }
-        Spacer(modifier = Modifier.height(10.dp))
-        SlotGridWithBottomSheet(app, context)
+        Log.e("Dispense", "Dispense service is not available")
       }
     }
   }
