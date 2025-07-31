@@ -450,7 +450,11 @@ fun Spring(app: App) {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
           ) {
-            Text(text = number.toString(), fontFamily = ibmpiexsansthailooped)
+            Text(
+              text = number.toString(),
+              fontFamily = ibmpiexsansthailooped,
+              color = Colors.BluePrimary
+            )
           }
         }
       }
@@ -842,7 +846,11 @@ fun SlotGridWithBottomSheet(app: App, context: Context) {
           modifier = Modifier.fillMaxSize(),
           contentAlignment = Alignment.Center
         ) {
-          Text(text = number.toString(), fontFamily = ibmpiexsansthailooped)
+          Text(
+            text = number.toString(),
+            fontFamily = ibmpiexsansthailooped,
+            color = Colors.BluePrimary
+          )
         }
       }
     }
