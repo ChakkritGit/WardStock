@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -221,16 +220,10 @@ fun CardLift(app: App) {
   val startDestination = LiftTabs.Static
   var selectedDestination by rememberSaveable { mutableIntStateOf(startDestination.ordinal) }
 
-  Column(
-    verticalArrangement = Arrangement.spacedBy(4.dp),
-    horizontalAlignment = Alignment.Start
-  ) {
-    Text(
-      stringResource(R.string.test_lift),
-      fontSize = 16.sp,
-      fontWeight = FontWeight.Medium,
-      color = Colors.BlueGrey40
-    )
+//  Column(
+//    verticalArrangement = Arrangement.spacedBy(4.dp),
+//    horizontalAlignment = Alignment.Start
+//  ) {
     Column(
       verticalArrangement = Arrangement.spacedBy(8.dp),
       horizontalAlignment = Alignment.Start,
@@ -251,6 +244,13 @@ fun CardLift(app: App) {
         .clip(RoundedCornerShape(RoundRadius.Large))
         .background(Colors.BlueGrey120)
     ) {
+      Text(
+        stringResource(R.string.test_lift),
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Medium,
+        color = Colors.BlueGrey40,
+        modifier = Modifier.padding(8.dp)
+      )
       PrimaryTabRow(
         modifier = Modifier.clip(
           RoundedCornerShape(
@@ -292,12 +292,147 @@ fun CardLift(app: App) {
         modifier = Modifier.padding(12.dp)
       ) {
         composable(LiftTabs.Static.route) {
-          Text("Static")
+          LiftStatic(app)
         }
         composable(LiftTabs.Dynamic.route) {
           LiftPosition(app)
         }
       }
+    }
+//  }
+}
+
+@Composable
+fun LiftStatic(app: App) {
+  val scope = rememberCoroutineScope()
+
+  fun sendCommand(command: String) {
+    if (command.isEmpty()) return
+
+    scope.launch {
+      app.dispenseService?.let { dispenseService ->
+
+        val continueReturn = withContext(Dispatchers.IO) {
+          try {
+            dispenseService.sendTestModuleStty2(command)
+          } catch (e: Exception) {
+            Log.e("Dispense", "Error during dispensing: ${e.message}")
+            false
+          }
+        }
+        Log.d("Dispense", "continue: $continueReturn")
+      } ?: run {
+        Log.e("Dispense", "Dispense service is not available")
+      }
+    }
+  }
+
+  Column(
+    verticalArrangement = Arrangement.spacedBy(12.dp)
+  ) {
+    GradientButton(
+      onClick = { sendCommand("# 1 1 1 1400 1403") },
+      shape = RoundedCornerShape(RoundRadius.Medium),
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(48.dp),
+    ) {
+      Text(
+        "${stringResource(R.string.floor)} 6",
+        fontSize = 20.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = Colors.BlueGrey100
+      )
+    }
+    GradientButton(
+      onClick = { sendCommand("# 1 1 1 1210 1213") },
+      shape = RoundedCornerShape(RoundRadius.Medium),
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(48.dp),
+    ) {
+      Text(
+        "${stringResource(R.string.floor)} 5",
+        fontSize = 20.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = Colors.BlueGrey100
+      )
+    }
+    GradientButton(
+      onClick = { sendCommand("# 1 1 1 1010 1013") },
+      shape = RoundedCornerShape(RoundRadius.Medium),
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(48.dp),
+    ) {
+      Text(
+        "${stringResource(R.string.floor)} 4",
+        fontSize = 20.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = Colors.BlueGrey100
+      )
+    }
+    GradientButton(
+      onClick = { sendCommand("# 1 1 1 790 793") },
+      shape = RoundedCornerShape(RoundRadius.Medium),
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(48.dp),
+    ) {
+      Text(
+        "${stringResource(R.string.floor)} 3",
+        fontSize = 20.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = Colors.BlueGrey100
+      )
+    }
+    GradientButton(
+      onClick = { sendCommand("# 1 1 1 580 583") },
+      shape = RoundedCornerShape(RoundRadius.Medium),
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(48.dp),
+    ) {
+      Text(
+        "${stringResource(R.string.floor)} 2",
+        fontSize = 20.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = Colors.BlueGrey100
+      )
+    }
+    GradientButton(
+      onClick = { sendCommand("# 1 1 1 360 363") },
+      shape = RoundedCornerShape(RoundRadius.Medium),
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(48.dp),
+    ) {
+      Text(
+        "${stringResource(R.string.floor)} 1",
+        fontSize = 20.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = Colors.BlueGrey100
+      )
+    }
+    GradientButton(
+      onClick = { sendCommand("# 1 1 1 -1 2") },
+      shape = RoundedCornerShape(RoundRadius.Medium),
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(48.dp),
+      gradient = Brush.verticalGradient(
+        colors = listOf(
+          Colors.BlueGrey80,
+          Colors.BlueGrey80
+        )
+      )
+    ) {
+      Text(
+        stringResource(R.string.return_home),
+        fontSize = 20.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = Colors.BluePrimary
+      )
     }
   }
 }
@@ -354,16 +489,8 @@ fun LiftPosition(app: App) {
       },
       label = { Text(stringResource(R.string.location_value)) },
       modifier = Modifier.fillMaxWidth(),
-      shape = RoundedCornerShape(RoundRadius.Large),
+      shape = RoundedCornerShape(RoundRadius.Medium),
       textStyle = TextStyle(fontSize = 20.sp),
-      leadingIcon = {
-        Icon(
-          painter = painterResource(R.drawable.shelf_position_24px),
-          contentDescription = "shelf_position_24px",
-          tint = Colors.BlueGrey40,
-          modifier = Modifier.size(32.dp),
-        )
-      },
       singleLine = true,
       maxLines = 1,
       keyboardOptions = KeyboardOptions.Default.copy(
@@ -396,7 +523,7 @@ fun LiftPosition(app: App) {
 
         sendCommand("# 1 1 1 $liftPosition ${liftPosition + 3}")
       },
-      shape = RoundedCornerShape(RoundRadius.Large),
+      shape = RoundedCornerShape(RoundRadius.Medium),
       modifier = Modifier
         .fillMaxWidth()
         .height(48.dp),
@@ -409,20 +536,15 @@ fun LiftPosition(app: App) {
       )
     }
     GradientButton(
-      onClick = {
-        if (liftPosition.isEmpty()) return@GradientButton
-
-        sendCommand("# 1 1 1 -1 2")
-      },
-      shape = RoundedCornerShape(RoundRadius.Large),
+      onClick = { sendCommand("# 1 1 1 -1 2") },
+      shape = RoundedCornerShape(RoundRadius.Medium),
       modifier = Modifier
         .fillMaxWidth()
-        .height(48.dp)
-        .border(1.dp, Colors.BlueGrey100, RoundedCornerShape(RoundRadius.Large)),
+        .height(48.dp),
       gradient = Brush.verticalGradient(
         colors = listOf(
-          Colors.BlueGrey100,
-          Colors.BlueGrey100
+          Colors.BlueGrey80,
+          Colors.BlueGrey80
         )
       )
     ) {

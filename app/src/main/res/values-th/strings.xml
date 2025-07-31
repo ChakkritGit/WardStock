@@ -144,4 +144,5 @@
   <string name="location_value">ใส่ค่าตำแหน่ง (–1 – 1400)</string>
   <string name="sent">ส่ง</string>
   <string name="return_home">กลับตำแหน่งเริ่มต้น</string>
+  <string name="floor">ชั้น</string>
 </resources>
