@@ -389,6 +389,27 @@ fun Door(app: App) {
 
 @Composable
 fun Spring(app: App) {
+  val scope = rememberCoroutineScope()
+
+  fun sendCommand(position: Int) {
+    scope.launch {
+      app.dispenseService?.let { dispenseService ->
+
+        val continueReturn = withContext(Dispatchers.IO) {
+          try {
+            dispenseService.sendTestModuleStty1(position)
+          } catch (e: Exception) {
+            Log.e("Dispense", "Error during dispensing: ${e.message}")
+            false
+          }
+        }
+        Log.d("Dispense", "continue: $continueReturn")
+      } ?: run {
+        Log.e("Dispense", "Dispense service is not available")
+      }
+    }
+  }
+
   Column(
     verticalArrangement = Arrangement.spacedBy(8.dp),
     horizontalAlignment = Alignment.Start,
