@@ -1,5 +1,9 @@
 package com.thanes.wardstock.navigation
 
+import androidx.annotation.StringRes
+import com.thanes.wardstock.R
+import kotlin.enums.enumEntries
+
 sealed class Routes(val route: String) {
   object Login: Routes(route = "login_route")
   object Home: Routes(route = "home_route")
@@ -29,4 +33,13 @@ sealed class Routes(val route: String) {
   object AddFingerprint: Routes(route = "add_fingerprint")
 
   object DispenseTestTool: Routes(route = "dispensetesttool_route")
+}
+
+enum class LiftTabs(val route: String, @StringRes val labelRes: Int) {
+  Static("tab_static", R.string.tab_static),
+  Dynamic("tab_dynamic", R.string.tab_dynamic);
+
+  companion object {
+    val entries = enumEntries<LiftTabs>()
+  }
 }

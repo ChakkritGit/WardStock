@@ -6,6 +6,13 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,15 +31,22 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,20 +55,29 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.thanes.wardstock.App
 import com.thanes.wardstock.R
+import com.thanes.wardstock.navigation.LiftTabs
 import com.thanes.wardstock.navigation.Routes
 import com.thanes.wardstock.ui.components.appbar.AppBar
 import com.thanes.wardstock.ui.components.dialog.AlertDialogCustom
@@ -155,10 +178,207 @@ fun DispenseTestTool(navController: NavHostController, context: Context) {
         modifier = Modifier
           .padding(10.dp)
       ) {
-        Text("Lift", fontSize = 32.sp)
+        Row(
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+          verticalAlignment = Alignment.Top
+        ) {
+          CardLift()
+          Text("Right")
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+          HorizontalDivider(
+            modifier = Modifier.weight(1f),
+            color = Colors.BlueGrey80
+          )
+          Text(
+            stringResource(R.string.dispense_test_tool_position),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = Colors.BlueGrey40
+          )
+          HorizontalDivider(
+            modifier = Modifier.weight(1f),
+            color = Colors.BlueGrey80
+          )
+        }
         Spacer(modifier = Modifier.height(10.dp))
         SlotGridWithBottomSheet(app, context)
       }
+    }
+  }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CardLift() {
+  val navController = rememberNavController()
+  val startDestination = LiftTabs.Static
+  var selectedDestination by rememberSaveable { mutableIntStateOf(startDestination.ordinal) }
+
+  Column(
+    verticalArrangement = Arrangement.spacedBy(4.dp),
+    horizontalAlignment = Alignment.Start
+  ) {
+    Text(
+      stringResource(R.string.test_lift),
+      fontSize = 16.sp,
+      fontWeight = FontWeight.Medium,
+      color = Colors.BlueGrey40
+    )
+    Column(
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+      horizontalAlignment = Alignment.Start,
+      modifier = Modifier
+        .animateContentSize(
+          animationSpec = tween(
+            durationMillis = 300,
+            easing = FastOutSlowInEasing
+          )
+        )
+        .fillMaxWidth(.5f)
+        .padding(vertical = 8.dp)
+        .border(
+          shape = RoundedCornerShape(RoundRadius.Large),
+          width = 1.dp,
+          color = Colors.BlueGrey80
+        )
+        .clip(RoundedCornerShape(RoundRadius.Large))
+        .background(Colors.BlueGrey120)
+    ) {
+      PrimaryTabRow(
+        modifier = Modifier.clip(
+          RoundedCornerShape(
+            topStart = RoundRadius.Large,
+            topEnd = RoundRadius.Large
+          )
+        ),
+        selectedTabIndex = selectedDestination,
+        containerColor = Colors.BlueGrey120,
+        divider = {
+          HorizontalDivider(color = Colors.BlueGrey80)
+        }
+      ) {
+        LiftTabs.Companion.entries.forEachIndexed { index, destination ->
+          Tab(
+            selected = selectedDestination == index,
+            onClick = {
+              navController.navigate(route = destination.route)
+              selectedDestination = index
+            },
+            text = {
+              Text(
+                text = stringResource(destination.labelRes),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+              )
+            }
+          )
+        }
+      }
+
+      NavHost(
+        navController = navController,
+        startDestination = startDestination.route,
+        enterTransition = { EnterTransition.None },
+        exitTransition = { ExitTransition.None },
+        popEnterTransition = { EnterTransition.None },
+        popExitTransition = { ExitTransition.None },
+        modifier = Modifier.padding(12.dp)
+      ) {
+        composable(LiftTabs.Static.route) {
+          Text("Static")
+        }
+        composable(LiftTabs.Dynamic.route) {
+          LiftPosition()
+        }
+      }
+    }
+  }
+}
+
+@Composable
+fun LiftPosition() {
+  var liftPosition by remember { mutableStateOf("") }
+
+  Column(
+    verticalArrangement = Arrangement.spacedBy(12.dp)
+  ) {
+    OutlinedTextField(
+      value = liftPosition,
+      onValueChange = { newValue ->
+        if (newValue.isEmpty()) {
+          liftPosition = ""
+          return@OutlinedTextField
+        }
+
+        if (newValue == "-") {
+          liftPosition = "-"
+          return@OutlinedTextField
+        }
+
+        val filteredText = newValue.filterIndexed { index, char ->
+          char.isDigit() || (index == 0 && char == '-')
+        }
+
+        val number = filteredText.toIntOrNull()
+
+        liftPosition = number?.coerceIn(-1, 1400)?.toString() ?: ""
+      },
+      label = { Text(stringResource(R.string.location_value)) },
+      modifier = Modifier.fillMaxWidth(),
+      shape = RoundedCornerShape(RoundRadius.Large),
+      textStyle = TextStyle(fontSize = 20.sp),
+      leadingIcon = {
+        Icon(
+          painter = painterResource(R.drawable.shelf_position_24px),
+          contentDescription = "shelf_position_24px",
+          tint = Colors.BlueGrey40,
+          modifier = Modifier.size(32.dp),
+        )
+      },
+      singleLine = true,
+      maxLines = 1,
+      keyboardOptions = KeyboardOptions.Default.copy(
+        imeAction = ImeAction.Next,
+        keyboardType = KeyboardType.Number
+      ),
+      keyboardActions = KeyboardActions(
+        onDone = {
+          // call dispense function
+        }),
+      colors = TextFieldDefaults.colors(
+        focusedTextColor = Colors.BlueSecondary,
+        focusedIndicatorColor = Colors.BlueSecondary,
+        unfocusedIndicatorColor = Colors.BlueSecondary.copy(alpha = 0.3f),
+        focusedLabelColor = Colors.BlueSecondary,
+        unfocusedLabelColor = Colors.BlueGrey40,
+        cursorColor = Colors.BlueSecondary,
+        focusedContainerColor = Color.Transparent,
+        unfocusedContainerColor = Color.Transparent,
+        disabledContainerColor = Color.Transparent,
+        errorContainerColor = Color.Transparent,
+        focusedLeadingIconColor = Colors.BlueSecondary
+      )
+    )
+    GradientButton(
+      onClick = {
+        // call dispense function
+      },
+      shape = RoundedCornerShape(RoundRadius.Large),
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(48.dp),
+    ) {
+      Text(
+        stringResource(R.string.sent),
+        fontSize = 20.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = Colors.BlueGrey100
+      )
     }
   }
 }

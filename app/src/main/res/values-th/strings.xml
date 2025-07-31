@@ -137,4 +137,10 @@
   <string name="prescription_dispense">สแกนสั่ง</string>
   <string name="select_dispense">เลือกสั่ง</string>
   <string name="drug_empty">ยาหมด</string>
+  <string name="tab_static">ชั้นคงที่</string>
+  <string name="tab_dynamic">กำหนดเอง</string>
+  <string name="test_lift">ทดสอบลิฟต์</string>
+  <string name="dispense_test_tool_position">ทดสอบการจ่ายรายช่อง</string>
+  <string name="location_value">ใส่ค่าตำแหน่ง (–1 – 1400)</string>
+  <string name="sent">ส่ง</string>
 </resources>

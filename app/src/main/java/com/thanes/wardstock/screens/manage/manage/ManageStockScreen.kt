@@ -1,5 +1,7 @@
 package com.thanes.wardstock.screens.manage.manage
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -128,6 +130,10 @@ fun ManageStockScreen(
         NavHost(
           navController = tabNavController,
           startDestination = Tabs.Inventory.route,
+          enterTransition = { EnterTransition.None },
+          exitTransition = { ExitTransition.None },
+          popEnterTransition = { EnterTransition.None },
+          popExitTransition = { ExitTransition.None },
           modifier = Modifier.weight(1f)
         ) {
           composable(Tabs.Inventory.route) {

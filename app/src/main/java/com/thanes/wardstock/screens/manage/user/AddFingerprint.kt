@@ -5,6 +5,8 @@ import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,11 +14,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -25,7 +28,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,9 +36,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.thanes.wardstock.R
 import com.thanes.wardstock.data.repositories.ApiRepository
@@ -46,6 +52,7 @@ import com.thanes.wardstock.screens.fvverify.MainDisplay
 import com.thanes.wardstock.ui.components.loading.LoadingDialog
 import com.thanes.wardstock.ui.theme.Colors
 import com.thanes.wardstock.ui.theme.RoundRadius
+import com.thanes.wardstock.ui.theme.ibmpiexsansthailooped
 import com.thanes.wardstock.utils.parseErrorMessage
 import com.thanes.wardstock.utils.parseExceptionMessage
 import kotlinx.coroutines.launch
@@ -142,12 +149,32 @@ fun AddFingerprint(
   Scaffold(
     topBar = {
       TopAppBar(
-        title = { Text(stringResource(R.string.add_finger_vein)) },
-        navigationIcon = {
-          IconButton(onClick = { navController.popBackStack() }) {
+        title = {
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+              .clip(RoundedCornerShape(RoundRadius.Large))
+              .clickable(onClick = { navController.popBackStack() })
+          ) {
             Icon(
               painter = painterResource(R.drawable.arrow_back_ios_new_24px),
-              contentDescription = "Back"
+              contentDescription = "arrow_back_ios_new_24px",
+              tint = Colors.BluePrimary,
+              modifier = Modifier
+                .size(44.dp)
+                .padding(6.dp)
+            )
+            Text(
+              text = stringResource(R.string.add_finger_vein),
+              maxLines = 1,
+              overflow = TextOverflow.Ellipsis,
+              fontWeight = FontWeight.Medium,
+              fontFamily = ibmpiexsansthailooped,
+              fontSize = 22.sp,
+              modifier = Modifier
+                .widthIn(max = 500.dp)
+                .padding(end = 14.dp)
             )
           }
         },
@@ -159,7 +186,10 @@ fun AddFingerprint(
             Text(stringResource(R.string.done_button))
           }
         },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Colors.BlueGrey100)
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+          containerColor = Colors.BlueGrey100,
+          titleContentColor = Colors.BluePrimary,
+        ),
       )
     },
     containerColor = Colors.BlueGrey100
