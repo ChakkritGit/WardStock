@@ -453,7 +453,8 @@ fun Spring(app: App) {
             Text(
               text = number.toString(),
               fontFamily = ibmpiexsansthailooped,
-              color = Colors.BluePrimary
+              color = Colors.BluePrimary,
+              fontWeight = FontWeight.Medium
             )
           }
         }
@@ -849,7 +850,8 @@ fun SlotGridWithBottomSheet(app: App, context: Context) {
           Text(
             text = number.toString(),
             fontFamily = ibmpiexsansthailooped,
-            color = Colors.BluePrimary
+            color = Colors.BluePrimary,
+            fontWeight = FontWeight.Medium
           )
         }
       }
