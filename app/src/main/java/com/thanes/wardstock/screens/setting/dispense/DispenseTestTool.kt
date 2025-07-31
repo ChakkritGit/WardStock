@@ -195,7 +195,7 @@ fun DispenseTestTool(navController: NavHostController, context: Context) {
               Door(app)
 
             }
-            Text("Spring")
+            Spring(app)
           }
         }
         Spacer(modifier = Modifier.height(10.dp))
@@ -266,7 +266,7 @@ fun Door(app: App) {
           durationMillis = 300, easing = FastOutSlowInEasing
         )
       )
-      .fillMaxWidth(.5f)
+      .fillMaxWidth()
       .padding(vertical = 8.dp)
       .border(
         shape = RoundedCornerShape(RoundRadius.Large), width = 1.dp, color = Colors.BlueGrey80
@@ -282,6 +282,36 @@ fun Door(app: App) {
       modifier = Modifier.padding(start = 18.dp, top = 12.dp, end = 0.dp, bottom = 2.dp)
     )
     Text("Door")
+  }
+}
+
+@Composable
+fun Spring(app: App) {
+  Column(
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+    horizontalAlignment = Alignment.Start,
+    modifier = Modifier
+      .animateContentSize(
+        animationSpec = tween(
+          durationMillis = 300, easing = FastOutSlowInEasing
+        )
+      )
+      .fillMaxWidth()
+      .padding(vertical = 8.dp)
+      .border(
+        shape = RoundedCornerShape(RoundRadius.Large), width = 1.dp, color = Colors.BlueGrey80
+      )
+      .clip(RoundedCornerShape(RoundRadius.Large))
+      .background(Colors.BlueGrey120)
+  ) {
+    Text(
+      "Spring",
+      fontSize = 16.sp,
+      fontWeight = FontWeight.Medium,
+      color = Colors.BlueGrey40,
+      modifier = Modifier.padding(start = 18.dp, top = 12.dp, end = 0.dp, bottom = 2.dp)
+    )
+    Text("Spring")
   }
 }
 
@@ -334,7 +364,11 @@ fun CardLift(app: App) {
             Text(
               text = stringResource(destination.labelRes),
               maxLines = 2,
-              overflow = TextOverflow.Ellipsis
+              overflow = TextOverflow.Ellipsis,
+              fontSize = 18.sp,
+              fontWeight = if (selectedDestination == index) FontWeight.Medium else FontWeight.Normal,
+              color = if (selectedDestination == index) Colors.BluePrimary else Colors.BlueGrey40,
+              fontFamily = ibmpiexsansthailooped
             )
           }
         )
