@@ -220,86 +220,72 @@ fun CardLift(app: App) {
   val startDestination = LiftTabs.Static
   var selectedDestination by rememberSaveable { mutableIntStateOf(startDestination.ordinal) }
 
-//  Column(
-//    verticalArrangement = Arrangement.spacedBy(4.dp),
-//    horizontalAlignment = Alignment.Start
-//  ) {
-    Column(
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-      horizontalAlignment = Alignment.Start,
-      modifier = Modifier
-        .animateContentSize(
-          animationSpec = tween(
-            durationMillis = 300,
-            easing = FastOutSlowInEasing
-          )
+  Column(
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+    horizontalAlignment = Alignment.Start,
+    modifier = Modifier
+      .animateContentSize(
+        animationSpec = tween(
+          durationMillis = 300, easing = FastOutSlowInEasing
         )
-        .fillMaxWidth(.5f)
-        .padding(vertical = 8.dp)
-        .border(
-          shape = RoundedCornerShape(RoundRadius.Large),
-          width = 1.dp,
-          color = Colors.BlueGrey80
-        )
-        .clip(RoundedCornerShape(RoundRadius.Large))
-        .background(Colors.BlueGrey120)
-    ) {
-      Text(
-        stringResource(R.string.test_lift),
-        fontSize = 16.sp,
-        fontWeight = FontWeight.Medium,
-        color = Colors.BlueGrey40,
-        modifier = Modifier.padding(8.dp)
       )
-      PrimaryTabRow(
-        modifier = Modifier.clip(
-          RoundedCornerShape(
-            topStart = RoundRadius.Large,
-            topEnd = RoundRadius.Large
-          )
-        ),
-        selectedTabIndex = selectedDestination,
-        containerColor = Colors.BlueGrey120,
-        divider = {
-          HorizontalDivider(color = Colors.BlueGrey80)
-        }
-      ) {
-        LiftTabs.Companion.entries.forEachIndexed { index, destination ->
-          Tab(
-            selected = selectedDestination == index,
-            onClick = {
-              navController.navigate(route = destination.route)
-              selectedDestination = index
-            },
-            text = {
-              Text(
-                text = stringResource(destination.labelRes),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-              )
-            }
-          )
-        }
+      .fillMaxWidth(.4f)
+      .padding(vertical = 8.dp)
+      .border(
+        shape = RoundedCornerShape(RoundRadius.Large), width = 1.dp, color = Colors.BlueGrey80
+      )
+      .clip(RoundedCornerShape(RoundRadius.Large))
+      .background(Colors.BlueGrey120)
+  ) {
+    Text(
+      stringResource(R.string.test_lift),
+      fontSize = 16.sp,
+      fontWeight = FontWeight.Medium,
+      color = Colors.BlueGrey40,
+      modifier = Modifier.padding(start = 18.dp, top = 12.dp, end = 0.dp, bottom = 2.dp)
+    )
+    PrimaryTabRow(
+      selectedTabIndex = selectedDestination,
+      containerColor = Colors.BlueGrey120,
+      divider = {
+        HorizontalDivider(color = Colors.BlueGrey80)
       }
-
-      NavHost(
-        navController = navController,
-        startDestination = startDestination.route,
-        enterTransition = { EnterTransition.None },
-        exitTransition = { ExitTransition.None },
-        popEnterTransition = { EnterTransition.None },
-        popExitTransition = { ExitTransition.None },
-        modifier = Modifier.padding(12.dp)
-      ) {
-        composable(LiftTabs.Static.route) {
-          LiftStatic(app)
-        }
-        composable(LiftTabs.Dynamic.route) {
-          LiftPosition(app)
-        }
+    ) {
+      LiftTabs.Companion.entries.forEachIndexed { index, destination ->
+        Tab(
+          selected = selectedDestination == index,
+          onClick = {
+            navController.navigate(route = destination.route)
+            selectedDestination = index
+          },
+          text = {
+            Text(
+              text = stringResource(destination.labelRes),
+              maxLines = 2,
+              overflow = TextOverflow.Ellipsis
+            )
+          }
+        )
       }
     }
-//  }
+
+    NavHost(
+      navController = navController,
+      startDestination = startDestination.route,
+      enterTransition = { EnterTransition.None },
+      exitTransition = { ExitTransition.None },
+      popEnterTransition = { EnterTransition.None },
+      popExitTransition = { ExitTransition.None },
+      modifier = Modifier.padding(12.dp)
+    ) {
+      composable(LiftTabs.Static.route) {
+        LiftStatic(app)
+      }
+      composable(LiftTabs.Dynamic.route) {
+        LiftPosition(app)
+      }
+    }
+  }
 }
 
 @Composable
