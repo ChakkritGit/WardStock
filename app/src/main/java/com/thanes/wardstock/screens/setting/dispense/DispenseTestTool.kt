@@ -208,7 +208,7 @@ fun DispenseTestTool(navController: NavHostController, context: Context) {
           )
           Text(
             stringResource(R.string.dispense_test_tool_position),
-            fontSize = 18.sp,
+            fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
             color = Colors.BlueGrey40
           )
@@ -263,7 +263,7 @@ fun Racks(app: App) {
   ) {
     Text(
       stringResource(R.string.test_rack),
-      fontSize = 20.sp,
+      fontSize = 16.sp,
       fontWeight = FontWeight.Medium,
       color = Colors.BlueGrey40,
       modifier = Modifier.padding(start = 10.dp, top = 4.dp, end = 0.dp, bottom = 2.dp)
@@ -277,7 +277,7 @@ fun Racks(app: App) {
     ) {
       Text(
         stringResource(R.string.Lock_rack),
-        fontSize = 20.sp,
+        fontSize = 16.sp,
         fontWeight = FontWeight.SemiBold,
         color = Colors.BlueGrey100
       )
@@ -297,7 +297,7 @@ fun Racks(app: App) {
     ) {
       Text(
         stringResource(R.string.unlock_rack),
-        fontSize = 20.sp,
+        fontSize = 16.sp,
         fontWeight = FontWeight.SemiBold,
         color = Colors.BluePrimary
       )
@@ -344,7 +344,7 @@ fun Door(app: App) {
   ) {
     Text(
       stringResource(R.string.test_door),
-      fontSize = 20.sp,
+      fontSize = 16.sp,
       fontWeight = FontWeight.Medium,
       color = Colors.BlueGrey40,
       modifier = Modifier.padding(start = 10.dp, top = 4.dp, end = 0.dp, bottom = 2.dp)
@@ -358,7 +358,7 @@ fun Door(app: App) {
     ) {
       Text(
         stringResource(R.string.door_open),
-        fontSize = 20.sp,
+        fontSize = 16.sp,
         fontWeight = FontWeight.SemiBold,
         color = Colors.BlueGrey100
       )
@@ -378,7 +378,7 @@ fun Door(app: App) {
     ) {
       Text(
         stringResource(R.string.door_close),
-        fontSize = 20.sp,
+        fontSize = 16.sp,
         fontWeight = FontWeight.SemiBold,
         color = Colors.BluePrimary
       )
@@ -424,7 +424,7 @@ fun Spring(app: App) {
   ) {
     Text(
       stringResource(R.string.test_spring),
-      fontSize = 20.sp,
+      fontSize = 16.sp,
       fontWeight = FontWeight.Medium,
       color = Colors.BlueGrey40,
       modifier = Modifier.padding(start = 10.dp, top = 4.dp, end = 0.dp, bottom = 2.dp)
@@ -469,7 +469,7 @@ fun CardLift(app: App) {
     verticalArrangement = Arrangement.spacedBy(8.dp),
     horizontalAlignment = Alignment.Start,
     modifier = Modifier
-      .fillMaxWidth(.4f)
+      .fillMaxWidth(.3f)
       .border(
         shape = RoundedCornerShape(RoundRadius.Large), width = 1.dp, color = Colors.BlueGrey80
       )
@@ -484,7 +484,7 @@ fun CardLift(app: App) {
   ) {
     Text(
       stringResource(R.string.test_lift),
-      fontSize = 20.sp,
+      fontSize = 16.sp,
       fontWeight = FontWeight.Medium,
       color = Colors.BlueGrey40,
       modifier = Modifier.padding(start = 18.dp, top = 12.dp, end = 0.dp, bottom = 2.dp)
@@ -508,7 +508,7 @@ fun CardLift(app: App) {
               text = stringResource(destination.labelRes),
               maxLines = 2,
               overflow = TextOverflow.Ellipsis,
-              fontSize = 18.sp,
+              fontSize = 16.sp,
               fontWeight = if (selectedDestination == index) FontWeight.Medium else FontWeight.Normal,
               color = if (selectedDestination == index) Colors.BluePrimary else Colors.BlueGrey40,
               fontFamily = ibmpiexsansthailooped
@@ -574,7 +574,7 @@ fun LiftStatic(app: App) {
     ) {
       Text(
         "${stringResource(R.string.floor)} 6",
-        fontSize = 20.sp,
+        fontSize = 16.sp,
         fontWeight = FontWeight.SemiBold,
         color = Colors.BlueGrey100
       )
@@ -588,7 +588,7 @@ fun LiftStatic(app: App) {
     ) {
       Text(
         "${stringResource(R.string.floor)} 5",
-        fontSize = 20.sp,
+        fontSize = 16.sp,
         fontWeight = FontWeight.SemiBold,
         color = Colors.BlueGrey100
       )
@@ -602,7 +602,7 @@ fun LiftStatic(app: App) {
     ) {
       Text(
         "${stringResource(R.string.floor)} 4",
-        fontSize = 20.sp,
+        fontSize = 16.sp,
         fontWeight = FontWeight.SemiBold,
         color = Colors.BlueGrey100
       )
@@ -616,7 +616,7 @@ fun LiftStatic(app: App) {
     ) {
       Text(
         "${stringResource(R.string.floor)} 3",
-        fontSize = 20.sp,
+        fontSize = 16.sp,
         fontWeight = FontWeight.SemiBold,
         color = Colors.BlueGrey100
       )
@@ -630,7 +630,7 @@ fun LiftStatic(app: App) {
     ) {
       Text(
         "${stringResource(R.string.floor)} 2",
-        fontSize = 20.sp,
+        fontSize = 16.sp,
         fontWeight = FontWeight.SemiBold,
         color = Colors.BlueGrey100
       )
@@ -644,7 +644,7 @@ fun LiftStatic(app: App) {
     ) {
       Text(
         "${stringResource(R.string.floor)} 1",
-        fontSize = 20.sp,
+        fontSize = 16.sp,
         fontWeight = FontWeight.SemiBold,
         color = Colors.BlueGrey100
       )
@@ -664,7 +664,7 @@ fun LiftStatic(app: App) {
     ) {
       Text(
         stringResource(R.string.return_home),
-        fontSize = 20.sp,
+        fontSize = 16.sp,
         fontWeight = FontWeight.SemiBold,
         color = Colors.BluePrimary
       )
@@ -765,7 +765,7 @@ fun LiftPosition(app: App) {
     ) {
       Text(
         stringResource(R.string.sent),
-        fontSize = 20.sp,
+        fontSize = 16.sp,
         fontWeight = FontWeight.SemiBold,
         color = Colors.BlueGrey100
       )
@@ -785,7 +785,7 @@ fun LiftPosition(app: App) {
     ) {
       Text(
         stringResource(R.string.return_home),
-        fontSize = 20.sp,
+        fontSize = 16.sp,
         fontWeight = FontWeight.SemiBold,
         color = Colors.BluePrimary
       )
