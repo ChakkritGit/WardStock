@@ -528,6 +528,7 @@ import com.thanes.wardstock.services.usb.SerialPortManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -535,6 +536,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.resume
@@ -552,6 +554,8 @@ class Dispense private constructor(
   companion object {
     private var INSTANCE: Dispense? = null
     private const val TAG = "Dispense"
+
+    private var progress = "ready"
 
     private const val OVERALL_TIMEOUT_MS = 120_000L
     private const val LIFT_MOVEMENT_TIMEOUT_MS = 20_000L
@@ -577,6 +581,7 @@ class Dispense private constructor(
         currentTtyS1CommNo = 0
         commandRetryCount = 0
         expectedTtyS1Response = ""
+        progress = "ready"
         Log.d(TAG, "Internal state has been reset.")
       } finally {
         stateMutex.unlock()
@@ -611,10 +616,12 @@ class Dispense private constructor(
   suspend fun sendToMachine(dispenseQty: Int, position: Int): Boolean {
     resetInternalState()
 
+    val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
     return try {
       val success = withTimeoutOrNull(OVERALL_TIMEOUT_MS) {
         suspendCoroutine<Boolean> { continuation ->
-          var progress = "ready"
+
           val positionsToDispense = List(dispenseQty) { position }
           var currentDispenseIndex = 0
           var itemsSuccessfullyDispensed = 0
@@ -786,6 +793,7 @@ class Dispense private constructor(
 
       if (success == null) {
         Log.e(TAG, "Overall process timed out after ${OVERALL_TIMEOUT_MS / 1000} seconds.")
+        scope.launch { emergencyShutdown() }
         return false
       }
 
@@ -798,6 +806,70 @@ class Dispense private constructor(
       Log.d(TAG, "Executing final cleanup: Stopping serial port readers.")
       serialPortManager.stopReadingSerialttyS1()
       serialPortManager.stopReadingSerialttyS2()
+    }
+  }
+
+  private suspend fun emergencyShutdown() {
+    Log.e(TAG, "!!! INITIATING EMERGENCY SHUTDOWN !!! Current progress: $progress")
+
+    withContext(NonCancellable) {
+      val liftWasUp = listOf(
+        "liftingUp",
+        "waitingForPoll",
+        "waitingForCmdAck",
+        "waitingForDispenseStatus",
+        "liftingDownToFifty"
+      ).contains(progress)
+
+      if (!liftWasUp) {
+        Log.w(TAG, "Lift was not up. No shutdown sequence needed.")
+        return@withContext
+      }
+
+      Log.d(TAG, "Starting shutdown sequence: Lift Down -> Close Door -> Unlock Rack")
+
+      val responseChannel = Channel<String>(Channel.CONFLATED)
+
+      val listenerJob = CoroutineScope(Dispatchers.IO).launch {
+        serialPortManager.startReadingSerialttyS2 { data ->
+          responseChannel.trySend(data.joinToString(",") { "%02x".format(it) })
+        }
+      }
+
+      try {
+        serialPortManager.writeSerialttyS2("# 1 1 1 -1 2")
+        val liftDownResponse = withTimeoutOrNull(LIFT_MOVEMENT_TIMEOUT_MS) {
+          while (true) {
+            if (responseChannel.receive() == "26,31,0d,0a,32,0d,0a,31,0d,0a,31,0d,0a,35,0d,0a") break
+          }
+        }
+        if (liftDownResponse == null) {
+          Log.e(TAG, "Timeout waiting for lift to go down during shutdown. Continuing...")
+        } else {
+          Log.d(TAG, "Shutdown: Lift is down.")
+        }
+
+        serialPortManager.writeSerialttyS2("# 1 1 6 10 18")
+        val closeDoorResponse = withTimeoutOrNull(DOOR_MOVEMENT_TIMEOUT_MS) {
+          while (true) {
+            if (responseChannel.receive() == "26,31,0d,0a,32,0d,0a,36,0d,0a,31,0d,0a,31,30,0d,0a") break
+          }
+        }
+        if (closeDoorResponse == null) {
+          Log.e(TAG, "Timeout waiting for door to close during shutdown. Continuing...")
+        } else {
+          Log.d(TAG, "Shutdown: Door is closed.")
+        }
+
+        serialPortManager.writeSerialttyS2("# 1 1 3 0 5")
+        Log.d(TAG, "Shutdown: Unlock command sent. Sequence complete.")
+
+      } catch (e: Exception) {
+        Log.e(TAG, "Exception during emergency shutdown: ${e.message}")
+      } finally {
+        listenerJob.cancel()
+        responseChannel.close()
+      }
     }
   }
 

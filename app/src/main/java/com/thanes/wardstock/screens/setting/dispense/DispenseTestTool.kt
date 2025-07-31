@@ -423,10 +423,15 @@ fun Door(app: App) {
 @Composable
 fun Spring(app: App) {
   val scope = rememberCoroutineScope()
+  var isDispensing by remember { mutableStateOf(false) }
   val numbers = (1..60).toList()
 
   fun sendCommand(position: Int) {
+    if (isDispensing) return
+
     scope.launch {
+      isDispensing = true
+
       app.dispenseService?.let { dispenseService ->
 
         val continueReturn = withContext(Dispatchers.IO) {
@@ -441,6 +446,8 @@ fun Spring(app: App) {
       } ?: run {
         Log.e("Dispense", "Dispense service is not available")
       }
+
+      isDispensing = false
     }
   }
 
