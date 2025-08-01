@@ -26,9 +26,21 @@ android {
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+    externalNativeBuild {
+      cmake {
+        cppFlags("-std=c++11")
+      }
+    }
+
     ndk {
 //      abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
       abiFilters.add("armeabi-v7a")
+    }
+  }
+
+  externalNativeBuild {
+    cmake {
+      path("src/main/cpp/CMakeLists.txt")
     }
   }
 
@@ -107,6 +119,8 @@ dependencies {
   implementation(libs.compose)
   implementation(libs.androidx.datastore.preferences)
   implementation(libs.accompanist.navigation.animation)
+
+//  implementation(libs.android.serialport.api)
 
   implementation(files("libs/jna.jar"))
   implementation(files("libs/jna-platform.jar"))

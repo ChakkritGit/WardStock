@@ -735,12 +735,13 @@ class Dispense private constructor(
                   Log.d("Dispense", "ttyS2 <<< $response (Progress: $progress)")
 
                   when (response) {
-                    "26,31,0d,0a,32,0d,0a,33,0d,0a,31,0d,0a,37,0d,0a" -> if (progress == "lockingRack") {
-                      nextCommand = "# 1 1 5 10 17"; progress = "openingDoor"; nextTimeout =
-                        DOOR_MOVEMENT_TIMEOUT_MS
+                    "26,31,0a,0a,32,0a,0a,33,0a,0a,31,0a,0a,37,0a,0a" -> if (progress == "lockingRack") {
+                      nextCommand = "# 1 1 5 10 17"
+                      progress = "openingDoor"
+                      nextTimeout = DOOR_MOVEMENT_TIMEOUT_MS
                     }
 
-                    "26,31,0d,0a,32,0d,0a,35,0d,0a,31,0d,0a,39,0d,0a" -> if (progress == "openingDoor") {
+                    "26,31,0a,0a,32,0a,0a,35,0a,0a,31,0a,0a,39,0a,0a" -> if (progress == "openingDoor") {
                       val floor = when {
                         position <= 10 -> 1400; position <= 20 -> 1210; position <= 30 -> 1010; position <= 40 -> 790; position <= 50 -> 580; position <= 60 -> 360; else -> 20
                       }
@@ -749,15 +750,16 @@ class Dispense private constructor(
                       nextTimeout = LIFT_MOVEMENT_TIMEOUT_MS
                     }
 
-                    "26,31,0d,0a,32,0d,0a,31,0d,0a,31,0d,0a,35,0d,0a" -> when (progress) {
+                    "26,31,0a,0a,32,0a,0a,31,0a,0a,31,0a,0a,35,0a,0a" -> when (progress) {
                       "liftingUp" -> {
                         prepareTtyS1Command(positionsToDispense[currentDispenseIndex]); progress =
                           "waitingForPoll"
                       }
 
                       "liftingDownToFifty" -> {
-                        nextCommand = "# 1 1 1 -1 2"; progress = "liftingDown"; nextTimeout =
-                          COMMUNICATION_TIMEOUT_MS
+                        nextCommand = "# 1 1 1 -1 2"
+                        progress = "liftingDown"
+                        nextTimeout = COMMUNICATION_TIMEOUT_MS
                       }
 
                       "liftingDown" -> {
@@ -766,12 +768,12 @@ class Dispense private constructor(
                       }
                     }
 
-                    "26,31,0d,0a,32,0d,0a,36,0d,0a,31,0d,0a,31,30,0d,0a" -> if (progress == "closingDoor") {
+                    "26,31,0a,0a,32,0a,0a,36,0a,0a,31,0a,0a,31,30,0a,0a" -> if (progress == "closingDoor") {
                       nextCommand = "# 1 1 3 0 5"; progress = "finalizing"; nextTimeout =
                         COMMUNICATION_TIMEOUT_MS
                     }
 
-                    "26,31,0d,0a,32,0d,0a,33,0d,0a,30,0d,0a,36,0d,0a" -> if (progress == "finalizing") {
+                    "26,31,0a,0a,32,0a,0a,33,0a,0a,30,0a,0a,36,0a,0a" -> if (progress == "finalizing") {
                       delay(200)
                       cleanupAndComplete(itemsSuccessfullyDispensed == positionsToDispense.size)
                     }

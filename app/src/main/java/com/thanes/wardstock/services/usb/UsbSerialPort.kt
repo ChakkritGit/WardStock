@@ -2,10 +2,21 @@ package com.thanes.wardstock.services.usb
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.core.content.edit
 import android.util.Log
-import kotlinx.coroutines.*
-import java.io.*
+import androidx.core.content.edit
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import java.io.FileDescriptor
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.io.OutputStream
+
+//import android.serialport.SerialPort
 
 class SerialPortManager private constructor(context: Context) {
   private val appContext: Context = context.applicationContext
@@ -17,6 +28,9 @@ class SerialPortManager private constructor(context: Context) {
 
   private var jobReaderS1: Job? = null
   private var jobReaderS2: Job? = null
+
+  private var fileDescriptorS1: FileDescriptor? = null
+  private var fileDescriptorS2: FileDescriptor? = null
 
   @Volatile
   private var isConnected = false
@@ -40,51 +54,27 @@ class SerialPortManager private constructor(context: Context) {
     private const val TTY_S2 = "/dev/ttyS2"
   }
 
-  private fun setSerialConfig(devicePath: String, baudRate: Int) {
-    val cmd = arrayOf(
-      "su", "-c",
-      "stty -F $devicePath $baudRate cs8 -cstopb -parenb -ixon"
-    )
-    try {
-      val process = Runtime.getRuntime().exec(cmd)
-      val exitCode = process.waitFor()
-      if (exitCode != 0) {
-        val errorMsg = process.errorStream.bufferedReader().readText().trim()
-        Log.e(TAG, "Failed to configure $devicePath with stty, exit=$exitCode. Error: $errorMsg")
-      } else {
-        Log.d(TAG, "Configured $devicePath to $baudRate")
-      }
-    } catch (e: Exception) {
-      Log.e(TAG, "Error configuring serial port: ${e.message}")
-    }
-  }
-
   fun connect(baudRateS1: Int = 57600, baudRateS2: Int = 9600): Boolean {
     if (isConnected) return true
-
     try {
-      setSerialConfig(TTY_S1, baudRateS1)
-      setSerialConfig(TTY_S2, baudRateS2)
-
-      val s1File = File(TTY_S1)
-      val s2File = File(TTY_S2)
-
-      if (!s1File.canRead() || !s1File.canWrite() || !s2File.canRead() || !s2File.canWrite()) {
-        Log.e(TAG, "Permission denied on serial ports")
-        return false
+      fileDescriptorS1 = SerialPortJNI.openPort(TTY_S1, baudRateS1)
+      if (fileDescriptorS1 == null) {
+        throw Exception("JNI failed to open ttyS1")
       }
+      inputStreamS1 = FileInputStream(fileDescriptorS1)
+      outputStreamS1 = FileOutputStream(fileDescriptorS1)
 
-      inputStreamS1 = FileInputStream(s1File)
-      outputStreamS1 = FileOutputStream(s1File)
-
-      inputStreamS2 = FileInputStream(s2File)
-      outputStreamS2 = FileOutputStream(s2File)
+      fileDescriptorS2 = SerialPortJNI.openPort(TTY_S2, baudRateS2)
+      if (fileDescriptorS2 == null) {
+        throw Exception("JNI failed to open ttyS2")
+      }
+      inputStreamS2 = FileInputStream(fileDescriptorS2)
+      outputStreamS2 = FileOutputStream(fileDescriptorS2)
 
       isConnected = true
-      Log.d(TAG, "✅ Connected to ttyS1 and ttyS2")
       return true
     } catch (e: Exception) {
-      Log.e(TAG, "❌ Error connecting serial ports: ${e.message}")
+      Log.e(TAG, "❌ Error opening serial port files: ${e.message}")
       disconnectPorts()
       return false
     }
@@ -237,6 +227,9 @@ class SerialPortManager private constructor(context: Context) {
     try {
       jobReaderS1?.cancel()
       jobReaderS2?.cancel()
+
+      SerialPortJNI.closePortFromFileDescriptor(fileDescriptorS1)
+      SerialPortJNI.closePortFromFileDescriptor(fileDescriptorS2)
 
       inputStreamS1?.close()
       outputStreamS1?.close()
