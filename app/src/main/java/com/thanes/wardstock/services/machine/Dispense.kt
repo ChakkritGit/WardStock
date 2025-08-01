@@ -208,7 +208,7 @@ class Dispense private constructor(
             }
 
             serialPortManager.startReadingSerialttyS2 { data ->
-              CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+              scope.launch {
                 stateMutex.withLock {
                   if (isProcessCompleted.get()) return@withLock
                   val response = data.joinToString(",") { "%02x".format(it) }

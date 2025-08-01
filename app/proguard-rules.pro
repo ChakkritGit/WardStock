@@ -119,3 +119,23 @@
 -dontwarn javax.swing.Timer
 -dontwarn javax.swing.text.JTextComponent
 -dontwarn org.slf4j.impl.StaticLoggerBinder
+
+# Keep interfaces for Retrofit
+-keep interface retrofit2.** { *; }
+-keep interface com.thanes.wardstock.data.remote.** { *; } # Replace with your API interface package
+
+# Keep OkHttp classes
+-dontwarn okio.**
+-dontwarn okhttp3.**
+-keep class okhttp3.** { *; }
+-keep interface okhttp3.** { *; }
+
+# Keep all data model classes that are used for JSON serialization/deserialization
+# Replace 'com.thanes.wardstock.data.models' with your actual package name for data models
+-keep class com.thanes.wardstock.data.models.** { *; }
+
+# Keep the names of fields in those model classes, especially if using @SerializedName
+-keepclassmembers class com.thanes.wardstock.data.models.** {
+  <fields>;
+}
+
