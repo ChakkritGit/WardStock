@@ -120,8 +120,6 @@ dependencies {
   implementation(libs.androidx.datastore.preferences)
   implementation(libs.accompanist.navigation.animation)
 
-//  implementation(libs.android.serialport.api)
-
   implementation(files("libs/jna.jar"))
   implementation(files("libs/jna-platform.jar"))
   implementation(files("libs/json-20220924.jar"))

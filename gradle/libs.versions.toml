@@ -1,7 +1,6 @@
 [versions]
 accompanistNavigationAnimation = "0.36.0"
 agp = "8.11.1"
-#androidSerialportApi = "2.1.0"
 appcompat = "1.7.1"
 compose = "1.0.0-beta01"
 coreSplashscreen = "1.0.1"
@@ -27,7 +26,6 @@ navigationCompose = "2.9.3"
 
 [libraries]
 accompanist-navigation-animation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanistNavigationAnimation" }
-#android-serialport-api = { module = "com.github.cepr:android-serialport-api", version.ref = "androidSerialportApi" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-appcompat-resources = { module = "androidx.appcompat:appcompat-resources", version.ref = "latestAppCompatVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
