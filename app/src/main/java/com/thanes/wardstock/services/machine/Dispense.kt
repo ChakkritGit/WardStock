@@ -123,7 +123,7 @@ class Dispense private constructor(
             timeout: Long = COMMUNICATION_TIMEOUT_MS
           ) {
             commandTimeoutJob?.cancel()
-            commandTimeoutJob = CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+            commandTimeoutJob = scope.launch {
               delay(timeout)
               if (isProcessCompleted.get()) return@launch
 
@@ -137,6 +137,11 @@ class Dispense private constructor(
                 if (stream == "ttyS2") {
                   serialPortManager.writeSerialttyS2(commandToRetry)
                   startCommandTimeout(commandToRetry, "ttyS2")
+                } else if (stream == "ttyS1" && commandToRetry == "VMC_COMMAND") {
+                  stateMutex.withLock {
+                    Log.d(TAG, "Resetting progress to 'waitingForPoll' to retry ttyS1 command.")
+                    progress = "waitingForPoll"
+                  }
                 }
               }
             }
@@ -149,7 +154,7 @@ class Dispense private constructor(
             startCommandTimeout(initialCmd, "ttyS2", COMMUNICATION_TIMEOUT_MS)
 
             serialPortManager.startReadingSerialttyS1 { data ->
-              CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+              scope.launch {
                 stateMutex.withLock {
                   if (isProcessCompleted.get()) return@withLock
                   val responseHex = data.joinToString(",") { "%02x".format(it) }
