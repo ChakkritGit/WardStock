@@ -289,8 +289,8 @@ class Dispense private constructor(
       return false
     } finally {
       Log.d(TAG, "Executing final cleanup: Stopping serial port readers.")
-      serialPortManager.stopReadingSerialttyS1()
-      serialPortManager.stopReadingSerialttyS2()
+//      serialPortManager.stopReadingSerialttyS1()
+//      serialPortManager.stopReadingSerialttyS2()
     }
   }
 
@@ -434,7 +434,7 @@ class Dispense private constructor(
       return null
     } finally {
       listenerJob.cancel()
-      serialPortManager.stopReadingSerialttyS1()
+//      serialPortManager.stopReadingSerialttyS1()
       responseChannel.close()
       Log.d(TAG, "[TEST_DISPENSE] Test finished.")
     }
@@ -454,7 +454,7 @@ class Dispense private constructor(
     val success = serialPortManager.writeSerialttyS2(asciiCommandString)
     if (!success) {
       Log.e(TAG, "[TEST_S2] Failed to write to serial port.")
-      serialPortManager.stopReadingSerialttyS2()
+//      serialPortManager.stopReadingSerialttyS2()
       responseChannel.close()
       return null
     }
@@ -463,7 +463,7 @@ class Dispense private constructor(
       responseChannel.receive()
     }
 
-    serialPortManager.stopReadingSerialttyS2()
+//    serialPortManager.stopReadingSerialttyS2()
     responseChannel.close()
 
     if (response != null) {
