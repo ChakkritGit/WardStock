@@ -24,7 +24,7 @@
       tools:targetApi="33"
       android:configChanges="locale|layoutDirection"
       android:requestLegacyExternalStorage="true"
-      android:usesCleartextTraffic="false">
+      android:usesCleartextTraffic="true"> <!-- set false if production-->
 
     <activity
         android:name=".MainActivity"
